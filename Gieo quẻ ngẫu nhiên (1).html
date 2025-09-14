@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gieo Quẻ Dịch Ảo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #ket_qua {
+            margin-top: 20px;
+            text-align: left;
+            font-family: monospace;
+            font-size: 18px;
+        }
+        .hao {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Gieo Quẻ Dịch Ảo</h2>
+        <input type="text" id="su_viec" placeholder="Nhập sự việc cần xem">
+        <button onclick="gieoQue()">Gieo Quẻ</button>
+        <div id="ket_qua"></div>
+    </div>
+
+    <script>
+        function gieoQue() {
+            const suViec = document.getElementById('su_viec').value;
+            const ketQuaDiv = document.getElementById('ket_qua');
+            ketQuaDiv.innerHTML = `<p>Sự việc: ${suViec || 'Không nhập'}</p>`;
+
+            // Tạo mảng ngẫu nhiên cho 6 hào
+            const lines = [];
+            for (let i = 0; i < 6; i++) {
+                lines.push(Math.random() < 0.5 ? 'am' : 'duong');
+            }
+
+            // Tạo số lượng hào động ngẫu nhiên (1 đến 4)
+            const numDong = Math.floor(Math.random() * 4) + 1;
+            const dongPositions = new Set();
+            while (dongPositions.size < numDong) {
+                const pos = Math.floor(Math.random() * 6);
+                dongPositions.add(pos);
+            }
+
+            // Hiển thị từng hào cách nhau 1 giây
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const haoNum = i + 1;
+                    const type = lines[i];
+                    const isDong = dongPositions.has(i);
+                    let display = '';
+                    if (type === 'duong') {
+                        display = isDong ? '——o——' : '—————';
+                    } else {
+                        display = isDong ? '—x—' : '— —';
+                    }
+
+                    // Thêm hào mới vào đầu div để hiển thị từ dưới lên
+                    const haoDiv = document.createElement('div');
+                    haoDiv.className = 'hao';
+                    haoDiv.innerHTML = `Hào ${haoNum}: ${display} (${type}${isDong ? ', động' : ''})`;
+                    ketQuaDiv.insertBefore(haoDiv, ketQuaDiv.firstChild.nextSibling); // Chèn sau phần "Sự việc"
+                }, i * 6000); // Mỗi hào cách nhau 6 giây
+            }
+        }
+    </script>
+</body>
+</html>
