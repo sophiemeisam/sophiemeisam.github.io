@@ -255,8 +255,8 @@
                         haoDisplay = '——o—— (dương, động)';
                         isDong = true;
                     }
-                    lines.unshift(haoType); // Thêm hào mới vào đầu mảng (hào 6 lên hào 1)
-                    if (isDong) dongHao.push(7 - haoIndex); // Gán số hào từ 6 đến 1
+                    lines.push(haoType); // Thêm hào từ hào 6 xuống hào 1
+                    if (isDong) dongHao.push(6 - haoIndex); // Gán số hào từ 6 đến 1
 
                     const haoDiv = document.createElement('div');
                     haoDiv.className = 'hao';
@@ -266,8 +266,8 @@
                     haoIndex++;
                     setTimeout(tungHao, 2000);
                 } else {
-                    // Tính quẻ đơn và quẻ kép
-                    const binaryLines = lines.map(line => line === 'duong' ? '1' : '0').reverse(); // Đảo ngược để hào 6 là đầu
+                    // Tính quẻ đơn và quẻ kép từ trên xuống
+                    const binaryLines = lines.map(line => line === 'duong' ? '1' : '0');
                     const thuongQuai = binaryLines.slice(0, 3).join(''); // Hào 6, 5, 4 (thượng quái)
                     const haQuai = binaryLines.slice(3, 6).join(''); // Hào 3, 2, 1 (hạ quái)
                     const queKepCode = thuongQuai + haQuai;
