@@ -304,26 +304,44 @@
         setInterval(flipCoins, 9000);
 
         // Hàm chụp quẻ
-        function chupQue() {
-            const ketqua = document.querySelector("#ket_qua");
-            const tenque = document.querySelector("#ten_que");
-            if (!ketqua) return;
+        <!-- import thư viện html2canvas -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-            const container = document.createElement("div");
-            container.style.background = "white";
-            container.style.padding = "10px";
-            container.style.display = "inline-block";
-            container.style.textAlign = "center";
-            container.appendChild(tenque.cloneNode(true));
-            container.appendChild(ketqua.cloneNode(true));
+<!-- Nút chụp ảnh -->
+<div style="margin-top:20px; text-align:center;">
+  <button id="captureBtn">📸 Lưu ảnh quẻ</button>
+</div>
 
-            html2canvas(container, { scale: 2 }).then(canvas => {
-                let link = document.createElement("a");
-                link.download = "que-kinhdich.png";
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
-        }
-    </script>
+<script>
+document.getElementById("captureBtn").addEventListener("click", function() {
+  // Chụp phần quẻ gieo (div chứa kết quả quẻ phải có id="ketquaQue")
+  const target = document.getElementById("ketquaQue");
+
+  if (!target) {
+    alert("Không tìm thấy phần kết quả quẻ (id='ketquaQue')");
+    return;
+  }
+
+  // Gọi html2canvas
+  html2canvas(target, {
+    useCORS: true,
+    scale: 2,
+    backgroundColor: "#ffffff" // nền trắng, không bị trong suốt
+  }).then(canvas => {
+    canvas.toBlob(function(blob) {
+      // Tạo link tải file
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "que-boi.png"; // tên file tải về
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }, "image/png");
+  }).catch(err => {
+    console.error("Lỗi khi chụp ảnh:", err);
+    alert("Chụp ảnh không thành công. Vui lòng thử lại!");
+  });
+});
+</script>
 </body>
 </html>
