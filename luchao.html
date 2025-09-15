@@ -203,8 +203,10 @@
                     haoToUpdate.innerHTML = `Hào ${haoIndex + 1}: ${haoDisplay}`;
                     if (isDong) haoToUpdate.classList.add('hao-dong'); else haoToUpdate.classList.remove('hao-dong');
                     haoIndex++;
-                    setTimeout(tungHao, 9000);
-                } else {
+if (haoIndex < 6) {
+    setTimeout(tungHao, 9000); // còn hào -> chờ 9s gieo tiếp
+} else {
+    // đủ 6 hào -> hiện tên quẻ ngay lập tức
                     const binaryLines = lines.reverse().map(line => line === 'duong' ? '1' : '0');
                     const thuongQuai = [binaryLines[0],binaryLines[1],binaryLines[2]].join('');
                     const haQuai = [binaryLines[3],binaryLines[4],binaryLines[5]].join('');
