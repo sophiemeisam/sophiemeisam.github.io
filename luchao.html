@@ -90,7 +90,7 @@
             margin-bottom: 10px;
         }
         .hao-dong {
-            color: red; /* Hào động hiển thị màu đỏ */
+            color: red;
         }
         #ten_que {
             margin-top: 10px;
@@ -102,26 +102,25 @@
 </head>
 <body>
     <div class="container">
-        <!-- Bát hương ở trên cùng -->
+        <!-- Bát hương -->
         <div class="bathuong-container">
             <img src="https://sophiemeisam.github.io/bathuong.png" alt="Bát Hương" class="bathuong">
         </div>
-        <!-- Đồng xu ngay dưới bát hương -->
+        <!-- Đồng xu -->
         <div class="coin-container">
             <div class="coin" id="coin1"><img src="https://sophiemeisam.github.io/duong.jpg" alt="Coin"></div>
             <div class="coin" id="coin2"><img src="https://sophiemeisam.github.io/duong.jpg" alt="Coin"></div>
             <div class="coin" id="coin3"><img src="https://sophiemeisam.github.io/duong.jpg" alt="Coin"></div>
         </div>
-        <!-- Ô nhập sự việc, nút Gieo Quẻ, và tên quẻ -->
+        <!-- Form gieo quẻ -->
         <div>
             <h2>Gieo Quẻ Dịch</h2>
             <input type="text" id="su_viec" placeholder="Nhập sự việc cần xem">
             <button onclick="gieoQue()">Gieo Quẻ</button>
             <div id="ten_que"></div>
-            <!-- nút chụp quẻ (giữ ở đây, không ảnh hưởng gieoQuẻ) -->
             <button onclick="chupQue()">📸 Chụp quẻ</button>
         </div>
-        <!-- Kết quả quẻ ở dưới cùng -->
+        <!-- Kết quả -->
         <div id="ket_qua">
             <div class="hao" id="hao6">Hào 6: </div>
             <div class="hao" id="hao5">Hào 5: </div>
@@ -133,87 +132,10 @@
     </div>
 
     <script>
-        // Link ảnh cho mặt hình và mặt chữ
-        const headsImage = 'https://sophiemeisam.github.io/duong.jpg'; // Mặt hình (dương)
-        const tailsImage = 'https://sophiemeisam.github.io/am.jpg'; // Mặt chữ (âm)
-        // Bảng quẻ đơn
-        const queDon = {
-            '111': 'Kiền',
-            '011': 'Đoài',
-            '101': 'Ly',
-            '001': 'Chấn',
-            '110': 'Tốn',
-            '010': 'Khảm',
-            '100': 'Cấn',
-            '000': 'Khôn'
-        };
-        // Bảng quẻ kép
-        const queKep = {
-            '111111': 'Thuần Kiền',
-            '111110': 'Thiên Phong Cấu',
-            '111100': 'Thiên Sơn Độn',
-            '111000': 'Thiên Địa Bĩ',
-            '110000': 'Phong Địa Quán',
-            '100000': 'Sơn Địa Bác',
-            '101000': 'Hoả Địa Tấn',
-            '101111': 'Hoả Thiên Đại Hữu',
-            '011011': 'Thuần Đoài',
-            '011010': 'Trạch Thủy Khốn',
-            '011000': 'Trạch Địa Tụy',
-            '011100': 'Trạch Sơn Hàm',
-            '010100': 'Thủy Sơn Kiển',
-            '000100': 'Địa Sơn Khiêm',
-            '001100': 'Lôi Sơn Tiểu Quá',
-            '001011': 'Lôi Trạch Quy Muội',
-            '101101': 'Thuần Ly',
-            '101100': 'Hoả Sơn Lữ',
-            '101110': 'Hoả Phong Đỉnh',
-            '101010': 'Hoả Thủy Vị Tế',
-            '100010': 'Sơn Thủy Mông',
-            '110010': 'Phong Thủy Hoán',
-            '111010': 'Thiên Thủy Tụng',
-            '111101': 'Thiên Hoả Đồng Nhân',
-            '001001': 'Thuần Chấn',
-            '001000': 'Lôi Địa Dự',
-            '001010': 'Lôi Thủy Giải',
-            '001110': 'Lôi Phong Hằng',
-            '000110': 'Địa Phong Thăng',
-            '010110': 'Thủy Phong Tĩnh',
-            '011110': 'Trạch Phong Đại Quá',
-            '011001': 'Trạch Lôi Tùy',
-            '110110': 'Thuần Tốn',
-            '110111': 'Phong Thiên Tiểu Súc',
-            '110101': 'Phong Hoả Gia Nhân',
-            '110001': 'Phong Lôi Ích',
-            '111001': 'Thiên Lôi Vô Vọng',
-            '101001': 'Hoả Lôi Phệ Hạp',
-            '100001': 'Sơn Lôi Di',
-            '100110': 'Sơn Phong Cổ',
-            '010010': 'Thuần Khảm',
-            '010011': 'Thủy Trạch Tiết',
-            '010001': 'Thủy Lôi Truân',
-            '010101': 'Thủy Hoả Ký Tế',
-            '011101': 'Trạch Hoả Cách',
-            '001101': 'Lôi Hoả Phong',
-            '000101': 'Địa Hoả Minh Di',
-            '000010': 'Địa Thủy Sư',
-            '100100': 'Thuần Cấn',
-            '100101': 'Sơn Hoả Bí',
-            '100111': 'Sơn Thiên Đại Súc',
-            '100011': 'Sơn Trạch Tổn',
-            '101011': 'Hoả Trạch Khuê',
-            '111011': 'Thiên Trạch Lý',
-            '110011': 'Phong Trạch Trung Phu',
-            '110100': 'Phong Sơn Tiệm',
-            '000000': 'Thuần Khôn',
-            '000001': 'Địa Lôi Phục',
-            '000011': 'Địa Trạch Lâm',
-            '000111': 'Địa Thiên Thái',
-            '001111': 'Lôi Thiên Đại Tráng',
-            '011111': 'Trạch Thiên Quải',
-            '010111': 'Thủy Thiên Nhu',
-            '010000': 'Thủy Địa Tỷ'
-        };
+        const headsImage = 'https://sophiemeisam.github.io/duong.jpg';
+        const tailsImage = 'https://sophiemeisam.github.io/am.jpg';
+        const queDon = { '111': 'Kiền','011': 'Đoài','101': 'Ly','001': 'Chấn','110': 'Tốn','010': 'Khảm','100': 'Cấn','000': 'Khôn' };
+        const queKep = { '111111': 'Thuần Kiền','111110': 'Thiên Phong Cấu','111100': 'Thiên Sơn Độn','111000': 'Thiên Địa Bĩ','110000': 'Phong Địa Quán','100000': 'Sơn Địa Bác','101000': 'Hoả Địa Tấn','101111': 'Hoả Thiên Đại Hữu','011011': 'Thuần Đoài','011010': 'Trạch Thủy Khốn','011000': 'Trạch Địa Tụy','011100': 'Trạch Sơn Hàm','010100': 'Thủy Sơn Kiển','000100': 'Địa Sơn Khiêm','001100': 'Lôi Sơn Tiểu Quá','001011': 'Lôi Trạch Quy Muội','101101': 'Thuần Ly','101100': 'Hoả Sơn Lữ','101110': 'Hoả Phong Đỉnh','101010': 'Hoả Thủy Vị Tế','100010': 'Sơn Thủy Mông','110010': 'Phong Thủy Hoán','111010': 'Thiên Thủy Tụng','111101': 'Thiên Hoả Đồng Nhân','001001': 'Thuần Chấn','001000': 'Lôi Địa Dự','001010': 'Lôi Thủy Giải','001110': 'Lôi Phong Hằng','000110': 'Địa Phong Thăng','010110': 'Thủy Phong Tĩnh','011110': 'Trạch Phong Đại Quá','011001': 'Trạch Lôi Tùy','110110': 'Thuần Tốn','110111': 'Phong Thiên Tiểu Súc','110101': 'Phong Hoả Gia Nhân','110001': 'Phong Lôi Ích','111001': 'Thiên Lôi Vô Vọng','101001': 'Hoả Lôi Phệ Hạp','100001': 'Sơn Lôi Di','100110': 'Sơn Phong Cổ','010010': 'Thuần Khảm','010011': 'Thủy Trạch Tiết','010001': 'Thủy Lôi Truân','010101': 'Thủy Hoả Ký Tế','011101': 'Trạch Hoả Cách','001101': 'Lôi Hoả Phong','000101': 'Địa Hoả Minh Di','000010': 'Địa Thủy Sư','100100': 'Thuần Cấn','100101': 'Sơn Hoả Bí','100111': 'Sơn Thiên Đại Súc','100011': 'Sơn Trạch Tổn','101011': 'Hoả Trạch Khuê','111011': 'Thiên Trạch Lý','110011': 'Phong Trạch Trung Phu','110100': 'Phong Sơn Tiệm','000000': 'Thuần Khôn','000001': 'Địa Lôi Phục','000011': 'Địa Trạch Lâm','000111': 'Địa Thiên Thái','001111': 'Lôi Thiên Đại Tráng','011111': 'Trạch Thiên Quải','010111': 'Thủy Thiên Nhu','010000': 'Thủy Địa Tỷ' };
         function flipCoins() {
             const coins = document.querySelectorAll('.coin img');
             const results = [];
@@ -237,7 +159,6 @@
             const lines = [];
             const dongHao = [];
             let haoIndex = 0;
-            // Tạo sẵn 6 hào trống
             for (let i = 6; i >= 1; i--) {
                 const haoDiv = document.createElement('div');
                 haoDiv.className = 'hao';
@@ -250,65 +171,39 @@
                     const coinResults = flipCoins();
                     const sum = coinResults.filter(result => result === 'duong').length;
                     let haoType, haoDisplay, isDong;
-                    if (sum === 0) {
-                        haoType = 'am';
-                        haoDisplay = '— — (âm, động)';
-                        isDong = true;
-                    } else if (sum === 1) {
-                        haoType = 'am';
-                        haoDisplay = '— — (âm)';
-                        isDong = false;
-                    } else if (sum === 2) {
-                        haoType = 'duong';
-                        haoDisplay = '————— (dương)';
-                        isDong = false;
-                    } else {
-                        haoType = 'duong';
-                        haoDisplay = '——o—— (dương, động)';
-                        isDong = true;
-                    }
-                    lines.push(haoType); // Thêm hào từ hào 1 đến hào 6
+                    if (sum === 0) { haoType = 'am'; haoDisplay = '— — (âm, động)'; isDong = true; }
+                    else if (sum === 1) { haoType = 'am'; haoDisplay = '— — (âm)'; isDong = false; }
+                    else if (sum === 2) { haoType = 'duong'; haoDisplay = '————— (dương)'; isDong = false; }
+                    else { haoType = 'duong'; haoDisplay = '——o—— (dương, động)'; isDong = true; }
+                    lines.push(haoType);
                     if (isDong) dongHao.push(haoIndex + 1);
                     const haoToUpdate = document.getElementById(`hao${haoIndex + 1}`);
                     haoToUpdate.innerHTML = `Hào ${haoIndex + 1}: ${haoDisplay}`;
-                    if (isDong) {
-                        haoToUpdate.classList.add('hao-dong');
-                    } else {
-                        haoToUpdate.classList.remove('hao-dong'); // Xóa lớp nếu không động
-                    }
+                    if (isDong) { haoToUpdate.classList.add('hao-dong'); }
+                    else { haoToUpdate.classList.remove('hao-dong'); }
                     haoIndex++;
-                    setTimeout(tungHao, 9000); // Tăng thời gian lên 9 giây
+                    setTimeout(tungHao, 9000);
                 } else {
-                    // Tính quẻ và hiển thị ngay lập tức sau khi hào 6 được lấy
                     const binaryLines = lines.reverse().map(line => line === 'duong' ? '1' : '0');
-                    const thuongQuai = [binaryLines[0], binaryLines[1], binaryLines[2]].join(''); // Hào 6, 5, 4
-                    const haQuai = [binaryLines[3], binaryLines[4], binaryLines[5]].join(''); // Hào 3, 2, 1
+                    const thuongQuai = [binaryLines[0], binaryLines[1], binaryLines[2]].join('');
+                    const haQuai = [binaryLines[3], binaryLines[4], binaryLines[5]].join('');
                     const queKepCode = thuongQuai + haQuai;
                     const tenThuongQuai = queDon[thuongQuai] || 'Không xác định';
                     const tenHaQuai = queDon[haQuai] || 'Không xác định';
                     const tenQueKep = queKep[queKepCode] || 'Không xác định';
-                    // Hiển thị tên quẻ và hào động ngay lập tức
                     let displayText = `Quẻ: ${tenQueKep} (Thượng: ${tenThuongQuai}, Hạ: ${tenHaQuai})`;
-                    if (dongHao.length > 0) {
-                        displayText += `, động hào ${dongHao.sort((a, b) => a - b).join(', ')}`;
-                    } else {
-                        displayText += ', không có hào động';
-                    }
+                    if (dongHao.length > 0) displayText += `, động hào ${dongHao.sort((a, b) => a - b).join(', ')}`;
+                    else displayText += ', không có hào động';
                     tenQueDiv.innerHTML = displayText;
                 }
             }
-            // Bắt đầu tung hào đầu tiên (hào 1)
             tungHao();
         }
-        // Tự động tung xu khi tải trang
         setInterval(flipCoins, 9000);
     </script>
 
-    <!-- thêm html2canvas ở cuối (sau tất cả script gieo quẻ) -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
     <script>
-    // Hàm chụp quẻ (AN TOÀN: không thay đổi DOM gốc)
     function chupQue() {
         try {
             const tenque = document.getElementById("ten_que");
@@ -317,8 +212,6 @@
                 alert("Chưa có kết quả quẻ để chụp. Vui lòng gieo quẻ trước.");
                 return;
             }
-
-            // Tạo vùng tạm (off-screen) để chụp (không ảnh hưởng DOM hiển thị)
             const tmp = document.createElement("div");
             tmp.style.position = "fixed";
             tmp.style.left = "-9999px";
@@ -327,15 +220,25 @@
             tmp.style.padding = "12px";
             tmp.style.boxSizing = "border-box";
             tmp.style.fontFamily = window.getComputedStyle(document.body).fontFamily;
-            // Clone nội dung (giữ nguyên hiển thị)
             tmp.appendChild(tenque.cloneNode(true));
             tmp.appendChild(ketqua.cloneNode(true));
             document.body.appendChild(tmp);
 
-            // Chụp bằng html2canvas
             html2canvas(tmp, { useCORS: true, scale: window.devicePixelRatio || 2, backgroundColor: "#ffffff" })
                 .then(canvas => {
-                    // chuyển sang blob và tải về (tương thích Android tốt hơn)
+                    let ctx = canvas.getContext("2d");
+                    let now = new Date();
+                    let hours = String(now.getHours()).padStart(2, '0');
+                    let minutes = String(now.getMinutes()).padStart(2, '0');
+                    let day = String(now.getDate()).padStart(2, '0');
+                    let month = String(now.getMonth() + 1).padStart(2, '0');
+                    let year = now.getFullYear();
+                    let text = `${hours}:${minutes} ${day}.${month}.${year}`;
+                    ctx.font = "20px Arial";
+                    ctx.fillStyle = "red";
+                    ctx.textAlign = "right";
+                    ctx.fillText(text, canvas.width - 20, canvas.height - 20);
+
                     if (canvas.toBlob) {
                         canvas.toBlob(function(blob) {
                             const url = URL.createObjectURL(blob);
@@ -344,7 +247,6 @@
                             a.download = "que_kinh_dich.png";
                             document.body.appendChild(a);
                             a.click();
-                            // dọn dẹp
                             setTimeout(() => {
                                 URL.revokeObjectURL(url);
                                 if (a.parentNode) a.parentNode.removeChild(a);
@@ -352,7 +254,6 @@
                             }, 150);
                         }, "image/png");
                     } else {
-                        // fallback
                         const dataUrl = canvas.toDataURL("image/png");
                         const a = document.createElement("a");
                         a.href = dataUrl;
@@ -366,7 +267,7 @@
                 .catch(err => {
                     if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
                     console.error("html2canvas error:", err);
-                    alert("Chụp ảnh thất bại — kiểm tra console (nếu có).");
+                    alert("Chụp ảnh thất bại — kiểm tra console.");
                 });
         } catch (e) {
             console.error(e);
