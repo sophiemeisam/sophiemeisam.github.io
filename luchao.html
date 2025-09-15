@@ -268,8 +268,8 @@
                 } else {
                     // Tính quẻ đơn và quẻ kép từ trên xuống
                     const binaryLines = lines.map(line => line === 'duong' ? '1' : '0');
-                    const thuongQuai = binaryLines.slice(0, 3).join(''); // Hào 6, 5, 4 (thượng quái)
-                    const haQuai = binaryLines.slice(3, 6).join(''); // Hào 3, 2, 1 (hạ quái)
+                    const thuongQuai = [binaryLines[0], binaryLines[1], binaryLines[2]].join(''); // Hào 6, 5, 4
+                    const haQuai = [binaryLines[3], binaryLines[4], binaryLines[5]].join(''); // Hào 3, 2, 1
                     const queKepCode = thuongQuai + haQuai;
 
                     const tenThuongQuai = queDon[thuongQuai] || 'Không xác định';
@@ -295,4 +295,4 @@
         setInterval(flipCoins, 2000);
     </script>
 </body>
-</html> 
+</html>
