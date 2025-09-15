@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -75,7 +76,6 @@
             border: none;
             cursor: pointer;
             font-size: 16px;
-            margin: 5px 0;
         }
         button:hover {
             background-color: #45a049;
@@ -106,21 +106,22 @@
         <div class="bathuong-container">
             <img src="https://sophiemeisam.github.io/bathuong.png" alt="Bát Hương" class="bathuong">
         </div>
+
         <!-- Đồng xu ngay dưới bát hương -->
         <div class="coin-container">
             <div class="coin" id="coin1"><img src="https://sophiemeisam.github.io/duong.jpg" alt="Coin"></div>
             <div class="coin" id="coin2"><img src="https://sophiemeisam.github.io/duong.jpg" alt="Coin"></div>
             <div class="coin" id="coin3"><img src="https://sophiemeisam.github.io/duong.jpg" alt="Coin"></div>
         </div>
+
         <!-- Ô nhập sự việc, nút Gieo Quẻ, và tên quẻ -->
         <div>
             <h2>Gieo Quẻ Dịch</h2>
             <input type="text" id="su_viec" placeholder="Nhập sự việc cần xem">
             <button onclick="gieoQue()">Gieo Quẻ</button>
             <div id="ten_que"></div>
-            <!-- Nút chụp quẻ -->
-            <button onclick="chupQue()">📸 Chụp quẻ</button>
         </div>
+
         <!-- Kết quả quẻ ở dưới cùng -->
         <div id="ket_qua">
             <div class="hao" id="hao6">Hào 6: </div>
@@ -132,13 +133,11 @@
         </div>
     </div>
 
-    <!-- Thư viện html2canvas -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
     <script>
         // Link ảnh cho mặt hình và mặt chữ
         const headsImage = 'https://sophiemeisam.github.io/duong.jpg'; // Mặt hình (dương)
         const tailsImage = 'https://sophiemeisam.github.io/am.jpg'; // Mặt chữ (âm)
+
         // Bảng quẻ đơn
         const queDon = {
             '111': 'Kiền',
@@ -150,6 +149,7 @@
             '100': 'Cấn',
             '000': 'Khôn'
         };
+
         // Bảng quẻ kép
         const queKep = {
             '111111': 'Thuần Kiền',
@@ -217,6 +217,7 @@
             '010111': 'Thủy Thiên Nhu',
             '010000': 'Thủy Địa Tỷ'
         };
+
         function flipCoins() {
             const coins = document.querySelectorAll('.coin img');
             const results = [];
@@ -231,15 +232,18 @@
             });
             return results;
         }
+
         function gieoQue() {
             const suViec = document.getElementById('su_viec').value;
             const ketQuaDiv = document.getElementById('ket_qua');
             const tenQueDiv = document.getElementById('ten_que');
             ketQuaDiv.innerHTML = `<p>Sự việc: ${suViec || 'Không nhập'}</p>`;
             tenQueDiv.innerHTML = '';
+
             const lines = [];
             const dongHao = [];
             let haoIndex = 0;
+
             // Tạo sẵn 6 hào trống
             for (let i = 6; i >= 1; i--) {
                 const haoDiv = document.createElement('div');
@@ -248,6 +252,7 @@
                 haoDiv.innerHTML = `Hào ${i}: `;
                 ketQuaDiv.appendChild(haoDiv);
             }
+
             function tungHao() {
                 if (haoIndex < 6) {
                     const coinResults = flipCoins();
@@ -271,24 +276,33 @@
                         isDong = true;
                     }
                     lines.push(haoType); // Thêm hào từ hào 1 đến hào 6
+
+                    // Gán số hào từ 1 đến 6 theo thứ tự lấy
                     if (isDong) dongHao.push(haoIndex + 1);
+
+                    // Cập nhật hào tương ứng với màu đỏ nếu là hào động
                     const haoToUpdate = document.getElementById(`hao${haoIndex + 1}`);
                     haoToUpdate.innerHTML = `Hào ${haoIndex + 1}: ${haoDisplay}`;
                     if (isDong) {
                         haoToUpdate.classList.add('hao-dong');
                     } else {
-                        haoToUpdate.classList.remove('hao-dong');
+                        haoToUpdate.classList.remove('hao-dong'); // Xóa lớp nếu không động
                     }
+
                     haoIndex++;
-                    setTimeout(tungHao, 9000);
+                    setTimeout(tungHao, 9000); // Tăng thời gian lên 9 giây
                 } else {
+                    // Tính quẻ và hiển thị ngay lập tức sau khi hào 6 được lấy
                     const binaryLines = lines.reverse().map(line => line === 'duong' ? '1' : '0');
-                    const thuongQuai = [binaryLines[0], binaryLines[1], binaryLines[2]].join('');
-                    const haQuai = [binaryLines[3], binaryLines[4], binaryLines[5]].join('');
+                    const thuongQuai = [binaryLines[0], binaryLines[1], binaryLines[2]].join(''); // Hào 6, 5, 4
+                    const haQuai = [binaryLines[3], binaryLines[4], binaryLines[5]].join(''); // Hào 3, 2, 1
                     const queKepCode = thuongQuai + haQuai;
+
                     const tenThuongQuai = queDon[thuongQuai] || 'Không xác định';
                     const tenHaQuai = queDon[haQuai] || 'Không xác định';
                     const tenQueKep = queKep[queKepCode] || 'Không xác định';
+
+                    // Hiển thị tên quẻ và hào động ngay lập tức
                     let displayText = `Quẻ: ${tenQueKep} (Thượng: ${tenThuongQuai}, Hạ: ${tenHaQuai})`;
                     if (dongHao.length > 0) {
                         displayText += `, động hào ${dongHao.sort((a, b) => a - b).join(', ')}`;
@@ -298,13 +312,15 @@
                     tenQueDiv.innerHTML = displayText;
                 }
             }
+
+            // Bắt đầu tung hào đầu tiên (hào 1)
             tungHao();
         }
+
         // Tự động tung xu khi tải trang
         setInterval(flipCoins, 9000);
 
-        // Hàm chụp quẻ
-        <!-- import thư viện html2canvas -->
+<!-- import thư viện html2canvas -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <!-- Nút chụp ảnh -->
@@ -340,7 +356,8 @@ document.getElementById("captureBtn").addEventListener("click", function() {
   }).catch(err => {
     console.error("Lỗi khi chụp ảnh:", err);
     alert("Chụp ảnh không thành công. Vui lòng thử lại!");
+  });
 });
-</script>
+    </script>
 </body>
 </html>
