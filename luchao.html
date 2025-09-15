@@ -225,77 +225,88 @@
 
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
-    function chupQue() {
-        try {
-            const tenque = document.getElementById("ten_que");
-            const ketqua = document.getElementById("ket_qua");
-            if (!tenque || !ketqua) {alert("Chưa có kết quả quẻ để chụp. Vui lòng gieo quẻ trước.");return;}
+function chupQue() {
+    try {
+        const tenque = document.getElementById("ten_que");
+        const ketqua = document.getElementById("ket_qua");
+        if (!tenque || !ketqua) {
+            alert("Chưa có kết quả quẻ để chụp. Vui lòng gieo quẻ trước.");
+            return;
+        }
 
-            // Thời gian hiện tại
-            let now = new Date();
-            let hours = String(now.getHours()).padStart(2, '0');
-            let minutes = String(now.getMinutes()).padStart(2, '0');
-            let day = String(now.getDate()).padStart(2, '0');
-            let month = String(now.getMonth() + 1).padStart(2, '0');
-            let year = now.getFullYear();
-            let text = `${hours}:${minutes}     ${day}.${month}.${year}`;
+        // Thời gian hiện tại
+        let now = new Date();
+        let hours = String(now.getHours()).padStart(2, '0');
+        let minutes = String(now.getMinutes()).padStart(2, '0');
+        let day = String(now.getDate()).padStart(2, '0');
+        let month = String(now.getMonth() + 1).padStart(2, '0');
+        let year = now.getFullYear();
+        let text = `${hours}:${minutes}     ${day}.${month}.${year}`;
 
-            // Vùng tạm
-            const tmp = document.createElement("div");
-            tmp.style.position = "fixed";
-            tmp.style.left = "-9999px";
-            tmp.style.top = "0";
-            tmp.style.background = "#ffffff";
-            tmp.style.padding = "12px";
-            tmp.style.boxSizing = "border-box";
-            tmp.style.fontFamily = window.getComputedStyle(document.body).fontFamily;
+        // Vùng tạm
+        const tmp = document.createElement("div");
+        tmp.style.position = "fixed";
+        tmp.style.left = "-9999px";
+        tmp.style.top = "0";
+        tmp.style.background = "#ffffff";
+        tmp.style.padding = "12px";
+        tmp.style.boxSizing = "border-box";
+        tmp.style.fontFamily = window.getComputedStyle(document.body).fontFamily;
 
-            // Thêm dòng thời gian trước tên quẻ
-            const timeDiv = document.createElement("div");
-            timeDiv.textContent = text;
-            timeDiv.style.fontSize = "18px";
-            timeDiv.style.fontWeight = "bold";
-            timeDiv.style.marginBottom = "8px";
-            tmp.appendChild(timeDiv);
+        // Thêm dòng thời gian trước tên quẻ (màu đỏ đậm)
+        const timeDiv = document.createElement("div");
+        timeDiv.textContent = text;
+        timeDiv.style.fontSize = "18px";
+        timeDiv.style.fontWeight = "bold";
+        timeDiv.style.marginBottom = "8px";
+        timeDiv.style.color = "#cc0000";   // 🔴 chữ đỏ đậm
+        tmp.appendChild(timeDiv);
 
-            tmp.appendChild(tenque.cloneNode(true));
-            tmp.appendChild(ketqua.cloneNode(true));
-            document.body.appendChild(tmp);
+        tmp.appendChild(tenque.cloneNode(true));
+        tmp.appendChild(ketqua.cloneNode(true));
+        document.body.appendChild(tmp);
 
-            html2canvas(tmp,{useCORS:true,scale:window.devicePixelRatio||2,backgroundColor:"#ffffff"})
-                .then(canvas=>{
-                    if(canvas.toBlob){
-                        canvas.toBlob(function(blob){
-                            const url=URL.createObjectURL(blob);
-                            const a=document.createElement("a");
-                            a.href=url;
-                            a.download="que_kinh_dich.png";
-                            document.body.appendChild(a);
-                            a.click();
-                            setTimeout(()=>{
-                                URL.revokeObjectURL(url);
-                                if(a.parentNode)a.parentNode.removeChild(a);
-                                if(tmp.parentNode)tmp.parentNode.removeChild(tmp);
-                            },150);
-                        },"image/png");
-                    }else{
-                        const dataUrl=canvas.toDataURL("image/png");
-                        const a=document.createElement("a");
-                        a.href=dataUrl;
-                        a.download="que_kinh_dich.png";
-                        document.body.appendChild(a);
-                        a.click();
-                        if(a.parentNode)a.parentNode.removeChild(a);
-                        if(tmp.parentNode)tmp.parentNode.removeChild(tmp);
-                    }
-                })
-                .catch(err=>{
-                    if(tmp.parentNode)tmp.parentNode.removeChild(tmp);
-                    console.error("html2canvas error:",err);
-                    alert("Chụp ảnh thất bại — kiểm tra console.");
-                });
-        }catch(e){console.error(e);alert("Lỗi nội bộ: "+(e&&e.message?e.message:e));}
+        html2canvas(tmp, {
+            useCORS: true,
+            scale: window.devicePixelRatio || 2,
+            backgroundColor: "#ffffff"
+        })
+        .then(canvas => {
+            if (canvas.toBlob) {
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "que_kinh_dich.png";
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        URL.revokeObjectURL(url);
+                        if (a.parentNode) a.parentNode.removeChild(a);
+                        if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
+                    }, 150);
+                }, "image/png");
+            } else {
+                const dataUrl = canvas.toDataURL("image/png");
+                const a = document.createElement("a");
+                a.href = dataUrl;
+                a.download = "que_kinh_dich.png";
+                document.body.appendChild(a);
+                a.click();
+                if (a.parentNode) a.parentNode.removeChild(a);
+                if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
+            }
+        })
+        .catch(err => {
+            if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
+            console.error("html2canvas error:", err);
+            alert("Chụp ảnh thất bại — kiểm tra console.");
+        });
+    } catch(e) {
+        console.error(e);
+        alert("Lỗi nội bộ: " + (e && e.message ? e.message : e));
     }
-    </script>
+}
+</script>
 </body>
 </html>
