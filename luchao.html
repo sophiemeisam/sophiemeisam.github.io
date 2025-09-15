@@ -158,6 +158,7 @@
             '000000': 'Thuần Khôn','000001': 'Địa Lôi Phục','000011': 'Địa Trạch Lâm','000111': 'Địa Thiên Thái',
             '001111': 'Lôi Thiên Đại Tráng','011111': 'Trạch Thiên Quải','010111': 'Thủy Thiên Nhu','010000': 'Thủy Địa Tỷ'
         };
+
         function flipCoins() {
             const coins = document.querySelectorAll('.coin img');
             const results = [];
@@ -172,15 +173,21 @@
             });
             return results;
         }
+
         function gieoQue() {
             const suViec = document.getElementById('su_viec').value;
             const ketQuaDiv = document.getElementById('ket_qua');
             const tenQueDiv = document.getElementById('ten_que');
+
+            // reset/hiển thị sự việc
             ketQuaDiv.innerHTML = `<p>Sự việc: ${suViec || 'Không nhập'}</p>`;
             tenQueDiv.innerHTML = '';
-            const lines = [];
-            const dongHao = [];
+
+            const lines = [];     // giữ 'duong' hoặc 'am' theo thứ tự lấy
+            const dongHao = [];   // danh sách hào động (số)
             let haoIndex = 0;
+
+            // tạo 6 hào placeholder (hào6..hao1 đã tồn tại trong HTML, nhưng ta đặt lại nội dung)
             for (let i = 6; i >= 1; i--) {
                 const haoDiv = document.createElement('div');
                 haoDiv.className = 'hao';
@@ -188,130 +195,162 @@
                 haoDiv.innerHTML = `Hào ${i}: `;
                 ketQuaDiv.appendChild(haoDiv);
             }
+
+            // tungHao: gieo từng hào, giữa các hào chờ 9s,
+            // nhưng sau khi hào6 xong => hiện tên quẻ ngay lập tức (không chờ).
             function tungHao() {
                 if (haoIndex < 6) {
                     const coinResults = flipCoins();
                     const sum = coinResults.filter(result => result === 'duong').length;
                     let haoType, haoDisplay, isDong;
-                    if (sum === 0) {haoType='am';haoDisplay='— — (âm, động)';isDong=true;}
-                    else if (sum === 1) {haoType='am';haoDisplay='— — (âm)';isDong=false;}
-                    else if (sum === 2) {haoType='duong';haoDisplay='————— (dương)';isDong=false;}
-                    else {haoType='duong';haoDisplay='——o—— (dương, động)';isDong=true;}
+                    if (sum === 0) {
+                        haoType = 'am';
+                        haoDisplay = '— — (âm, động)';
+                        isDong = true;
+                    } else if (sum === 1) {
+                        haoType = 'am';
+                        haoDisplay = '— — (âm)';
+                        isDong = false;
+                    } else if (sum === 2) {
+                        haoType = 'duong';
+                        haoDisplay = '————— (dương)';
+                        isDong = false;
+                    } else {
+                        haoType = 'duong';
+                        haoDisplay = '——o—— (dương, động)';
+                        isDong = true;
+                    }
+
                     lines.push(haoType);
                     if (isDong) dongHao.push(haoIndex + 1);
+
                     const haoToUpdate = document.getElementById(`hao${haoIndex + 1}`);
                     haoToUpdate.innerHTML = `Hào ${haoIndex + 1}: ${haoDisplay}`;
                     if (isDong) haoToUpdate.classList.add('hao-dong'); else haoToUpdate.classList.remove('hao-dong');
+
                     haoIndex++;
-if (haoIndex < 6) {
-    setTimeout(tungHao, 9000); // còn hào -> chờ 9s gieo tiếp
-} else {
-    // đủ 6 hào -> hiện tên quẻ ngay lập tức
-                    const binaryLines = lines.reverse().map(line => line === 'duong' ? '1' : '0');
-                    const thuongQuai = [binaryLines[0],binaryLines[1],binaryLines[2]].join('');
-                    const haQuai = [binaryLines[3],binaryLines[4],binaryLines[5]].join('');
-                    const queKepCode = thuongQuai + haQuai;
-                    const tenThuongQuai = queDon[thuongQuai] || 'Không xác định';
-                    const tenHaQuai = queDon[haQuai] || 'Không xác định';
-                    const tenQueKep = queKep[queKepCode] || 'Không xác định';
-                    let displayText = `Quẻ: ${tenQueKep} (Thượng: ${tenThuongQuai}, Hạ: ${tenHaQuai})`;
-                    if (dongHao.length > 0) displayText += `, động hào ${dongHao.sort((a,b)=>a-b).join(', ')}`;
-                    else displayText += ', không có hào động';
-                    tenQueDiv.innerHTML = displayText;
+
+                    // nếu chưa đủ 6 hào -> chờ 9s để gieo tiếp (thời gian để khấn)
+                    if (haoIndex < 6) {
+                        setTimeout(tungHao, 9000);
+                    } else {
+                        // đã lấy đủ 6 hào -> hiện tên quẻ ngay lập tức (không chờ thêm)
+                        const binaryLines = [...lines].reverse().map(line => line === 'duong' ? '1' : '0');
+                        const thuongQuai = [binaryLines[0], binaryLines[1], binaryLines[2]].join('');
+                        const haQuai = [binaryLines[3], binaryLines[4], binaryLines[5]].join('');
+                        const queKepCode = thuongQuai + haQuai;
+
+                        const tenThuongQuai = queDon[thuongQuai] || 'Không xác định';
+                        const tenHaQuai = queDon[haQuai] || 'Không xác định';
+                        const tenQueKep = queKep[queKepCode] || 'Không xác định';
+
+                        let displayText = `Quẻ: ${tenQueKep} (Thượng: ${tenThuongQuai}, Hạ: ${tenHaQuai})`;
+                        if (dongHao.length > 0) {
+                            displayText += `, động hào ${dongHao.sort((a,b) => a - b).join(', ')}`;
+                        } else {
+                            displayText += ', không có hào động';
+                        }
+                        tenQueDiv.innerHTML = displayText;
+                    }
                 }
             }
+
+            // bắt đầu gieo từ hào 1
             tungHao();
         }
+
+        // Tự động tung xu khi tải trang (không can thiệp chức năng gieo quẻ)
         setInterval(flipCoins, 9000);
     </script>
 
+    <!-- html2canvas + chupQue (giữ nguyên logic: download trên Chrome; fallback hiển thị ảnh cho Zalo) -->
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
-function chupQue() {
-    try {
-        const tenque = document.getElementById("ten_que");
-        const ketqua = document.getElementById("ket_qua");
-        if (!tenque || !ketqua) {
-            alert("Chưa có kết quả quẻ để chụp. Vui lòng gieo quẻ trước.");
-            return;
-        }
-
-        // Thời gian hiện tại
-        let now = new Date();
-        let hours = String(now.getHours()).padStart(2, '0');
-        let minutes = String(now.getMinutes()).padStart(2, '0');
-        let day = String(now.getDate()).padStart(2, '0');
-        let month = String(now.getMonth() + 1).padStart(2, '0');
-        let year = now.getFullYear();
-        let text = `${hours}:${minutes}     ${day}.${month}.${year}`;
-
-        // Vùng tạm
-        const tmp = document.createElement("div");
-        tmp.style.position = "fixed";
-        tmp.style.left = "-9999px";
-        tmp.style.top = "0";
-        tmp.style.background = "#ffffff";
-        tmp.style.padding = "12px";
-        tmp.style.boxSizing = "border-box";
-        tmp.style.fontFamily = window.getComputedStyle(document.body).fontFamily;
-
-        // Thêm dòng thời gian trước tên quẻ (màu đỏ đậm)
-        const timeDiv = document.createElement("div");
-        timeDiv.textContent = text;
-        timeDiv.style.fontSize = "18px";
-        timeDiv.style.fontWeight = "bold";
-        timeDiv.style.marginBottom = "8px";
-        timeDiv.style.color = "#cc0000";
-        tmp.appendChild(timeDiv);
-
-        tmp.appendChild(tenque.cloneNode(true));
-        tmp.appendChild(ketqua.cloneNode(true));
-        document.body.appendChild(tmp);
-
-        html2canvas(tmp, {
-            useCORS: true,
-            scale: window.devicePixelRatio || 2,
-            backgroundColor: "#ffffff"
-        })
-        .then(canvas => {
-            // Nếu browser hỗ trợ download (Chrome/Edge/Firefox)
-            if (typeof canvas.toBlob === "function" && "download" in document.createElement("a")) {
-                canvas.toBlob(function(blob) {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement("a");
-                    a.href = url;
-                    a.download = "que_kinh_dich.png";
-                    document.body.appendChild(a);
-                    a.click();
-                    setTimeout(() => {
-                        URL.revokeObjectURL(url);
-                        if (a.parentNode) a.parentNode.removeChild(a);
-                        if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
-                    }, 150);
-                }, "image/png");
-            } else {
-                // Zalo browser hoặc browser hạn chế
-                const dataUrl = canvas.toDataURL("image/png");
-                const img = new Image();
-                img.src = dataUrl;
-                img.style.maxWidth = "100%";
-                img.style.display = "block";
-                img.style.margin = "12px auto";
-                document.body.appendChild(img);
-                alert("👉 Trình duyệt không hỗ trợ tải trực tiếp.\nNhấn giữ vào ảnh để lưu về máy.");
-                if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
+    function chupQue() {
+        try {
+            const tenque = document.getElementById("ten_que");
+            const ketqua = document.getElementById("ket_qua");
+            if (!tenque || !ketqua) {
+                alert("Chưa có kết quả quẻ để chụp. Vui lòng gieo quẻ trước.");
+                return;
             }
-        })
-        .catch(err => {
-            if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
-            console.error("html2canvas error:", err);
-            alert("Chụp ảnh thất bại — kiểm tra console.");
-        });
-    } catch(e) {
-        console.error(e);
-        alert("Lỗi nội bộ: " + (e && e.message ? e.message : e));
+
+            // Thời gian hiện tại
+            let now = new Date();
+            let hours = String(now.getHours()).padStart(2, '0');
+            let minutes = String(now.getMinutes()).padStart(2, '0');
+            let day = String(now.getDate()).padStart(2, '0');
+            let month = String(now.getMonth() + 1).padStart(2, '0');
+            let year = now.getFullYear();
+            let text = `${hours}:${minutes}     ${day}.${month}.${year}`;
+
+            // Vùng tạm (off-screen)
+            const tmp = document.createElement("div");
+            tmp.style.position = "fixed";
+            tmp.style.left = "-9999px";
+            tmp.style.top = "0";
+            tmp.style.background = "#ffffff";
+            tmp.style.padding = "12px";
+            tmp.style.boxSizing = "border-box";
+            tmp.style.fontFamily = window.getComputedStyle(document.body).fontFamily;
+
+            // Thêm dòng thời gian trước tên quẻ (màu đỏ đậm)
+            const timeDiv = document.createElement("div");
+            timeDiv.textContent = text;
+            timeDiv.style.fontSize = "18px";
+            timeDiv.style.fontWeight = "bold";
+            timeDiv.style.marginBottom = "8px";
+            timeDiv.style.color = "#cc0000";
+            tmp.appendChild(timeDiv);
+
+            tmp.appendChild(tenque.cloneNode(true));
+            tmp.appendChild(ketqua.cloneNode(true));
+            document.body.appendChild(tmp);
+
+            html2canvas(tmp, {
+                useCORS: true,
+                scale: window.devicePixelRatio || 2,
+                backgroundColor: "#ffffff"
+            })
+            .then(canvas => {
+                // Nếu browser hỗ trợ download (Chrome/Edge/Firefox)
+                if (typeof canvas.toBlob === "function" && "download" in document.createElement("a")) {
+                    canvas.toBlob(function(blob) {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = "que_kinh_dich.png";
+                        document.body.appendChild(a);
+                        a.click();
+                        setTimeout(() => {
+                            URL.revokeObjectURL(url);
+                            if (a.parentNode) a.parentNode.removeChild(a);
+                            if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
+                        }, 150);
+                    }, "image/png");
+                } else {
+                    // Zalo browser hoặc browser hạn chế -> hiển thị ảnh cho user nhấn giữ lưu
+                    const dataUrl = canvas.toDataURL("image/png");
+                    const img = new Image();
+                    img.src = dataUrl;
+                    img.style.maxWidth = "100%";
+                    img.style.display = "block";
+                    img.style.margin = "12px auto";
+                    document.body.appendChild(img);
+                    alert("👉 Trình duyệt không hỗ trợ tải trực tiếp.\nNhấn giữ vào ảnh để lưu về máy.");
+                    if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
+                }
+            })
+            .catch(err => {
+                if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
+                console.error("html2canvas error:", err);
+                alert("Chụp ảnh thất bại — kiểm tra console.");
+            });
+        } catch(e) {
+            console.error(e);
+            alert("Lỗi nội bộ: " + (e && e.message ? e.message : e));
+        }
     }
-}
-</script>
+    </script>
 </body>
 </html>
