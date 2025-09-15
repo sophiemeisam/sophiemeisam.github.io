@@ -259,7 +259,7 @@ function chupQue() {
         timeDiv.style.fontSize = "18px";
         timeDiv.style.fontWeight = "bold";
         timeDiv.style.marginBottom = "8px";
-        timeDiv.style.color = "#cc0000";   // 🔴 chữ đỏ đậm
+        timeDiv.style.color = "#cc0000";
         tmp.appendChild(timeDiv);
 
         tmp.appendChild(tenque.cloneNode(true));
@@ -272,7 +272,8 @@ function chupQue() {
             backgroundColor: "#ffffff"
         })
         .then(canvas => {
-            if (canvas.toBlob) {
+            // Nếu browser hỗ trợ download (Chrome/Edge/Firefox)
+            if (typeof canvas.toBlob === "function" && "download" in document.createElement("a")) {
                 canvas.toBlob(function(blob) {
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement("a");
@@ -287,13 +288,15 @@ function chupQue() {
                     }, 150);
                 }, "image/png");
             } else {
+                // Zalo browser hoặc browser hạn chế
                 const dataUrl = canvas.toDataURL("image/png");
-                const a = document.createElement("a");
-                a.href = dataUrl;
-                a.download = "que_kinh_dich.png";
-                document.body.appendChild(a);
-                a.click();
-                if (a.parentNode) a.parentNode.removeChild(a);
+                const img = new Image();
+                img.src = dataUrl;
+                img.style.maxWidth = "100%";
+                img.style.display = "block";
+                img.style.margin = "12px auto";
+                document.body.appendChild(img);
+                alert("👉 Trình duyệt không hỗ trợ tải trực tiếp.\nNhấn giữ vào ảnh để lưu về máy.");
                 if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
             }
         })
