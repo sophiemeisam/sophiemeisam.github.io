@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gieo Quẻ Dịch Ảo với Đồng Xu</title>
+    <title>Gieo Quẻ Dịch với Đồng Xu</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -29,7 +29,7 @@
             margin-bottom: 20px;
         }
         .bathuong {
-            width: 150px;
+            width: 300px;
             height: auto;
         }
         .coin-container {
@@ -39,8 +39,8 @@
             margin-bottom: 20px;
         }
         .coin {
-            width: 100px;
-            height: 100px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -88,6 +88,9 @@
         .hao {
             margin-bottom: 10px;
         }
+        .hao-dong {
+            color: red; /* Hào động hiển thị màu đỏ */
+        }
         #ten_que {
             margin-top: 10px;
             font-size: 16px;
@@ -112,14 +115,21 @@
 
         <!-- Ô nhập sự việc, nút Gieo Quẻ, và tên quẻ -->
         <div>
-            <h2>Gieo Quẻ Dịch Ảo</h2>
+            <h2>Gieo Quẻ Dịch</h2>
             <input type="text" id="su_viec" placeholder="Nhập sự việc cần xem">
             <button onclick="gieoQue()">Gieo Quẻ</button>
             <div id="ten_que"></div>
         </div>
 
         <!-- Kết quả quẻ ở dưới cùng -->
-        <div id="ket_qua"></div>
+        <div id="ket_qua">
+            <div class="hao" id="hao6">Hào 6: </div>
+            <div class="hao" id="hao5">Hào 5: </div>
+            <div class="hao" id="hao4">Hào 4: </div>
+            <div class="hao" id="hao3">Hào 3: </div>
+            <div class="hao" id="hao2">Hào 2: </div>
+            <div class="hao" id="hao1">Hào 1: </div>
+        </div>
     </div>
 
     <script>
@@ -217,7 +227,7 @@
                 setTimeout(() => {
                     coin.src = isHeads ? headsImage : tailsImage;
                     coin.parentElement.classList.remove('flip');
-                }, 1000);
+                }, 3000);
             });
             return results;
         }
@@ -232,6 +242,15 @@
             const lines = [];
             const dongHao = [];
             let haoIndex = 0;
+
+            // Tạo sẵn 6 hào trống
+            for (let i = 6; i >= 1; i--) {
+                const haoDiv = document.createElement('div');
+                haoDiv.className = 'hao';
+                haoDiv.id = `hao${i}`;
+                haoDiv.innerHTML = `Hào ${i}: `;
+                ketQuaDiv.appendChild(haoDiv);
+            }
 
             function tungHao() {
                 if (haoIndex < 6) {
@@ -255,19 +274,25 @@
                         haoDisplay = '——o—— (dương, động)';
                         isDong = true;
                     }
-                    lines.push(haoType); // Thêm hào từ hào 6 xuống hào 1
-                    if (isDong) dongHao.push(6 - haoIndex); // Gán số hào từ 6 đến 1
+                    lines.push(haoType); // Thêm hào từ hào 1 đến hào 6
 
-                    const haoDiv = document.createElement('div');
-                    haoDiv.className = 'hao';
-                    haoDiv.innerHTML = `Hào ${6 - haoIndex}: ${haoDisplay}`; // Hiển thị từ hào 6 đến hào 1
-                    ketQuaDiv.insertBefore(haoDiv, ketQuaDiv.firstChild.nextSibling);
+                    // Gán số hào từ 1 đến 6 theo thứ tự lấy
+                    if (isDong) dongHao.push(haoIndex + 1);
+
+                    // Cập nhật hào tương ứng với màu đỏ nếu là hào động
+                    const haoToUpdate = document.getElementById(`hao${haoIndex + 1}`);
+                    haoToUpdate.innerHTML = `Hào ${haoIndex + 1}: ${haoDisplay}`;
+                    if (isDong) {
+                        haoToUpdate.classList.add('hao-dong');
+                    } else {
+                        haoToUpdate.classList.remove('hao-dong'); // Xóa lớp nếu không động
+                    }
 
                     haoIndex++;
-                    setTimeout(tungHao, 2000);
+                    setTimeout(tungHao, 9000); // Tăng thời gian lên 9 giây
                 } else {
-                    // Tính quẻ đơn và quẻ kép từ trên xuống
-                    const binaryLines = lines.map(line => line === 'duong' ? '1' : '0');
+                    // Tính quẻ và hiển thị ngay lập tức sau khi hào 6 được lấy
+                    const binaryLines = lines.reverse().map(line => line === 'duong' ? '1' : '0');
                     const thuongQuai = [binaryLines[0], binaryLines[1], binaryLines[2]].join(''); // Hào 6, 5, 4
                     const haQuai = [binaryLines[3], binaryLines[4], binaryLines[5]].join(''); // Hào 3, 2, 1
                     const queKepCode = thuongQuai + haQuai;
@@ -276,7 +301,7 @@
                     const tenHaQuai = queDon[haQuai] || 'Không xác định';
                     const tenQueKep = queKep[queKepCode] || 'Không xác định';
 
-                    // Hiển thị tên quẻ và hào động
+                    // Hiển thị tên quẻ và hào động ngay lập tức
                     let displayText = `Quẻ: ${tenQueKep} (Thượng: ${tenThuongQuai}, Hạ: ${tenHaQuai})`;
                     if (dongHao.length > 0) {
                         displayText += `, động hào ${dongHao.sort((a, b) => a - b).join(', ')}`;
@@ -287,12 +312,12 @@
                 }
             }
 
-            // Bắt đầu tung hào đầu tiên
+            // Bắt đầu tung hào đầu tiên (hào 1)
             tungHao();
         }
 
         // Tự động tung xu khi tải trang
-        setInterval(flipCoins, 2000);
+        setInterval(flipCoins, 9000);
     </script>
 </body>
 </html>
