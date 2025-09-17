@@ -11,20 +11,24 @@
             background: #f7f1e3;
         }
 
+        /* Ống lắc xăm */
         #tube {
             width: 100px;
             height: 200px;
-            background: brown;
             margin: 50px auto;
             position: relative;
-            border-radius: 10px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-            color: white;
-            line-height: 200px;
-            font-weight: bold;
-            font-size: 18px;
         }
 
+        #tube img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            display: block;
+        }
+
+        /* Que xăm */
         #stick {
             width: 50px;
             height: 150px;
@@ -127,15 +131,19 @@
     </style>
 </head>
 <body>
-    
+
     <!-- Ảnh Quán Âm -->
-<div class="image-container">
-    <img src="https://i.imgur.com/H8zjFlB.jpeg" alt="Quán Âm" style="width: 6cm; height: 8cm; display: block; margin: 20px auto; object-fit: cover;">
-</div>
-    
+    <div class="image-container">
+        <img src="https://i.imgur.com/H8zjFlB.jpeg" alt="Quán Âm" style="width: 6cm; height: 8cm; display: block; margin: 20px auto; object-fit: cover;">
+    </div>
+
     <h2>QUÁN ÂM LINH XĂM</h2>
-    <div id="tube">Xin Xăm</div>
-    
+
+    <!-- Ống lắc bằng ảnh -->
+    <div id="tube">
+        <img src="https://chudich.github.io/ongtrexinxam.jpeg" alt="Ống Xăm">
+    </div>
+
     <div class="button-container">
         <button onclick="startShake()">LẮC XĂM</button>
         <button onclick="toggleTable()">XEM LỜI GIẢI</button>
