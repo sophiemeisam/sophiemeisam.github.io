@@ -80,26 +80,27 @@ $(document).ready(function(){
       <td>
         <!-- Banner trên cùng -->
         <div style="text-align:center; margin: 10px 0;">
-          <img src="https://sophiemeisam.github.io/bannerlienhoa.jpg"
+          <img src="https://sophiemeisam.github.io/bannerlienhoa.jpeg"
                alt="Banner Liên Hoa"
                style="width:100%; height:auto; display:block;" />
+        </div>
+
+        <!-- Ảnh Liên Hoa đặt ngay sau banner, trải ngang -->
+        <div style="text-align:center; margin: 10px 0;">
+          <img src="https://sophiemeisam.github.io/anhLienHoa.jpeg"
+               alt="Liên Hoa"
+               style="max-width:100%; height:auto; display:block;" />
         </div>
 
         <!-- Nội dung chính -->
         <table border="0" width="100%" height="600">
           <tr>
-            <td align="center">
+            <!-- Bảng nhập -->
+            <td align="center" valign="top">
               <table border="2" width="300" height="600" bordercolor="#000000" bgcolor="#FF8000">
                 <tr>
                   <td align="center">
-                    <p>
-                      <div style="text-align:center; margin: 10px 0;">
-                        <img src="https://sophiemeisam.github.io/anhLienHoa.jpeg"
-                             alt="Liên Hoa"
-                             style="max-width:100%; height:auto; display:inline-block;" />
-                      </div>
-                    </p>
-
+                    
                     <!-- Bảng nhập PHẢI / TRÁI -->
                     <table border="0" width="40" id="dontable">
                       <tr>
@@ -151,9 +152,7 @@ $(document).ready(function(){
                     <table border="0" width="40" id="timtable">
                       <tr>
                         <td width="67">PHẢI</td>
-                        <td bgcolor="#CC6600">
-                          <input type="text" name="phai" class="txtDon" value="1" />
-                        </td>
+                        <td bgcolor="#CC6600"><input type="text" name="phai" class="txtDon" value="1" /></td>
                         <td></td>
                       </tr>
                       <tr>
@@ -229,7 +228,8 @@ $(document).ready(function(){
                 </tr>
               </table>
             </td>
-            <td width="100%" align="right" id="canvas">&nbsp;</td>
+            <!-- Khu vực hiển thị quẻ -->
+            <td width="100%" align="right" valign="top" id="canvas">&nbsp;</td>
           </tr>
         </table>
       </td>
