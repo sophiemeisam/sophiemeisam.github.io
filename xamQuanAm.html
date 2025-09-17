@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUÁN ÂM LINH XĂM</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background: #f7f1e3;
+        }
+
+        #tube {
+            width: 100px;
+            height: 200px;
+            background: brown;
+            margin: 50px auto;
+            position: relative;
+            border-radius: 10px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            color: white;
+            line-height: 200px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        #stick {
+            width: 50px;
+            height: 150px;
+            background: #f4c542;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 25px;
+            text-align: center;
+            font-weight: bold;
+            color: red;
+            line-height: 150px;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            display: none;
+        }
+
+        .shaking {
+            animation: shake 0.5s infinite;
+        }
+
+        .fall {
+            animation: fallDown 1s ease-out forwards;
+        }
+
+        @keyframes shake {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-10deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        @keyframes fallDown {
+            0% { top: 0px; opacity: 1; }
+            100% { top: 200px; opacity: 1; }
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        #resultTable {
+            display: none;
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        #resultTable th, #resultTable td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        #resultTable th {
+            background: #f4c542;
+            color: black;
+        }
+
+        #resultTable tr:hover {
+            background: #f0e68c;
+            cursor: pointer;
+        }
+
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 60%;
+            max-height: 80vh;
+            overflow-y: auto;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Ảnh Quán Âm -->
+<div class="image-container">
+    <img src="https://i.imgur.com/H8zjFlB.jpeg" alt="Quán Âm" style="width: 6cm; height: 8cm; display: block; margin: 20px auto; object-fit: cover;">
+</div>
+    
+    <h2>QUÁN ÂM LINH XĂM</h2>
+    <div id="tube">Xin Xăm</div>
+    
+    <div class="button-container">
+        <button onclick="startShake()">LẮC XĂM</button>
+        <button onclick="toggleTable()">XEM LỜI GIẢI</button>
+    </div>
+
+    <div id="stick"></div>
+
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th>Số Xăm</th>
+                <th>Ý Nghĩa</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <div id="popup">
+        <h3 id="popupTitle"></h3>
+        <p id="popupContent"></p>
+        <button onclick="closePopup()">Đóng</button>
+    </div>
+
+    <script>
+        const xamList = [
+            { number: 1, meaning: "QUẺ SỐ 1 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 1 - Xăm Quan Âm\nSỐ 001 - THƯỢNG\nThiên Thai địa tịch tác lương duyên,\nNhựt cát, thì luơng vạn vật tuyền.\nCầu đắc thử xăm phi tiểu khả,\nNhơn hành trung chánh đề hoàng tuyên.\nDỊCH NGHĨA\nTrời đất mở mang làm ra duyên ưa,\nNgày giờ tốt lành muôn vật toàn vẹn.\nDược quẻ Xăm này chẳng phải là điềm nhỏ,\nVì người trung chánh nên Trời xét soi.\nGIẢI RẰNG\nMau mau điểm mau,\nTrong năm chưa hết.\nQuán Âm giáng bút,\nBáo trước cho hay\nCUNG TÝ\nQuẻ này là tượng Trời Đất Mở Mang, là điềm việc gì cũng lợi vậy" },
+            { number: 2, meaning: "QUẺ SỐ 2 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 2 - Xăm Quan Âm\nSỐ 002 - HẠ\nKình ngư vị biền thủ giang hà,\nBất khả thăng đằng cánh vọng xa.\nDị nhựt tranh danh thân biến hóa,\nHứa quân nhựt được vạn trùng ba.\nDỊCH NGHĨA\nCon cá kình chưa hóa phải giữ khúc sông,\nChẳng nên trông ra xa, chớ bay lên cao.\nNgày khác biến hóa thì trở nên thênh thang,\nSẽ cho ngươi nhảy qua muôn lớp sóng.\nGIẢI RẰNG\nNhịn được hãy nhịn,\nChịu được hãy chịu.\nChờ cho thời đến,\nSẽ có công danh.\nCUNG TÝ\nQuẻ này là tượng Cá Kình Chưa Hóa, phàm việc gì tới lui đều nên nhẫn nại." },
+            { number: 3, meaning: "QUẺ SỐ 3 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 3 - Xăm Quan Âm\nSỐ 003 - HẠ\nLâm phong mạo vũ khứ hoàn qui,\nChánh thị kỳ thân tự yến nhi.\nHàm đắc nệ lai dục tác lũy,\nÁo thì lũy hoại phục hoàn ni.\nDỊCH NGHĨA\nXông pha mưa gió đi lại về,\nCái thân chẳng khác gì con én.\nNgậm được bùn lại muốn đắp làm vách,\nTới chừng vách đổ trở lại thành bùn.\nGIẢI RẰNG\nTrăm bề dụng kế,\nSớm hôm chẳng ngừng.\nAi hay việc này,\nNhọc lòng cũng uổng.\nCUNG TÝ\nQuẻ này là tượng Con Én Ngậm Bùn, là cái triệu làm việc gì cũng hoài công vô ích." },
+            { number: 4, meaning: "QUẺ SỐ 4 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 4 - Xăm Quan Âm\nSỐ 004 - THƯỢNG\nThiên niên cổ kính phục tùng vôn,\nNữ tái cầu phu, nam tái hôn.\nTự thử môn đình trùng cải hoán,\nCánh thiêm phước lộc tại nhi tôn.\nDỊCH NGHĨA\nGương xưa ngàn năm trở lại tròn,\nGái lại tìm chồng, trai tái hôn.\nCửa nhà từ đây thay đổi lại,\nLại thêm phước lộc ở cháu con.\nGIẢI RẰNG\nLược vàng thấy vàng,\nCỡi rồng gác cọp.\nNhọc lòng cũng đáng,\nCó lợi ở trong.\nCUNG TÝ\nQuẻ này là tượng Gương Xưa Lại Tròn, phàm việc gì nhọc lòng mà có ích vậy" },
+            { number: 5, meaning: "QUẺ SỐ 5 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 5 - Xăm Quan Âm\nSỐ 005 - HẠ\nNhứt chùy quật địa yếu cầu tuyền,\nNỗ lực cầu chi cánh bất nhiên.\nVô ý hốt nhiên ngộ tri-kỷ,\nTương phùng huề thủ thưởng thanh thiên.\nDỊCH NGHĨA\nMột dùi đào đất muốn tìm suối,\nRáng sức tìm, té ra chẳng được.\nTrong khi vô ý xảy ra gặp lành,\nGặp nhau cầm tay dắt lên trời xanh.\nGIẢI RẰNG\nMuốn trông tâm sự,\nPhương tây khá cầu.\nChẳng nên kiện cáo,\nTức thời khá mưu.\nCUNG TÝ\nQuẻ này là tượng Đào Đất Tìm Suối, phàm việc gì tuy lúc đầu vất vả mà rốt cuộc có quí nhân giúp đỡ, sẽ được tốt đẹp" },
+            { number: 6, meaning: "QUẺ SỐ 6 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 6 - Xăm Quan Âm\nSỐ 006 - TRUNG\nBáo thân nham hạ đồng điểu đồ,\nTu thị hoàn tha đại trượng phu.\nXả đắc tức cơ thùy khả đắc?\nThông hành thiên hạ thử nhơn vô.\nDỊCH NGHĨA\nĐem trả ơn ở dưới núi là bầy chim đồng,\nNên trả tư cách đại trượng phu của kẻ ấy.\nBỏ được cơ quan, ai có thể bỏ được?\nThông hành trong thiên hạ, phải là người ấy chăng?\nGIẢI RẰNG\nThọ dụng vô cùng,\nMùng mình trong sạch.\nĐợi thời lợi lạc,\nQuyền ở nơi người.\nCUNG SỬU\nQuẻ này là tượng Chim Đồng Trả Ơn, phàm việc gì nên thuận thời Trời, ý dân là được." },
+            { number: 7, meaning: "QUẺ SỐ 7 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 7 - Xăm Quan Âm\nSỐ 007 - TRUNG\nBôn ba cách trở trùng trùng hiểm,\nĐái thủy, tha nê, khứ độ san.\nCánh vọng tha hương cầu dụng sự,\nThiên hương vạn lý vị hồi hoàn.\nDỊCH NGHĨA\nChạy chọt cách trở bao nhiêu lần hiểm,\nĐeo nước, kéo bùn, đi phải qua non.\nCòn trông qua nơi đất khách mà vận động,\nNhưng người ở xa chưa có thể trở về.\nGIẢI RẰNG\nLui mình thì được,\nBước tới không xong.\nChỉ nên thủ cựu,\nChớ trông nhành cao.\nCUNG TÝ\nQuẻ này là tượng Đeo Nước Kéo Bùn, phàm việc gì hễ thủ cựu thì tốt." },
+            { number: 8, meaning: "QUẺ SỐ 8 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 8 - Xăm Quan Âm\nSỐ 008 - THƯỢNG\nMậu lâm tùng bá chính hưng vượng,\nVũ tuyết phong sương tổng mạc vi.\nDi nhựt hốt nhiên thành đại dụng,\nCông danh tác cá đống lương qui.\nDỊCH NGHĨA\nTùng, bá trong rừng rậm dương thạnh vượng,\nMưa, tuyết, gió, sương chẳng làm gì nổi.\nNgày khác xảy đâu việc dùng lớn,\nCông danh làm cái khuôn mực cột tường.\nGIẢI RẰNG\nTrên đường hanh thông,\nTrọn đời có công.\nRuộng, lắm phì tốt,\nĐạo nhà hưng long.\nCUNG SỬU\nQuẻ này là tượng Cây Tùng Cây Bá Tươi Tốt, phàm việc gì đều thuận lợi hết thảy." },
+            { number: 9, meaning: "QUẺ SỐ 9 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 9 - Xăm Quan Âm\nSỐ 009 - THƯỢNG\nPhiền quân mạc vấn tư tâm sự,\nThử ý thiên nghi thuyết vấn công.\nNhứt phiến minh tâm thanh thả khiết,\nUyển như hạo-nguyệt chánh đương trung.\nDỊCH NGHĨA\nKhuyên người đừng hỏi việc tư làm chi,\nÝ đó phải nói chuyện công mới được.\nẤy một tấm lòng trong và sạch.\nRõ ràng trăng tỏ giữa không gian.\nGIẢI RẰNG\nTrong lòng chánh trực,\nLẽ thuận, việc nhàn.\nThánh không nói tư (việc riêng),\nRốt cuộc rành rẽ.\nCUNG SỬU\nQuẻ này là tượng Trăng Sáng Giữa Trời, phàm việc gì hễ sáng sủa thì được thông thái." },
+            { number: 10, meaning: "QUẺ SỐ 10 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 10 - Xăm Quan Âm\nSỐ 010 - TRUNG\nThạch tàng vô giá ngọc hòa trân,\nMạc quản tha hương ngoại giới tầm.\nUyển nhược trì đăng cánh mịch hỏa,\nBất như thâu thập, miễn lao tâm.\nDỊCH NGHĨA\nTrong sẵn chứa các thứ ngọc, trân vô giá,\nChẳng cần đi tìm ở ngoài cõi khác làm chi.\nRõ ràng như cầm đèn mà còn kiếm lửa,\nChi bằng thâu lượm lại thì khỏi nhọc lòng.\nGIẢI RẰNG\nNhơn duyên hội hiệp,\nViệc gì chẳng nên?\nChẳng cần ý khác,\nTrước mắt là chơn.\nCUNG DẦN\nQuẻ này là tượng Cầm Đèn Kiếm Lửa, phàm việc gì đợi thời ắt sẽ thành tựu." },
+            { number: 11, meaning: "QUẺ SỐ 11 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 11 - Xăm Quan Âm\nSỐ 011 - THƯỢNG\nDục cầu vọng sự khả phi thường,\nTrnh nại thân nhơn mục tam mang.\nTất cánh đáo đầu thừa lộc tiến,\nQuí-nhơn chỉ dẫn quí-nhơn hương.\nDỊCH NGHĨA\nChí muốn làm công việc to lớn phi thường,\nNgặt nỗi bà con trước mắt còn ngăn ngại.\nRốt cuộc ắt theo dấu chơn nai mà tiến bước,\nSẽ có quí nhơn chỉ dẫn đến làng quí nhơn.\nGIẢI RẰNG\nCó ý thì biến.\nRốt đến tự nhiên.\nNếu hỏi việc gì,\nChỉ cần người quí.\nCUNG DẦN\nQuẻ này là tượng Nhơn Cái Họa Mà Được Cái Phước, phàm việc gì hễ mưu chậm chạp dè dặt thì có cái lợi lớn." },
+            { number: 12, meaning: "QUẺ SỐ 12 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 12 - Xăm Quan Âm\nSỐ 012 - THƯỢNG\nBỉ khứ, thái lai chỉ xích gian,\ntiệm giao quân tử xuất ư san.\nNhược phùng hổ, thỏ giai-âm chí,\nLập chí mang trung sự tức hoàn.\nDỊCH NGHĨA\nVận bỉ đi, vận thái lại chỉ trong gang thước,\nLần hồi khiến quân tử ra khỏi núi non.\nNếu gặp cọp, thỏ thì tin lành sẽ đến,\nVững chí lúc rối rắm thì việc được thành.\nGIẢI RẰNG\nGai đổi được tơ.\nCột hai chơn người.\nCốt thấy rõ ràng,\nNhơn họa được phước.\nCUNG DẦN\nQuẻ này là tượng Trong Sự Dữ Có Điềm Lành, phàm việc gì trước khó, sau dễ vậy." },
+            { number: 13, meaning: "QUẺ SỐ 13 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 13 - Xăm Quan Âm\nSỐ 013 - TRUNG\nTự tiểu sanh lai phú quí gia,\nNhã tiền vạn vật tổng xa-hoa.\nMông quân sắc tứ hoàng kim-dái,\nTứ hải thanh danh định khả khoa.\nDỊCH NGHĨA\nTừ nhỏ sanh vào nhà phú quí,\nMuôn vật trước mắt thảy xa-hoa.\nĐội ơn vua ban cho dải đai vàng,\nThanh-danh có thể chưng với bốn biển.\nGIẢI RẰNG\nNhơn người gặp xá,\nBịnh liền yên lành.\nĐược qua Long-Môn,\nDanh khắp hoàng thành.\nCUNG DẦN\nQuẻ này là tượng Được Qua Long Môn, phàm việc gì hễ có biến hóa thì có tốt lành" },
+            { number: 14, meaning: "QUẺ SỐ 14 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 14 - Xăm Quan Âm\nSỐ 014 - TRUNG\nUyển như tiên-hạc xuất phàm lung,\nThoát liễu phàm lung, sự sự thông.\nNam, Bắc, Đông, Tây, vô trở cách,\nNhiệm quân trực thưởng cửu tiên cung.\nDỊCH NGHĨA\nRõ ràng như chim hạc tiên ra khỏi lồng trần,\nĐã khỏi lồng trần thì mọi việc hanh thông.\nĐông, Tây, Nam, Bắc không chổ nào là trở ngại,\nMặc dầu cho người lên thẳng cung chín tầng mây.\nGIẢI RẰNG\nMặc ý không lo,\nĐường có hanh thông.\nTùy tâm tự tại,\nTiêu diêu như người.\nCUNG MẸO\nQuẻ này là tượng Hạc Tiên Xổ Lồng, phàm việc gì đều trước dữ sau lành vậy." },
+            { number: 15, meaning: "QUẺ SỐ 15 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 15 - Xăm Quan Âm\nSỐ 015 - HẠ\nHành nhơn nhứt khẩu khí nan thôn,\nKhuất hữu tai thì, sự vật thân.\nĐiểu phá lâm sào, vô sở túc,\nKhoái tầm thâm-xứ ổn an thân.\nDỊCH NGHĨA\nNgười đi một miệng khó nuốt hơi phiền,\nLúc khuất có tai, việc đừng nên gần.\nNhư chim rừng bị phá ổ không nơi trú,\nMau tìm chỗ kín đáo cho được yên thân.\nGIẢI RẰNG\nNếu được người tha,\nLúc nào hả dạ.\nLời khéo chớ tin,\nThủ cựu là tốt.\nCUNG MẸO\nQuẻ này là tượng Chim Bị Phá Ổ, phàm việc gì rốt cuộc cũng khó khăn vậy." },
+            { number: 16, meaning: "QUẺ SỐ 16 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 16 - Xăm Quan Âm\nSỐ 016 - TRUNG\nSầu my kim nhựt tiệm phương khai,\nKhải xuất vân tiêu hỷ nhựt lai.\nUyển tự thổ trung tàng mỹ ngọc,\nLương-công nhứt cử xuất trần ai.\nDỊCH NGHĨA\nChơn mày sầu ngày nay mới lần mở,\nXa khỏi mây mù, tin mừng ngày lại.\nTỷ như trong đất bùn chứa hòn ngọc tốt,\nNgười thợ khéo đem ngọc ra khỏi trần ai.\nGIẢI RẰNG\nChỗ được không mất,\nTrong tổn có ích.\nTiểu-nhơn nghịch dữ,\nQuân tử thuận lành.\nCUNG MẸO\nQuẻ này là tượng Âm Dương Hòa Hiệp, phàm mưu việc gì đều tốt vậy." },
+            { number: 17, meaning: "QUẺ SỐ 17 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 17 - Xăm Quan Âm\nSỐ 017 - HẠ\nMạc thính nhàn-ngôn thuyết thị, phi,\nThần hôn chỉ bảo niệm A-Di.\nNhược tương cuồng-ngữ vi chơn thật,\nHọa bính như hà chỉ đắc ky?\nDỊCH NGHĨA\nĐừng nghe lời phiếm nói phải, nói quấy,\nChỉ nên sớm hôm niệm phật Di-Đà.\nNếu đem chuyện bậy bạ làm chơn thật,\nBánh vẽ ăn vào đỡ đói chăng?\nGIẢI RẰNG\nTrong lòng chẳng định,\nhãy coi kinh-văn.\nChớ như bánh vẽ,\nĂn khỏi đói chăng?\nCUNG MẸO\nQuẻ này là tượng Bánh Vẽ Đỡ Đói, phàm việc gì cũng hư nhiều mà thiệt ít vậy" },
+            { number: 18, meaning: "QUẺ SỐ 18 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 18 - Xăm Quan Âm\nSỐ 018 - THƯỢNG\nKim-ô Tây trụy, hổ sanh âm,\nNhựt dạ tuần bôi chí cổ cám.\nTăng đạo đắc tri vô bất lợi,\nSĩ, nông, công, cổ các tùng tâm.\nDỊCH NGHĨA\nMặt trời lặn về Tây, con cọp sanh chốn âm,\nNgày đêm noi theo vòng nhựt nguyệt suốt xưa nay.\nTheo Đạo tăng được biết lẽ không chi chẳng lợi,\nSĩ, nông, công, thương đều theo lòng muốn của mình.\nGIẢI RẰNG\nTrong lòng vô sự,\nLàm việc có công.\nCung dương phải lỗi,\nTên phát đều nhằm.\nCUNG MẸO\nQuẻ này là tượng Khí Âm Lớn Lên, Khí Dương Tiêu Đi, là cái triệu làm việc gì cũng được toại ý." },
+            { number: 19, meaning: "QUẺ SỐ 19 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 19 - Xăm Quan Âm\nSỐ 019 - THƯỢNG\nThan hồi thủy cấp phóng thuyền nhi,\nBa lãng dương xung, vị khả vi.\nNhược yếu an nhiên cầu ổn tịnh,\nĐãi phong bình thủy miễn tai nguy.\nDỊCH NGHĨA\nBến quanh, nước gấp, lại thả con thuyền,\nSóng dập gió dồi, chưa làm gì được.\nNếu muốn dành lòng cầu yên-tịnh,\nĐợi gió êm rồi khỏi ai nguy.\nGIẢI RẰNG\nThuyền đương nước gấp,\nNơi hiểm đợi thời.\nMuốn mưu việc lớn,\nCó thể làm ra.\nCUNG THÌN\nQuẻ nầy là tượng Thuyền Đương Nước Gấp, phàm việc gì hãy nên đợi thời, chớ có nóng nảy." },
+            { number: 20, meaning: "QUẺ SỐ 20 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 20 - Xăm Quan Âm\nSỐ 020 - TRUNG\nĐương xuân cửu vũ hỷ khai tình,\nNgọc-thỏ, kim-ô tiệm tự minh.\nCựu sự tiêu tan, tân sự toại,\nLong-môn nhứt dược đáo vân trình.\nDỊCH NGHĨA\nĐương xuân, mưa lâu, mừng được tạnh ráo,\nMặt trời, mặt trăng lần tự nhiên sáng ra.\nViệc cũ tiêu tan, việc mới toại,\nLong-môn nhảy khỏi, tới đường mây.\nGIẢI RẰNG\nThần phật hộ trì,\nQua khỏi tai nguy.\nBình-sanh toại chí,\nKết quả vinh-qui.\nCUNG THÌN\nQuẻ nầy là tượng Mưa Lâu Mới Vừa Tạnh, phàm việc gì cũng được hanh thông toại chí" },
+            { number: 21, meaning: "QUẺ SỐ 21 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 21 - Xăm Quan Âm\nSỐ 021 - THƯỢNG\nÂm dương đạo hợp ý do Thiên,\nNữ hiệp, nam hòa, hỷ ngẫu nhiên.\nĐản kiến long xà tương hội ngộ,\nHùng bi nhập mộng triệu đoàn viên.\nDỊCH NGHĨA\nĐạo âm dương hợp nhau là do nơi trời,\nNam hòa, nữ hiệp, sự mừng đến thình lình.\nChiêm-bao chỉ thấy long xà cùng hội ngộ,\nHùng bi ứng mộng mới là điềm vuông tròn.\nGIẢI RẰNG\nMưu theo lòng toại:\nDuyên đẹp sanh trai.\nNguồn của tấn ích,\nCàng lợi ruộng vườn.\nCUNG THÌN\nQuẻ nầy là tượng Âm Dương Đạo hợp, phàm việc gì cũng được hòa hiệp tốt lành." },
+            { number: 22, meaning: "QUẺ SỐ 22 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 22 - Xăm Quan Âm\nSỐ 022 - TRUNG\nHạn thì điền lý giai khô-cảo,\nNgưỡng tạ Thiên-công giáng vũ lâm.\nHoa, Mộc, bá lâm cu nhuận- trạch,\nThủy tri nhứt trích trị thiên câm!\nDỊCH NGHĨA\nĐương lúc nắng, ruộng đất đều khô khan,\nVái trời đổ xuống cho trận mưa dào.\nHoa cỏ, cây cối, rừng rú đều thấm mát,\nMới hay một giọt mưa đáng giá ngàn vàng.\nGIẢI RẰNG\nLúa, tằm đều lợi,\nVận mạng hanh thông,\nBệnh gặp thuốc lành,\nNgười đi đến chốn.\nCUNG TÝ\nQuẻ nầy là tượng Nắng Hạn Gặp Mưa Rào, phàm việc gì đều ở trong cảnh khó khăn hoạn nạn, nhưng có người cứu giúp." },
+            { number: 23, meaning: "QUẺ SỐ 23 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 23 - Xăm Quan Âm\nSỐ 023 - TRUNG\nThiềm-cung dục nhập phan tiên quế,\nKhởi lự Thiên môn bất phóng quân?\nHốt ngộ nhứt ban âm tín hảo,\nCao nhơn tự tiếu lãnh đầu vân.\nDỊCH NGHĨA\nMuốn vô cung Thiềm vin nhành tiên quế,\nHá lo cửa Trời chẳng dung cho người?\nXảy gặp tin lành một khi đem đến nơi,\nCao nhơn mỉm cười với đám mây đầu núi.\nGIẢI RẰNG\nBuôn bán lợi lớn,\nlàm việc khỏi nguy.\nBệnh yên, kiện thắng,\nđều khá thi vi.\nCUNG TÝ\nQuẻ nầy là tượng Tay Vịn Nhành Tiên Quế, phàm việc gì cũng có qúi nhơn phò trợ vậy." },
+            { number: 24, meaning: "QUẺ SỐ 24 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 24 - Xăm Quan Âm\nSỐ 024 - HẠ\nBất thành luân-lý, bất thành gia,\nThủy tánh si nhơn tự lạc hoa.\nNhược vấn quân ân tu đắc lực,\nĐáo đầu phương kiến sự như ma.\nDỊCH NGHĨA\nChẳng xong luân lý, chẳng nên nhà,\nTánh thủy ngây người tợ hoa rơi.\nNếu hỏi ơn vua thì cần phải đắc lực,\nTới nơi mới thấy việc rối như bòng bong.\nGIẢI RẰNG\nĐừng nói phải, quấy,\nPhải nói hẳn hòi.\nLòng ngay, lẽ thẳng,\nMới khỏi tai-nàn.\nCUNG TÝ\nQuẻ nầy là tượng Người Ngu Lấp Nẻo, phàm việc gì phải nên thủ cựu đợi thời." },
+            { number: 25, meaning: "QUẺ SỐ 25 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 25 - Xăm Quan Âm\nSỐ 025 - HẠ\nQuá nhứt ưu nguy sự kỷ trùng,\nTùng kim tái lập vĩnh vô hung.\nKhoan tâm tự hữu khoan tâm kế,\nĐắc ngộ cao-nhơn hoạch đại-công.\nDỊCH NGHĨA\nQua một việc ưu nguy cách trở mấy lần,\nTừ nay lập lại, không còn sự hung dữ.\nHễ người rộng lượng, có kế khoan hồng,\nGặp được cao-nhơn, sẽ thành công lớn.\nGIẢI RẰNG\nViệc kiện có lý,\nBệnh được yên lành.\nRa vô cầu mưu,\nGiống cũ gặp mạch.\nCUNG TÝ\nQuẻ này là tượng Giống Cũ Gặp Mạch, phàm việc gì cũng có quí-nhơn phò trợ vậy." },
+            { number: 26, meaning: "QUẺ SỐ 26 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 26 - Xăm Quan Âm\nSỐ 026 - TRUNG\nThượng hạ truyền lai, sự chuyển hu,\nThiên biên viện đắc nhứt phong thư.\nThư trung hứa ngã công-danh toại,\nTrực đáo chung thì giã thị hư.\nDỊCH NGHĨA\nTrên dưới truyền nhau, việc lại hư,\nBên trời tiếp được một phong thư.\nXem thư, mình biết công-danh toại,\nNhưng đến lúc cùng, lại hóa hư.\nGIẢI RẰNG\nTrên dưới lòng phiền,\nCầu nhàn được nhàn.\nMuốn trông công danh,\nThủ cựu thân an.\nCUNG NGỌ\nQuẻ nầy là tượng Hư Danh, phàm việc gì nhiều hư, ít thật, vậy phải nên thủ cựu." },
+            { number: 27, meaning: "QUẺ SỐ 27 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 27 - Xăm Quan Âm\nSỐ 027 - TRUNG\nNhứt mưu, nhứt dụng, nhứt phiên thư,\nTưởng hậu, tư tiền, ý vị như.\nThì chí, quí-nhơn đa trợ lực.\nNhư sơn, tường bích khả an cư.\nDỊCH NGHĨA\nMột lần mưu, một lần dùng, một phen gởi thơ,\nTưởng sau, nghĩ trước, vẫn chưa được như ý muốn.\nTới chừng thời đến, quí-nhơn phần nhiều giúp sức mình,\nKhi ấy bức tường vững như núi, có thể để yên.\nGIẢI RẰNG\nThâu cũ thành mới,\nhoa lạnh gặp xuân.\nTừ trước trở-trệ,\nnay được vừa lòng.\nCUNG NGỌ\nQuẻ nầy là tượng Nhà Tốt Tường Vững, việc gì cũng được ổn đáng, không có nguy hiểm vậy." },
+            { number: 28, meaning: "QUẺ SỐ 28 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 28 - Xăm Quan Âm\nSỐ 028 - HẠ\nĐông biên nguyệt thưởng chánh thuyền quyên,\nTư khử vân già diệc ám tồn.\nHoặc hữu viên thì, hoàn hữu khuyết,\nCánh ngôn phi giả diệc nhàn ngôn.\nDỊCH NGHĨA\nMặt trăng lên phía Đông dương sáng sủa,\nChờ bỏ mây che, cũng sẽ giữ còn.\nHoặc có lúc tròn, cũng có lúc khuyết,\nKẻ nào nói không , tức là nói ngoa.\nGIẢI RẰNG\nMây nổi che trăng,\nChẳng nên nghi hoặc.\nĐợi khi mây thâu,\nLiền thấy sáng tỏ.\nCUNG NGỌ\nQuẻ nầy là tượng Trăng Bị Mây Án, là triệu việc gì cũng hôn mê bất định vậy." },
+            { number: 29, meaning: "QUẺ SỐ 29 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 29 - Xăm Quan Âm\nSỐ 029 - TRUNG\nKiếm quang giá bảo trị thiên câm,\nTại hạp toàn thiên trần bất xâm.\nKim đắc quí-nhơn huề xuất hiện,\nHữu oai, hữu thế, chúng nhơn khâm.\nDỊCH NGHĨA\nThanh gươm sáng quí đáng ngàn vàng,\nỞ hộp nguyên không nhuốm bụi Trần.\nNay được quí-nhơn dắc đem xuất hiện,\nCó oai, có thế, mọi người kính theo.\nGIẢI RẰNG\nGươm báu ra hộp,\nMuôn dặm sáng ngời.\nQuí-nhơn dẫn ra,\nKhông chi chẳng tốt.\nCUNG NGỌ\nQuẻ nầy là tượng Gươm Báu Ra Hộp, phàm việc gì cũng đương có oai thế." },
+            { number: 30, meaning: "QUẺ SỐ 30 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 30 - Xăm Quan Âm\nSỐ 030 - TRUNG\nKhuyến quân thiết vật hướng tha cầu,\nTự hạc phi lai ám tiễn đầu.\nNhược khứ thái tân, xà tại thảo,\nKhủng tao độc khẩu giã thành sầu!\nDỊCH NGHĨA\nKhuyên người đừng có cầu việc chi khác,\nHọa như chim hạc bay lại bị mũi tên.\nNếu đi đốn củi thì có rắn dưới cỏ,\nE gặp miệng độc mà sanh sự sầu-phiền!\nGIẢI RẰNG\nNgậm miệng, cắn răng,\nĐừng nghĩ việc khác.\nNếu có lòng cầu,\nSẽ hại đến mình.\nCUNG NGỌ\nQuẻ nầy là tượng An Thân Thủ Phận, phàm việc gì cũng phải để ý phòng hờ cẩn-thận." },
+            { number: 31, meaning: "QUẺ SỐ 31 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 31 - Xăm Quan Âm\nSỐ 031 - TRUNG\nThanh-nhàn vô sự, tịnh trung tọa,\nPhạn hậu ngật trà, bão thì ngoạ.\nPhóng hạ thân tâm bất dụng mang,\nTất định bất chiêu tai dữ họa,\nDỊCH NGHĨA\nThanh-nhàn vô sự, ngồi nơi tịnh vắng,\nĂn cơm xong uống trà, no thì nằm.\nBuông xuống thân tâm, chẳng dùng rắc rối.\nẮt hẳn chẳng vời tai họa đến vậy.\nGIẢI RẰNG\nThủ cựu an nhiên,\nLà tiên cõi tục.\nChờ cho vận tới,\nTự có tin lành.\nCUNG MÙI\nQuẻ nầy là tượng Ở Yên Đợi Thời, phàm việc gì đợi thời ắt có đại lợi vậy." },
+            { number: 32, meaning: "QUẺ SỐ 32 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 32 - Xăm Quan Âm\nSỐ 032 - TRUNG\nViễn đại tiền trình định bất nghi,\nThạch trung ẩn ngọc hữu thùy tri!\nNhứt triêu lương tượng phân minh phẩu,\nThủy mịch an nhiên bích ngọc kỳ.\nDỊCH NGHĨA\nĐường tương lai rộng xa, quyết không ngờ,\nNhư hòn ngọc ẩn trong đá, có ai hay!\nNgày kia người thợ khéo bửa ra rành rẽ,\nĐó là thời kỳ ngọc bích hiện ra rõ ràng.\nGIẢI RẰNG\nNgọc ở trong đá,\nNgười khác ít hay.\nĐợi khi rõ ràng,\nĐều dùng ra được.\nCUNG MÙI\nQuẻ nầy là tượng Bửa Đá Thấy Ngọc, phàm việc gì ra sức tự nhiên thành công." },
+            { number: 33, meaning: "QUẺ SỐ 33 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 33 - Xăm Quan Âm\nSỐ 033 - TRUNG\nNội tàng vô giá ngọc hòa trân,\nĐắc bảo, hà tu ngoại giới tầm?\nThử vật tất nhu cao sĩ thức,\nKhoan tâm du thả cánh khoan tâm.\nDỊCH NGHĨA\nTrong chứa của vô giá là ngọc và trân,\nĐược báu, cần gì tìm nữa ở đâu xa?\nNhững vật nầy phải đợi có người cao biết,\nChừng đó khoan tâm càng được khoan tâm.\nGIẢI RẰNG\nTrong chứa vàng, ngọc,\nChẳng cần kiếm ngoài.\nQuí-nhơn chỉ dẫn,\nNào phải nhọc lòng.\nCUNG MÙI\nQuẻ nầy là tượng Của Báu Chứa Ở Trong Ắt Hiện Ra Ngoài, phàm việc gì cứ thủ cựu là rất tốt." },
+            { number: 34, meaning: "QUẺ SỐ 34 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 34 - Xăm Quan Âm\nSỐ 034 - HẠ\nHành tàng xuất nhập lễ nghi cung,\nNgôn tất trung-lương, tín tất thông.\nTâm bất liễu nhiên thả tịnh-triệt,\nQuang-minh hồng-nhựt chính đương trung.\nDỊCH NGHĨA\nTấn, Thối, ra, vô hạp lễ nghĩa và cung kính,\nNói ắt ngay lành, có đức tin thì cảm thông.\nLòng chẳng hiểu thì hãy yên-lặng mà nghe,\nSẽ thấy mặt trời đỏ sáng tỏ giữa hư không.\nGIẢI RẰNG\nTrong lòng vô sự:\nNước thu lắng trong.\nChẳng cần nghi hoặc,\nViệc tự yên lành.\nCUNG TÝ\nQuẻ nầy là tượng Mặt Trời Chính Giữa Sáng Soi, việc gì cũng được toại ý." },
+            { number: 35, meaning: "QUẺ SỐ 35 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 35 - Xăm Quan Âm\nSỐ 035 - TRUNG\nY quan trùng chỉnh, cựu gia phong,\nĐạo thị vô công, khước hữu công.\nTảo khước đương đồ kinh cức thích,\nTam nhơn nhược nghị sự hòa-đồng.\nDỊCH NGHĨA\nÁo mão sửa lại, giữ nếp gia phong,\nNói là vô ích, té ra có công.\nQuét sạch những gai góc giữa đường,\nBa người bàn việc, ý kiến hòa đồng.\nGIẢI RẰNG\nChẳng dùng nghi ngại,\nẮt có kỳ hay.\nNếu hỏi đường tới,\nĐời bước khá ngời.\nCUNG THÂN\nQuẻ nầy là tượng Chinh Lại Áo Mão, phàm việc gì cũng trước khó sau dễ." },
+            { number: 36, meaning: "QUẺ SỐ 36 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 36 - Xăm Quan Âm\nSỐ 036 - TRUNG\nNhãn tiền bệnh tụng bất tu ưu,\nThật địa tư tài tấn khả cầu.\nCáp tự viên hầu kim tỏa thoát,\nTự qui sơn động khứ lai du.\nDỊCH NGHĨA\nViệc đau, việc kiện trước mắt chẳng cần lo,\nTài vật tới nơi đất thật, đều cầu được.\nKhéo như con vượn, thoát khỏi khóa sắt,\nTự do về nơi động núi qua lại dong chơi.\nGIẢI RẰNG\nTrừ thoát khỏi việc,\nTự nhiên khoan tâm.\nĐợi được của lại,\nTìm tới đường ngay.\nCUNG THÂN\nQuẻ nầy là tượng Vượn, Khỉ Xổ Xích, phàm việc gì cũng trước cay đắng, sau ngọt bùi vậy." },
+            { number: 37, meaning: "QUẺ SỐ 37 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 37 - Xăm Quan Âm\nSỐ 037 - THƯỢNG\nDục đãi thân an vận chí thì,\nPhong trung đăng chúc bất tương nghi.\nBất như thâu thập thâm đường tọa,\nThứ miễn quang diêu tịnh xứ kỳ.\nDỊCH NGHĨA\nMuốn đợi lúc thân yên, vận tới,\nĐèn đuốc trong gió chẳng hạp nhau.\nChi bằng thâu lượm mà ngồi trong nhà kín,\nNgõ hầu khỏi sự kỳ sáng lòa chỗ thanh tịnh.\nGIẢI RẰNG\nỞ tịnh yên thân,\nNgồi chờ vận mạng.\nChẳng nên động quấy,\nE mắc tai nguy.\nCUNG THÂN\nQuẻ nầy là tượng Gió Thổi Đèn Đuốc, phàm việc gì nên thủ cựu an tịnh." },
+            { number: 38, meaning: "QUẺ SỐ 38 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 38 - Xăm Quan Âm\nSỐ 038 - TRUNG\nNguyệt chiếu thiên trung tịnh xứ nghi,\nHốt tao vân vụ hựu mê ly.\nKhoan tâm thủ đãi phù-vân tán,\nThử độ phương năng hảo sự vi.\nDỊCH NGHĨA\nTrăng soi giữa trời, nên ở chỗ tịnh,\nXảy gặp mây mù, lại thấy lờ mờ.\nVậy hãy khoan tâm chờ cho mây tan,\nChừng đó mới sẽ làm được việc tốt.\nGIẢI RẰNG\nGia đạo rủi ro,\nMạng người có tai.\nCầu phước bảo hộ,\nCòn e hao tài.\nCUNG THÂN\nQuẻ nầy là tượng Trăng bị Mây Che, phàm việc gì chưa toại, hãy nên thủ cựu đợi thời." },
+            { number: 39, meaning: "QUẺ SỐ 39 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 39 - Xăm Quan Âm\nSỐ 039 - THƯỢNG\nThiên biên tiêu tức khởi năng thông?\nBắt nghi miễn cưỡng khổ tương tòng.\nNhược bả thạch đầu ma tác kính\nĐáo để phương tri uổng phí công!\nDỊCH NGHĨA\nVen trời tin tức há thông được sao?\nChẳng nên gắng gượng theo nhau cho khổ.\nNếu đem hòn đá mài ra làm kiếng\nRốt cuộc rồi mới hay là uổng công!\nGIẢI RẰNG\nNgàn bề dùng mẹo,\nUổng phí công phu.\nChi bằng thủ cựu\nXem cớ bỡi đâu.\nCUNG DẬU\nQuẻ nầy là tượng An Tịnh Thủ Thường, phàm việc gì chẳng nên nhiều chuyện mới tốt." },
+            { number: 40, meaning: "QUẺ SỐ 40 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 40 - Xăm Quan Âm\nSỐ 040 - HẠ\nHồng luân Tây trụy, thỏ Đông sanh,\nÂm trưởng Dương tiêu, vạn sự hanh.\nNhược thị nữ nhơn nghi vọng dụng\nTăng thêm phước lộc xứng tâm tình.\nDỊCH NGHĨA\nMặt trời lặn phía Tây, mặt trăng mọc phía Đông,\nÂm thạnh, dương suy, trăm việc hanh hản cho âm.\nNếu là đờn bà, nên trong dùng ra,\nThêm nhiều phước lộc, được xứng tâm tình.\nGIẢI RẰNG\nÂm lợi phụ-nữ,\nChẳng lợi nam-nhơn.\nNếu hỏi cầu mưu\nTrước xấu, sau tốt.\nCUNG DẬU\nQuẻ nầy là tượng Âm Thạnh, Dương Suy, phàm việc gì cũng trước khó, sau dễ." },
+            { number: 41, meaning: "QUẺ SỐ 41 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 41 - Xăm Quan Âm\nSỐ 041 - HẠ\nVô hạn hảo ngôn, quân ký thủ:\nKhước vi nhận tặc tương tác tử.\nMạc tham nhãn hạ hữu tá điềm\nCánh lự tha niên khan ngộ sự.\nDỊCH NGHĨA\nLời hay vô hạn, ngươi nhớ đây:\nAi đi nhận giặc làm con mình?\nĐừng tham trước mắt điều ngon ngọt,\nE nỗi lo lầm buổi hậu lai.\nGIẢI RẰNG\nChỉ xem một lẽ,\nQuân tử đừng lầm.\nGhi chắc trong lòng\nChẳng sanh hiu quạnh.\nCUNG DẬU\nQuẻ nầy là tượng Nhận Giặc Làm Con, phàm việc gì cũng thành ra nhận giả làm thật vậy." },
+            { number: 42, meaning: "QUẺ SỐ 42 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 42 - Xăm Quan Âm\nSỐ 042 - THƯỢNG\nHoàng-quân Thánh hậu tổng vi ân,\nPhục đãi kỳ nhương vô tổn thần.\nNhứt thiết hữu tình giai thọ dụng\nNhơn gian Thiên thượng cộng triêm nhân.\nDỊCH NGHĨA\nVua Trời, Thánh hậu thảy ra ân,\nPhải đợi trừ xong, chẳng tổn thần.\nTất cả chúng sanh đều thọ dụng\nTiên thần, nhơn loại thấm nền nhân.\nGIẢI RẰNG\nƠn-trạch Trời ban,\nTrước sau chớ lãng.\nSớm hôm lễ niệm\nKhá tua đốt nhang.\nCUNG DẬU\nQuẻ nầy là tượng Trời Ban Ơn Trạch, phàm việc gì đều xong thuận lợi." },
+            { number: 43, meaning: "QUẺ SỐ 43 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 43 - Xăm Quan Âm\nSỐ 043 - THƯỢNG\nThiên Địa giao thông vạn vật tuyền\nTự vinh, tự quí, tự nhiên miên.\nSanh tàng vạn tượng giai tinh thái\nBá sự như tâm, tạ Thánh hiền.\nDỊCH NGHĨA\nTrời đất giao thông, muôn vật toàn vẹn,\nTự nhiên vinh quí, tự nhiên lâu dài.\nSanh tàng muôn tượng đều hiện tinh đẹp,\nTrăm sự xứng lòng, tạ ơn Thánh hiền.\nGIẢI RẰNG\nTrời sanh muôn vật,\nMưu vọng đều thông.\nPhước đức giúp nhau\nĐiềm lành đầy dẫy.\nCUNG TUẤT\nQuẻ nầy là tượng Trời Đất Giao Vận Thời, phàm việc gì đều tốt lành, không có chuyện nguy hiểm." },
+            { number: 44, meaning: "QUẺ SỐ 44 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 44 - Xăm Quan Âm\nSỐ 044 - THƯỢNG\nKỳ phùng địch thủ trước tiện nghi\nHắc bạch bồn trung, vị quyết thì.\nNhứt trước giai nhơn tri thắng bại\nTu giao tự hữu bảo thôi đi.\nDỊCH NGHĨA\nCờ gặp tay địch đều giữ thế mình\nTrong bàn đen, trắng, lúc chưa quyết.\nHơn, thua đều nhơn một nước mà biết\nNên khiến cho ai nấy khéo chuyển dời.\nGIẢI RẰNG\nMuốn cầu tâm sự\nHệch như đánh cờ.\nBiết đâu hơn, thua\nĐi sau là tốt.\nCUNG TUẤT\nQuẻ nầy là tượng Cờ Gặp Tay Địch, phàm việc gì nên lưu tâm cẩn thận là tốt." },
+            { number: 45, meaning: "QUẺ SỐ 45 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 45 - Xăm Quan Âm\nSỐ 045 - THƯỢNG\nÔn nhu tự cổ thắng cang cường,\nTích thiện chi môn đại cát xương.\nNhược thị hữu nhơn chiêm thử quái,\nUyển như chính khát đắc quỳnh tương.\nDỊCH NGHĨA\nTừ xưa hòa dịu vẫn thắng cứng mạnh,\nNhà chứa đức lành được tốt thạnh hoài.\nNếu có người nào xem được quẻ nầy,\nHệch như đương khát được nước quỳnh tương.\nGIẢI RẰNG\nTrời đất có cảm,\nLinh nghiệm phi thường.\nPhật thần hộ cho,\nPhú quí an khương.\nCUNG TUẤT\nQuẻ này là tượng Chứa Đức Hòa Dịu, (tích thiện ôn nhu), phàm việc gì cũng được quí nhơn hòa hiệp vậy." },
+            { number: 46, meaning: "QUẺ SỐ 46 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 46 - Xăm Quan Âm\nSỐ 046 - TRUNG\nKhuyến quân nại thủ cựu sanh nha\nBả định tâm cơ, vật khởi tha.\nTrực dãi hữu nhơn khinh trước lực\nDu như khô mộc tái sanh hoa.\nDỊCH NGHĨA\nKhuyên ngươi giữ vững cách sanh nhai cũ,\nCầm chắc tấm lòng, đừng khởi ý khác.\nChờ khi có người dùng sức lực lẹ làng\nSẽ như cây khô lại trỗ hoa vậy.\nGIẢI RẰNG\nYên phận thủ cựu,\nTự nhiên xong xuôi.\nĐộng thì mang tai\nTịnh thì không lỗi.\nCUNG TUẤT\nQuẻ nầy là tượng Cây Khô Trỗ Hoa, phàm việc gì sẽ xong xuôi tự nhiên." },
+            { number: 47, meaning: "QUẺ SỐ 47 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 47 - Xăm Quan Âm\nSỐ 047 - TRUNG\nCẩm thượng thiêm hoa sắc dũ tiên\nThì lai lộc mã hỷ song tuyền.\nTâm trung mạc hận công danh vẫn,\nNhứt cử đăng khoa tứ hải truyền.\nDỊCH NGHĨA\nTrên gấm thêm hoa, màu càng tươi đẹp,\nVận tới, mừng được phước lộc song toàn.\nTrong lòng đừng ân hận công danh muộn\nMột lần đăng khoa bốn biển đồn vang.\nGIẢI RẰNG\nGiữ cũ, biến mới,\nCha mẹ hộ cho.\nToại chí bình sanh\nĐều là mạng vận.\nCUNG HỢI\nQuẻ nầy là tượng Trên Gấm Thêm Hoa, phàm việc gì cũng có lành to, lôi lớn." },
+            { number: 48, meaning: "QUẺ SỐ 48 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 48 - Xăm Quan Âm\nSỐ 048 - TRUNG\nThu nguyệt côn ngư hóa tác bằng,\nHảo du khoái lạc khứ phi đằng.\nCao tường vạn lý vân tiêu thượng\nDư ngoại chư cầm tổng bất năng.\nDỊCH NGHĨA\nTháng thu, cá côn hóa làm chim bằng,\nTung bay đi chơi vừa được khoái lạc.\nLiệng qua liệng lại trên từng mây muôn dặm,\nNgoài ra các giống chim đều chẳng được bằng.\nGIẢI RẰNG\nCôn hóa làm bằng,\nMuôn chim chẳng được.\nDầu lòng bay liệng\nPhước lộc tự nhiên.\nCUNG HỢI\nQuẻ nầy là tượng Côn Bằng Biến Hóa, phàm việc gì cũng có biến động vậy." },
+            { number: 49, meaning: "QUẺ SỐ 49 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 49 - Xăm Quan Âm\nSỐ 049 - TRUNG\nThiên hàn, địa đống, thủy băng sanh,\nTham lận hà năng bác đắc danh?\nThủ kỷ chỉ ưng an tịnh tọa\nĐãi thì dữ biến tự nhiên minh.\nDỊCH NGHĨA\nTrời lạnh, đất rét, nước thành băng,\nTham lận làm sao được công danh?\nChỉ nên giữ mình ngồi nơi yên tịnh\nĐợi thời cùng biến tự nhiên tỏ ra.\nGIẢI RẰNG\nNước đóng thành băng,\nBăng tiêu thành nước.\nNếu có mưu việc\nNhư lẽ ấy thôi.\nCUNG HỢI\nQuẻ nầy là tượng Kết Băng, Hóa Nước, phàm việc gì chẳng nên trái lẽ mà cầu." },
+            { number: 50, meaning: "QUẺ SỐ 50 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 50 - Xăm Quan Âm\nSỐ 050 - THƯỢNG\nNgũ hồ tứ hải nhậm quân hành,\nCao quải phàm bồng vạn lý trình.\nĐản đắc thuận phong tùy tức chí\nMãn thuyền bảo bối hỷ phong doanh.\nDỊCH NGHĨA\nNăm hồ, bốn biển, mặc ý ngươi đi,\nTreo cao buồm mui, lên đường muôn dặm.\nChỉ được thuận gió, rồi liền tới nơi,\nCủa bào đầy thuyền, mừng được phong phú.\nGIẢI RẰNG\nTiêu diêu tự nhiên\nChẳng cần ra sức.\nTài lộc đem đến,\nKhông chi chẳng đẹp.\nCUNG HỢI\nQuẻ nầy là tượng Đi Thuyền Thuận Gió, mọi việc đều hanh thông cát lợi." },
+            { number: 51, meaning: "QUẺ SỐ 51 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 51 - Xăm Quan Âm\nSỐ 051 - TRUNG\nHạ nhựt viêm thiên nhựt tối trường,\nNhơ nhơn sầu nhiệt náo phi thường.\nThiên công giã giải tri nhơn ý\nPhất phất luân phong chí tự lương.\nDỊCH NGHĨA\nMùa hạ trời nóng, ngày rất dài,\nNgười người buồn nóng, rộn phi thường.\nÔng Trời cũng hiểu biết người ta,\nPhân phất gió nồm đến tự nhiên mát.\nGIẢI RẰNG\nLui, tới đừng ngờ\nTự có kỳ tối.\nMuốn mưu dùng việc\nChẳng nên làm xằng.\nCUNG TÝ\nQuẻ nầy là tượng Người Buồn Vì Khí Nóng Mùa Hè, phàm việc gì chẳng nên nóng nảy vậy." },
+            { number: 52, meaning: "QUẺ SỐ 52 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 52 - Xăm Quan Âm\nSỐ 052 - HẠ\nThủy trung tróc nguyệt phí công phu,\nDụng tận công phu khước hựu vô.\nMạc thuyết nhàn ngôn cập loạn ngữ,\nUổng lao tâm lực cưỡng thân cô.\nDỊCH NGHĨA\nMò trăng dưới nước, uổng công phu,\nDùng hết sức mình, trở lại không.\nĐừng nói lời ngoa và tiếng loạn nghịch,\nUổng lao công lực, chịu phần đơn cô.\nGIẢI RẰNG\nNói năng khó nghĩ,\nDùng uổng tấm lòng.\nPhàm việc lao lực,\nChẳng đặng thành công.\nCUNG TÝ\nQuẻ nầy là tượng Tham Công Nghĩ Uổng, phàm việc gì đều chẳng đặng như ý vậy." },
+            { number: 53, meaning: "QUẺ SỐ 53 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 53 - Xăm Quan Âm\nSỐ 053 - TRUNG\nThất ý phản thành đắc ý thì,\nLong ngâm, hổ khiếu, lưỡng tương nghi.\nThanh thiên tự hữu thông tiêu lộ.\nHứa ngã công danh tái hữu kỳ.\nDỊCH NGHĨA\nThất ý, thế mà thành ra đắc ý,\nRồng ngâm, cọp cười, hai đàng hạp nhau.\nTự nhiên có thể thông đường mây lên trời,\nLại có kỳ cho mình toại chí công danh.\nGIẢI RẰNG\nBảo đi liền đi,\nBảo ở liền ở.\nTự có hanh thông,\nTới nơi ắt lợi.\nCUNG TÝ\nQuẻ nầy là tượng Rồng Ngâm Cọp Cười, phàm việc gì thuận ý tự nhiên có hy vọng vậy." },
+            { number: 54, meaning: "QUẺ SỐ 54 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 54 - Xăm Quan Âm\nSỐ 054 - TRUNG\nMộng trung đắc bảo, tỉnh lai vô,\nTự vị Nam sơn khứ mịch đồ.\nNhược vấn hôn nhơn tinh vấn bệnh,\nBiệt tầm điều lộ vị tương phù.\nDỊCH NGHĨA\nTrong mộng được của báo, tỉnh ra lại hóa không,\nMình bảo mình rằng đi qua núi Nam kiếm đường.\nNếu hỏi việc hôn nhơn cùng hỏi việc bệnh,\nRiêng tìm con đường khác mà dắt nhau đi.\nGIẢI RẰNG\nVật ở trong nước,\nHình ảnh vắng dài.\nĐều do phận định,\nẮt dùng tính ra.\nCUNG TÝ\nQuẻ nầy là tượng Trong Mộng Được Của Báu, phàm việc gì cũng hư nhiều, thật ít." },
+            { number: 55, meaning: "QUẺ SỐ 55 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 55 - Xăm Quan Âm\nSỐ 055 - THƯỢNG\nPhụ hiền truyền tử hựu tôn truyền,\nY thực phong long chỉ kháo Thiên.\nĐường thượng xuân huyên nhơn khoái lạc,\nCơ tôn, khát ẩm, khốn thì miên.\nDỊCH NGHĨA\nCha hiền truyền con, con truyền cháu,\nÁo cơm no ấm chỉ nhờ Trời.\nCha mẹ trên thềm đều khoái lạc,\nĐói ăn, khát uống, mỏi thì nằm.\nGIẢI RẰNG\nTiếp tre dẫn mạch,\nLưu truyền chẳng dứt.\nQuân tử mưu vọng,\nKhông chi chẳng vui.\nCUNG SỬU\nQuẻ nầy là tượng Tiếp Ống Tre Dẫn Mạch Suối, phàm việc gì đều được cát lợi vậy." },
+            { number: 56, meaning: "QUẺ SỐ 56 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 56 - Xăm Quan Âm\nSỐ 056 - TRUNG\nThan tiểu thạch khê lưu thủy hưởng,\nThanh phong, minh nguyệt, quí nhơn mang.\nLộ tu tá vấn hà phương khứ,\nQuản thủ lâm trung hoa thảo hương.\nDỊCH NGHĨA\nSuối nhỏ, khe đá, tiếng nước chảy,\nTrăng trong, gió mát, rộn người sang.\nNên hỏi thăm đường đi về phương nào,\nThâu lấy hương hoa cỏ ở trong rừng.\nGIẢI RẰNG\nMưu toan dùng việc,\nUổng sức, nhọc lòng.\nThủ cựu đợi thời,\nRồi việc rất tốt.\nCUNG SỬU\nQuẻ nầy là tượng Thuyền Đi Suối Nhỏ, phàm việc gì sau này mới có hy vọng." },
+            { number: 57, meaning: "QUẺ SỐ 57 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 57 - Xăm Quan Âm\nSỐ 057 - TRUNG\nThuyết thị, thuyết phi: phong quá nhĩ,\nHảo y, hảo thực: tự nhiên không.\nKhuyến quân mạc ký đương niên sự,\nNhữ ý hoàn như ngã ý đồng.\nDỊCH NGHĨA\nNói phải, nói quấy: gió thoảng ngoài tai,\nĂn ngon, mặc lành: tự nhiên như không.\nKhuyên ngươi đừng nhớ việc năm trước,\nRồi ý ngươi trở ra như ý ta vậy.\nGIẢI RẰNG\nPhàm mưu vọng gì,\nĐều vui mừng lắm.\nLàm theo công bình,\nNhư con gặp mẹ.\nCUNG SỬU\nQuẻ nầy là tượng Con Nít Thấy Mẹ, phàm việc gì hễ gặp quí nhơn thì tốt lắm." },
+            { number: 58, meaning: "QUẺ SỐ 58 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 58 - Xăm Quan Âm\nSỐ 058 - THƯỢNG\nQuân ngôn thuyết thoại tu đương ký,\nMạc tại tha hương cầu biệt ý.\nThiết tu thủ kỷ dụng sanh nhai,\nTrừ thị kỳ dư đô bất thị.\nDỊCH NGHĨA\nNgươi nói chuyện gì thì phải nhớ,\nĐừng cầu ý khác nơi xứ khác.\nCần phải giữ mình mà sanh hoạt,\nNgoài ra mọi việc đều chẳng phải.\nGIẢI RẰNG\nĐược sao hay vậy,\nNên theo đường cũ.\nChẳng nên cầu bậy,\nThủ cựu là hơn.\nCUNG SỬU\nQuẻ nầy là tượng Thủ Thường Đợi Thời, phàm việc gì thủ cựu là tốt." },
+            { number: 59, meaning: "QUẺ SỐ 59 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 59 - Xăm Quan Âm\nSỐ 059 - TRUNG\nTrực thưởng trùng lâu khứ ẩn thân:\nTứ vi kinh cức nhiễu viên lâm.\nThiên cao, quân mạng trường hòa đoản,\nĐắc nhứt phiên thành, thất nhứt nhơn.\nDỊCH NGHĨA\nLên thẳng tầng lầu đi ẩn mình:\nBốn bề gai gốc quanh vườn tược.\nTrời cao, mạng người dài hay vắn,\nĐược một phen nên, mất một người.\nGIẢI RẰNG\nNhư say uống rượu,\nKhá tua thủ cựu.\nĐợi khi vận tới,\nChẳng bị họa trời.\nCUNG DẦN\nQuẻ nầy là tượng Thủ Cựu Tùy Thời, phàm việc gì đợi thời thì tốt." },
+            { number: 60, meaning: "QUẺ SỐ 60 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 60 - Xăm Quan Âm\nSỐ 060 - TRUNG\nBảo tân cứu hỏa đại giai nhiên,\nNhiễu biến tam thiên cập đại thiên.\nNhược hướng vinh hoa giai vị nhập,\nBất như thâu thập, miễn lao phiền.\nDỊCH NGHĨA\nÔm củi đi chữa lửa, lửa lớn thêm,\nCháy khắp ba ngàn đại thiên thế giới.\nNếu tìm vinh hoa, thì chưa tới,\nChi bằng thâu lượm, khỏi lao phiền.\nGIẢI RẰNG\nNgàn bề mưu kế,\nMột ngày quên đi.\nChẳng nên làm bậy,\nE vướng vào mình.\nCUNG DẦN\nQuẻ nầy là tượng Ôm Củi Chữa Lửa, phàm việc gì nên yên phận đợi thời." },
+            { number: 61, meaning: "QUẺ SỐ 61 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 61 - Xăm Quan Âm\nSỐ 061 - HẠ\nNhựt thượng ngâm thành, nguyệt hạ ca,\nPhùng trường tác hý tiếu kha kha.\nTương phùng nhứt dán nan hồi tỵ,\nHát thái liên tề xướng lý a.\nDỊCH NGHĨA\nTrên mặt trời ngâm, dưới mặt trăng hát,\nGặp rạp làm trò, đều cười khà khà\nMột ngày gặp nhau, khó bề chạy tránh,\nReo hò tiếp nối, lên tiếng la vang.\nGIẢI RẰNG\nGiai nhơn ở nhà,\nXướng ngâm thi khúc.\nMột tấm lòng vui,\nMạng có họa phúc.\nCUNG DẦN\nQuẻ nầy là tượng Thủ Cựu Tùy Thời, phàm việc gì đợi thời có thể nên." },
+            { number: 62, meaning: "QUẺ SỐ 62 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 62 - Xăm Quan Âm\nSỐ 062 - TRUNG\nTích nhựt hành thuyền thất liễu châm,\nKim triêu y cựu hải trung tầm.\nNhược nhiên tầm đắc nguyên châm tại,\nGiã phí công phu, giã phí tâm!\nDỊCH NGHĨA\nBữa trước đi thuyền rớt mấy cây kim,\nNay y chỗ cũ dưới biển mà tìm.\nDầu có tìm được cây kim ở đó đi nữa,\nPhải hao biết bao công phu và tâm lực!\nGIẢI RẰNG\nPhước là nền lộc,\nLộc là giống phước.\nNếu đợi phân minh,\nNên giữ cẩn thận.\nCUNG DẦN\nQuẻ nầy là tượng Mò Kim Đáy Biển, phàm việc gì đều nhọc nhằn mà không thành công vậy." },
+            { number: 63, meaning: "QUẺ SỐ 63 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 63 - Xăm Quan Âm\nSỐ 063 - TRUNG\nDu ngư khước tại bích ba trì,\nHốt lao la võng tứ biên vi.\nTư lương vô kế phiên thân xuất,\nMạng đáo tuyền quan nhạ thị phi.\nDỊCH NGHĨA\nCá lội đi chơi trong ao sóng biếc,\nXảy gặp lưới vó vây phủ bốn bề.\nLo tính không có kế nào nhảy ra được,\nMạng tới cửa suối, rước lấy điều thị phi.\nGIẢI RẰNG\nYên thân trong nhà,\nHọa từ trôi lại.\nDự phòng mọi việc,\nHầu khó tiêu tai.\nCUNG MẸO\nQuẻ nầy là tượng Cá Gặp Lưới Vó, phàm việc gì nên nhẫn nại và dự phòng." },
+            { number: 64, meaning: "QUẺ SỐ 64 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 64 - Xăm Quan Âm\nSỐ 064 - TRUNG\nThần hồn toàn lại phật phò trì,\nTuy tắc phùng nguy giã bất nguy.\nHạnh hữu quí nhơn tương trợ lực,\nNá thì y lộc diệc vô khuy.\nDỊCH NGHĨA\nSớm hôm đều được phật phò trì,\nDầu có gặp nguy, cũng chẳng nguy.\nMay có quí nhơn cùng giúp sức,\nBấy giờ cơm áo chẳng lo chi!\nGIẢI RẰNG\nVận mạng bằng phẳng,\nPhật Thần phò trì.\nGặp dữ hóa lành,\nTự nhiên yên ổn.\nCUNG MẸO\nQuẻ nầy là tượng Phật Thần Giúp Ngầm, phàm việc gì nên giữ lòng kính cẩn thì tốt." },
+            { number: 65, meaning: "QUẺ SỐ 65 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 65 - Xăm Quan Âm\nSỐ 065 - TRUNG\nNhãn tiền hoan sự vị vi hoan,\nDiệc bất nguy hề diệc bất an.\nCát nhục thành sang vi thậm sự,\nBất như thủ cựu dãi thì khoan.\nDỊCH NGHĨA\nTrước mắt việc mừng chưa đáng mừng,\nCũng chẳng nguy mà cũng chẳng yên.\nCắt thịt thành ghẻ độc càng hại thêm,\nChi bằng thủ cựu chờ lúc khoan nhàn.\nGIẢI RẰNG\nBiết thôi thì thôi,\nBiết nhàn hãy nhàn.\nCắt thịt hại mình,\nMột đường đau đớn.\nCUNG MẸO\nQuẻ nầy là tượng Cắt Thịt Thành Ghẻ Độc, phàm việc gì chẳng nên làm bậy." },
+            { number: 66, meaning: "QUẺ SỐ 66 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 66 - Xăm Quan ÂM\nSỐ 066 - HẠ\nLộ hiểm, mã nuy, nhơn hành cấp,\nQuân trung bị hãm, họa tương lai.\nThan cao, lãng đại, thuyền sanh phá,\nNhựt mộ, hoa tàn, thiên giáng tai.\nDỊCH NGHĨA\nĐường hiểm, ngựa yếu, người đi gấp,\nTrong quân bị hãm họa sẽ lại.\nBến cao, sóng lớn, thuyền chèo bể,\nNgày hết, hoa tàn, trời xuống tai.\nGIẢI RẰNG\nTrăm bề tai nạn,\nLành ít dữ nhiều.\nLòng thành cầu Thần,\nHoặc là qua khỏi.\nCUNG MẸO\nQuẻ nầy là tượng Khổ Càng Thêm Khổ, phàm việc gì phải nên cẩn thận, chăm bề làm phước mới nên." },
+            { number: 67, meaning: "QUẺ SỐ 67 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 67 - Xăm Quan Âm\nSỐ 067 - THƯỢNG\nNhứt điều kim tuyến, nhứt tâm bình,\nBất giảm, bất tăng, hựu bất khinh.\nNhược đắc tận tâm hành chánh trực,\nTự nhiên phùng ám hữu quang minh.\nDỊCH NGHĨA\nMột sợi chỉ vàng, một lòng bình chánh,\nChẳng thêm, chẳng bớt, chẳng trọng khinh.\nNếu được hết lòng làm chuyện ngay thẳng,\nTự nhiên trong chỗ tối gặp ánh sáng.\nGIẢI RẰNG\nLàm việc chẳng quấy,\nCầm lòng công bình.\nDữ hóa ra lành,\nTự nhiên sáng sủa.\nCUNG THÌN\nQuẻ nầy là tượng Lòng Lành Gặp Tốt, phàm việc gì đều được yên ổn." },
+            { number: 68, meaning: "QUẺ SỐ 68 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 68 - Xăm Quan Âm\nSỐ 068 - THƯỢNG\nMôn đình cát khánh hỷ phi thường,\nTích thiện chi gia đại cát xương.\nHôn cấu, điền, tàm giai hoạch lợi,\nBệnh phùng diệu dược đắc khương cường.\nDỊCH NGHĨA\nPhước lành trong cửa mừng phi thường,\nNhững nhà tích thiện rất thạnh vượng.\nHôn nhơn, lúa, tằm đều được lợi,\nBệnh gặp thuốc hay được mạnh lành.\nGIẢI RẰNG\nLòng xuân ngày ấm,\nTrăm hoa trổ ra.\nViệc đừng chậm trễ,\nTheo người làm luôn.\nCUNG THÌN\nQuẻ nầy là tượng Xuân Trổ Trăm Hoa, phàm việc gì đều được toại lòng, khoái lạc." },
+            { number: 69, meaning: "QUẺ SỐ 69 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 69 - Xăm Quan Âm\nSỐ 069 - THƯỢNG\nĐông lai lãnh thượng nhứt chi mai,\nDiệp lạc, chi khô, tổng bất khai.\nĐản đắc dương xuân tiêu tức chí,\nY nhiên hoàn ngã tác hoa khôi.\nDỊCH NGHĨA\nMùa đông, trên núi một cây mai,\nLá rụng, nhành khô, chẳng trổ hoa.\nChỉ chờ được tin tức dương xuân đưa đến,\nSẽ trả cho ta cái giá trị hoa khôi.\nGIẢI RẰNG\nMột mũi tên bắn tới,\nTrong giữa cõi hư không.\nChờ được xuân đến,\nMàu ở trong đó.\nCUNG THÌN\nQuẻ nầy là tượng Hoa Mai Đợi Xuân, phàm việc gì nên chậm thì tốt." },
+            { number: 70, meaning: "QUẺ SỐ 70 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 70 - Xăm Quan Âm\nSỐ 070 - HẠ\nTriêu triêu cáp tự thái hoa phong,\nPhi xuất tây lai, hựu khứ đông.\nXuân tận, hoa tàn, vô mịch xứ,\nThử tâm bất biến tự hành tung.\nDỊCH NGHĨA\nNgày ngày đeo riết tợ con ong hái hoa,\nBay ra phía tây, lại trở qua phía đông.\nXuân hết, hoa tàn, không chỗ tìm nữa,\nLòng nầy chẳng biến, vẫn cứ đi hoài.\nGIẢI RẰNG\nMùa xuân trọn ngày,\nMưa lâu chẳng tạnh.\nCầu mưu dùng việc,\nChẳng bằng yên tịnh.\nCUNG THÌN\nQuẻ nầy là tượng Ong Mật Hái Hoa, phàm việc gì cũng nhọc lòng uổng sức vậy." },
+            { number: 71, meaning: "QUẺ SỐ 71 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 71 - Xăm Quan Âm\nSỐ 071 - TRUNG\nThùy tri thương long thưởng cửu cù!\nNữ tử đương niên giá nhị phu.\nTự thị nhứt cung giá nhị tiến,\nThiết hiềm long mã thượng an cư.\nDỊCH NGHĨA\nAi hay rồng xanh lên đường chín tầng mây!\nCon gái năm rồi đã gả hai đời chồng.\nĐó là một cây cung gài hai mũi tên,\nChỉ hiềm ở yên trên con long mã vậy.\nGIẢI RẰNG\nMấy lần chẳng khỏi,\nViệc bởi mạng Trời.\nKhoảng giữa buông ra,\nCần nên cẩn thủ.\nCUNG TỴ\nQuẻ nầy là tượng Một Cây Cung Hai Mũi Tên, phàm việc gì tái hiệp thì tốt." },
+            { number: 72, meaning: "QUẺ SỐ 72 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 72 - Xăm Quan Âm\nSỐ 072 - THƯỢNG\nDưỡng phong tu yếu đồ tha mặt,\nChỉ phạ tao phong vĩ thượng châm.\nTuy tắc nhãn tiền hữu dị lộ,\nÁm trung thiết tỵ cức kinh lâm.\nDỊCH NGHĨA\nNuôi ong là để dùng mật của nó,\nChỉ sợ gặp mũi kim trên đuôi ong.\nTuy rằng trước mắt có con đường khác,\nTrong chỗ tối, phải tránh rừng chông gai.\nGIẢI RẰNG\nViệc nên suy nghĩ,\nChẳng khá gượng cầu.\nNuôi ong lấy mật,\nCó cớ gì đâu.\nCUNG TỴ\nQuẻ nầy là tượng Nuôi Ong Lượm Mật, phàm việc gì nhọc sức một cách cẩn thận thì tốt." },
+            { number: 73, meaning: "QUẺ SỐ 73 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 73 - Xăm Quan Âm\nSỐ 073 - THƯỢNG\nXuân lai lôi hưởng chấn côn trùng,\nPhiên thân nhứt chuyển ly né trung.\nThủy tri xuất nhập hoan lai vãng,\nNhứt triên biến hóa tiện thành long.\nDỊCH NGHĨA\nXuân tới, tiếng sấm làm dậy côn trùng,\nChuyển mình một bận, liền lìa khỏi bùn lầy.\nMới hay ra vô rồi quay lại,\nMột ngày biến hóa liền thành rồng.\nGIẢI RẰNG\nSấm vang thời chuyển,\nRa vô tự do.\nMột ngày biến hóa,\nThành lên cửa trời.\nCUNG TỴ\nQuẻ nầy là tượng Sấm Dậy Trùng Kêu, phàm việc gì đợi thời thì được quí nhơn phò trợ vậy." },
+            { number: 74, meaning: "QUẺ SỐ 74 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 74 - Xăm Quan Âm\nSỐ 074 - HẠ\nHộc phi hoàn tự nhập lung trung,\nDục tưởng phiên thân khước bất thông.\nNam, bắc, đông, tây đô hiểm nạn,\nThử gian vô xứ kiến thương khung.\nDỊCH NGHĨA\nChim hộc hay trở vô lồng,\nÝ muốn cất mình, lại chẳng thông.\nĐông, tây, nam, bắc đều là nơi hiểm khó,\nKhoảng nầy không có nơi ngó thấy trời.\nGIẢI RẰNG\nHiểm hiểm nguy nguy,\nCó ngàn lối trước.\nCầu mưu chẳng lợi,\nĐáo để gian truân.\nCUNG NGỌ\nQuẻ nầy là tượng Chim Hộc Vô Lồng, phàm việc gì dư nhiều, lành ít vậy." },
+            { number: 75, meaning: "QUẺ SỐ 75 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 75 - Xăm Quan Âm\nSỐ 075 - THƯỢNG\nCáp như bảo hổ quá cao san,\nChiến chiến căng căng đảm toái hàn!\nBất giác hốt nhiên tùng hảo sự,\nThiết tu bảo thủ nhứt thân an.\nDỊCH NGHĨA\nHệch như ôm con cọp trèo qua núi cao,\nTrái mật những hồi hộp muốn bể nát ra!\nChẳng dè xảy được gặp sự tốt lành,\nCần phải giữ gìn thì được yên thân.\nGIẢI RẰNG\nHung hiểm khó làm,\nTới chẳng bằng lui.\nViệc nên cẩn thận,\nChớ có làm xằng.\nCUNG NGỌ\nQuẻ nầy là tượng Ôm Cọp Lên Núi, phàm việc gì hễ mạo hiểm sẽ mang lấy tai họa vậy." },
+            { number: 76, meaning: "QUẺ SỐ 76 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 76 - Xăm Quan Âm\nSỐ 076 - TRUNG\nNgư, long hỗn tạp ý tương đồng,\nNại thủ thâm đàm đãi vận thông.\nBất giác nhứt triêu đầu tủng dác,\nVõ môn nhứt được quá long cung.\nDỊCH NGHĨA\nCá, rồng chung chạ, ý chí như nhau,\nNhẫn nại đầm sâu, chờ cho vận tới.\nThình lình ngày nọ, đầu lại mọc sừng,\nVõ môn nhảy khỏi, lướt tới đền rồng.\nGIẢI RẰNG\nDầu có tư cơ,\nCũng nên đợi thời.\nMưu việc ra vô,\nChớ nên làm bậy.\nCUNG NGỌ\nQuẻ nầy là tượng Cá, Rồng Chưa Biến, phàm việc gì nên thủ cựu đợi thời." },
+            { number: 77, meaning: "QUẺ SỐ 77 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 77 - Xăm Quan Âm\nSỐ 077 - TRUNG\nMộng trung thuyết thị đắc đa tài,\nVân ngoại thinh danh tổng vị lai.\nThủy viễn, san cao nan tín thật,\nQuí nhơn chỉ dẫn tiếu nhan khai.\nDỊCH NGHĨA\nTrong giấc mộng, thấy mình được nhiều của\nThinh danh còn ở ngoài mây chớ chưa lại.\nNước thâm, non cao, khó tin là thật,\nQuí nhơn chỉ dẫn sẽ mở mặt trời.\nGIẢI RẰNG\nChẳng qua mộng ảo,\nThinh danh đừng trông,\nChỉ nên đợi thời,\nQuí nhơn chỉ bảo.\nCUNG NGỌ\nQuẻ nầy là tượng Trong Mộng Được Của, phàm việc gì cũng hư nhiều, thật ít." },
+            { number: 78, meaning: "QUẺ SỐ 78 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 78 - Xăm Quan Âm\nSỐ 078 - TRUNG\nLãnh thủy vị thiêu bạch phí thang,\nBất lương, bất nhiệt, hữu ôn lương.\nYếu hành thiên hạ vô tha sự,\nTuy hữu thân trung bá nghệ cường.\nDỊCH NGHĨA\nNước lã chưa nấu cho đến sôi,\nChẳng nóng, chẳng lạnh, chỉ vừa vừa.\nCốt làm việc tầm thường trong thiên hạ,\nTuy rằng tụ mình có trăm nghề hay.\nGIẢI RẰNG\nKẻ tù được thả,\nBịnh gặp thuốc hay.\nCầu tài mưu vọng\nNhờ có quí nhơn.\nCUNG NGỌ\nQuẻ nầy là tượng Bình Thường Làm Việc, phàm việc gì đều do hòa khí sanh tài." },
+            { number: 79, meaning: "QUẺ SỐ 79 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 79 - Xăm Quan Âm\nSỐ 079 - TRUNG\nHư không kết nguyện bảo bình an,\nBảo đắc thân an, nguyện bát hoàn.\nThần thánh mạc vong hoàn nguyện liễu,\nKhởi tri thần ngữ mạc khinh màn?\nDỊCH NGHĨA\nKết nguyện với hư - không bảo - hộ mình được bình yên,\nThân thế yên ổn nhờ bảo hộ, nhưng chẳng trả nguyện.\nChớ quên ơn thần thánh, nguyện phải trả đủ,\nNào hay lời thần há dè khi lờn sao?\nGIẢI RẰNG\nNgười chỉ biết mình,\nLòng chẳng dùng rối.\nQuan Âm chỉ dẫn,\nChớ khá chi lờn.\nCUNG MÙI\nQuẻ nầy là tượng Tin Thật, Đừng Tin Hư, phàm việc gì cũng nên thủ cựu." },
+            { number: 80, meaning: "QUẺ SỐ 80 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 80 - Xăm Quan Âm\nSỐ 080 - THƯỢNG\nTrực thưởng tiên nham yếu học tiên,\nKhởi chi nhứt đán đế hoàng tuyên?\nThanh thiên nhựt nguyệt thường minh chiếu,\nChánh trực thinh danh tứ hải truyền.\nDỊCH NGHĨA\nThẳng lên non tiên đặng học tiên,\nHá biết ngày kia lệnh đế hoàng?\nMặt trời, mặt trăng trên trời xanh thường soi sáng,\nHễ chánh trực thì tiếng tăm đồn vang bốn biển.\nGIẢI RẰNG\nLòng ngay làm việc,\nTrời Đất hộ cho.\nHai chữ cầu mưu,\nĐều nên làm tới.\nCUNG MÙI\nQuẻ nầy là tượng Quí Nhơn Tiếp Dẫn, phàm việc gì hễ hòa hiệp thì tốt lắm." },
+            { number: 81, meaning: "QUẺ SỐ 81 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 81 - Xăm Quan Âm\nSỐ 081 - THƯỢNG\nNgô đồng diệp lạc, thu tương mộ,\nHành khách qui trình khứ tự phi.\nTạ đắc thiên công đa trước lực,\nThuận phong thuyền tái bảo trân qui.\nDỊCH NGHĨA\nNgô đồng rụng lá, năm hầu hết,\nHành khách quay về, mau như bay.\nNhờ được trời ra sức giúp cho nhiều,\nThuyền theo gió thuận chở về của báu.\nGIẢI RẰNG\nNhững việc trong lòng,\nChắc có Trời hộ.\nDoanh mưu đụng độ,\nĐều khá thành công.\nCUNG MÙI\nQuẻ nầy là tượng Ngô Đồng Rụng Lá, phàm việc gì cũng trước dữ, sau lành vậy." },
+            { number: 82, meaning: "QUẺ SỐ 82 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 82 - Xăm Quan Âm\nSỐ 082 - TRUNG\nViêm viêm liệt hỏa chiếu nam thiên,\nNoãn xứ hoàn sanh nhứt đoá liên.\nĐáo để đắc thành, chung bất hại,\nDiệp phồn, chi trưởng tự y nhiên.\nDỊCH NGHĨA\nLửa nóng ngùn ngụt chiếu tới trời nam,\nTrong chỗ ấm lại sanh một đóa sen.\nTới cùng được nên, trọn chẳng hại gì,\nLá sai, nhành lớn vẫn y như trước.\nGIẢI RẰNG\nDẫu rằng gặp hiểm,\nChẳng hại đến mình.\nMưu sự thuận lợi,\nTrăm việc như lòng.\nCUNG MÙI\nQuẻ nầy là tượng Trong Lửa Mọc Sen, phàm việc gì sợ hiểm mà không phải hiểm." },
+            { number: 83, meaning: "QUẺ SỐ 83 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 83 - Xăm Quan Âm\nSỐ 083 - TRUNG\nThí nhược sơ tam, tứ, ngũ khuyết,\nBán vô, bán hữu, vị viên tuyền.\nĐẳng đãi thập ngũ lương tiêu dạ,\nĐáo xứ quang minh, đáo xứ viên.\nDỊCH NGHĨA\nTỷ như trăng khuyết mồng ba, mồng bốn, mồng năm,\nCông việc nửa có, nửa không, chưa trọn vẹn.\nHãy chờ đến rằm là đêm tốt lành hơn hết,\nTới chỗ nào cũng sáng, tới chỗ nào cũng tròn.\nGIẢI RẰNG\nThủ cựu đợi thời,\nNhư trăng mới mọc.\nTới khi trọn vẹn,\nSẽ có tốt lành.\nCUNG THÂN\nQuẻ nầy là tượng Trăng Khuyết Chưa Tròn, phàm việc gì đợi thời thì tốt." },
+            { number: 84, meaning: "QUẺ SỐ 84 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 84 - Xăm Quan Âm\nSỐ 084 - TRUNG\nNhơn danh táng đức, như hà hảo?\nThiết khủng cát trung, biến hóa hung.\nTửu hậu bất tri hà xứ khứ,\nThanh tùng ảnh lý dính mông lung.\nDỊCH NGHĨA\nVì danh lợi mà mất đức, há tốt sao?\nChỉ e trong sự lành, hiện ra sự dữ.\nUống rượu say, chẳng biết đi chỗ nào,\nTrong bóng thông xanh, láo lướt mờ mịt.\nGIẢI RẰNG\nCá lên khỏi nước,\nTrong tốt chẳng lành.\nNếu hỏi doanh mưu,\nChi bằng chẳng động.\nCUNG THÂN\nQuẻ nầy là tượng Cá Lên Khỏi Nước, phàm việc gì chẳng nên dời động." },
+            { number: 85, meaning: "QUẺ SỐ 85 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 85 - Xăm Quan Âm\nSỐ 085 - THƯỢNG\nVân khai, vụ tán san tiền lộ,\nVạn vật viên trung, nguyệt tái đoàn.\nNhược đắc thi thư trầm mộng tỉnh,\nQuí nhơn tiếp bộ tiên san.\nDỊCH NGHĨA\nMây vén, mù tan tại đường trước núi,\nTrong vườn muôn vật, mặt trăng lại tròn.\nNếu được thoát khỏi giấc mộng thi thư,\nQuí nhơn sẽ tiếp dẫn đến non tiên.\nGIẢI RẰNG\nNgười già mong cầu,\nXuân tàn lại nở.\nMuốn cầu danh lợi,\nSẽ gặp thình lình.\nCUNG THÂN\nQuẻ nầy là tượng Xuân Hết Hoa Nở, phàm việc gì chủ về sau sẽ biến đổi tốt lành." },
+            { number: 86, meaning: "QUẺ SỐ 86 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 86 - Xăm Quan Âm\nSỐ 086 - THƯỢNG\nXuân lai hoa phát ánh dương đài,\nVạn vật hưng long tấn bảo tài,\nDục đắc võ môn tam cấp lãng,\nCáp như bình địa nhứt thanh lôi.\nDỊCH NGHĨA\nXuân tới hoa nở rạng đông dương đài,\nMuôn vật thạnh vượng đem lại của báu.\nMuốn được lên khỏi ba lớp sóng cửa võ,\nHệch như chỗ đất bằng một tiếng sấm vang.\nGIẢI RẰNG\nChầu vua chịu chức,\nNhư nghèo được của.\nMưu vọng tùng tâm,\nLà quẻ bực nhứt.\nCUNG THÂN\nQuẻ nầy là tượng Người Được Chầu Vua, phàm việc gì cũng rất có hy vọng." },
+            { number: 87, meaning: "QUẺ SỐ 87 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 87 - Xăm Quan Âm\nSỐ 087 - THƯỢNG\nNhơn hành bán lãnh, nhựt hàm san,\nTuấn lãnh, nguy nham, tâm vị an.\nĐản đắc thượng thiên lai tý hựu,\nThử thân du tại thái hư gian.\nDỊCH NGHĨA\nNgười đi lưng chừng non, mặt trời ngậm núi,\nNon thì cao, khe thì hiểm, lòng chưa yên.\nChỉ được thượng thiên lại che hộ cho,\nThân nầy vẫn ở trong khoảng thái hư.\nGIẢI RẰNG\nĐẽo đá thấy ngọc,\nLược cát thấy vàng.\nKhá tua ra sức,\nChỉ chút nhọc lòng.\nCUNG THÂN\nQuẻ nầy là tượng Lược Cát Thấy Vàng, phàm việc gì nhọc lòng thì có ích vậy." },
+            { number: 88, meaning: "QUẺ SỐ 88 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 88 - Xăm Quan Âm\nSỐ 088 - TRUNG\nMộc vi nhứt hổ chính đương môn,\nTu thị hữu oai, bất hại nhơn.\nThuyết thị phân minh vô ngại sự,\nTrì nghi khủng cụ, miễn thương thần.\nDỊCH NGHĨA\nMột con cọp bằng cây ở giữa cửa,\nTuy là có oai, mà chẳng hại người.\nRõ ràng chuyện không có bề chi hiểm trở,\nDầu sợ sệt sụt sè, nhưng khỏi tổn tinh thần.\nGIẢI RẰNG\nTrong lò nấu tuyết,\nTợ gió bên tai.\nKíp nên làm phước,\nMới khỏi hung tai.\nCUNG THÂN\nQuẻ nầy là tượng Con Cọp Bằng Cây Ở Giữa Cửa, phàm việc gì chỉ sợ không không, chớ chẳng có chuyện thật." },
+            { number: 89, meaning: "QUẺ SỐ 89 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 89 - Xăm Quan Âm\nSỐ 089 - TRUNG\nDoanh mưu xuất nhập đại gia trường,\nTự ngọc vô hà thạch lý tàng.\nNhược đắc quí nhơn lai chỉ thị,\nTư thì đắc bảo hỷ phong quang.\nDỊCH NGHĨA\nRa vô mưu việc, gặp điềm rất lành,\nNhư ngọc không vít chứa tại trong đá.\nNếu được quí nhơn lại chỉ dẫn,\nBấy giờ được báu, mừng vẻ vang.\nGIẢI RẰNG\nNhư đá chứa ngọc,\nQuí nhơn chỉ cho\nĐược báu xứng lòng,\nVui mừng đắc ý.\nCUNG DẬU\nQuẻ nầy là tượng Đá Chứa Ngọc Báu, phàm việc gì đều được vừa lòng, là điềm rất lành vậy." },
+            { number: 90, meaning: "QUẺ SỐ 90 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 90 - Xăm Quan ÂM\nSỐ 090 - TRUNG\nHốt nhiên hỷ tín hướng thiên phi,\nBảo bối doanh truyền tự tái qui.\nNhược vấn lộ đồ thành hảo sự.\nTiền đầu nhưng hữu quí nhơn suy.\nDỊCH NGHĨA\nXảy đâu tin mừng tự trời bay lại,\nCủa báu đầy thuyền chở lấy đem về.\nNếu hỏi việc tốt lành ở ngoài đường,\nThì dòng trước vẫn có quí nhơn giúp.\nGIẢI RẰNG\nNếu hỏi công danh,\nQuí nhơn ở trước.\nLại thêm điềm tốt,\nTài lộc phong doanh.\nCUNG DẬU\nQuẻ nầy là tượng Công Danh, phàm việc gì cũng được hanh thông khương thái vậy." },
+            { number: 91, meaning: "QUẺ SỐ 91 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 91 - Xăm Quan Âm\nSỐ 091 - TRUNG\nHảo triển sầu my xuất chúng lai,\nTiền đồ cải biến hỷ đa tài.\nNhứt điều đại lộ như thiên khoát,\nPhàm hữu thi vi tận xứng hoài.\nDỊCH NGHĨA\nHãy mở chân mày sầu, mình trổi hơn người,\nTương lai thay đổi, mừng có nhiều của.\nMột con đường cái rộng như trời mở,\nHễ làm việc gì đều được xứng lòng.\nGIẢI RẰNG\nMột con đường cái,\nTheo đó mà tới.\nLàm việc theo lòng,\nMột bề tấn tới.\nCUNG DẬU\nQuẻ nầy là tượng Đường Trước (tương lai) Thông Đạt, phàm việc gì cũng được hanh thông đại cát." },
+            { number: 92, meaning: "QUẺ SỐ 92 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 92 - Xăm Quan Âm\nSỐ 092 - THƯỢNG\nẤu lai vi lữ nhiệm thi mưu,\nTài lộc phong doanh bất dụng cầu.\nNhược thị tấn thân mưu vọng sự,\nTú tài khứ chiếm trạng nguyên đầu.\nDỊCH NGHĨA\nTừ nhỏ làm khách, mặc ý dùng mưu,\nTài lộc đầy đủ, chẳng cần phải cầu.\nNếu cất mình ra mưu vọng mọi việc,\nTài lành chiếm lấy giải đầu trạng nguyên.\nGIẢI RẰNG\nTừ nhỏ chí lớn,\nKhông trở không ngại.\nMặc ý cầu mưu,\nCông danh liền tới.\nCUNG DẬU\nQuẻ nầy là tượng Từ Nhỏ Đi Buôn, phàm việc gì đều thuận lợi, không có lỗi." },
+            { number: 93, meaning: "QUẺ SỐ 93 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 93 - Xăm Quan Âm\nSỐ 093 - TRUNG\nPhụng hoàng mao bị vũ lâm ly,\nNhứt đán thân suy, thọ tước khi!\nĐản năng hồng nhựt lai tương chiếu,\nThắng giáp hoàn ngô thái võ y.\nDỊCH NGHĨA\nPhụng hoàng bị mưa, lông lá ướt dầm dề,\nMột khi phụng suy, bị chim sẻ khi lờn!\nNếu được mặt trời lại soi đến,\nSố thắng trả ta tấm áo màu.\nGIẢI RẰNG\nTiểu nhân đương thạnh,\nQuân tử đừng động.\nChỉ nên giữ mình,\nĐợi thời hơn cũ.\nCUNG TUẤT\nQuẻ nầy là tượng Lông Phụng Bị Mưa, phàm việc gì nên đợi thời cơ là lợi." },
+            { number: 94, meaning: "QUẺ SỐ 94 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 94 - Xăm Quan Âm\nSỐ 094 - TRUNG\nQuân tử mạc thính tiểu nhân vi,\nSự nhược si trì, các thị phi.\nCầm minh, tu đụng chi âm thính,\nThủ cựu an tịnh đắc y hy.\nDỊCH NGHĨA\nQuân tử đừng nghe chuyện kẻ tiểu nhân,\nNếu việc lỡ ra, mình mang lấy tiếng thị phi.\nNhư khảy đàn, cần có người tri âm nghe,\nVậy nên cứ thủ cựu thì được an tịnh.\nGIẢI RẰNG\nTri âm mới hứa,\nViệc phiếm chớ làm.\nĐợi được quý nhân,\nĐi đâu cũng lợi.\nCUNG TUẤT\nQuẻ nầy là tượng Cần Gặp Tri Kỷ, phàm việc gì thủ cựu thì tốt." },
+            { number: 95, meaning: "QUẺ SỐ 95 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 95 - Xăm Quan Âm\nSỐ 095 - TRUNG\nChí khí cần nghiệp tại chiêu chiêu,\nKim tương tửu sắc bất thăng nhiêu.\nNhược kiến kim kê báo quân ngữ,\nY nhiên phước lộc dữ quân mưu.\nDỊCH NGHĨA\nNgày ngày chí khí chuyên chú nghề làm ăn,\nNay chuyện tửu sắc thì chẳng xiêu lòng.\nNếu thấy gà vàng báo tin cho người biết,\nKhi ấy phước lộc vẫn cùng mưu với người.\nGIẢI RẰNG\nChí khí siêng năng,\nGiữ mình chưa muộn.\nGà vàng tin báo,\nChi chẳng vui mừng.\nCUNG TUẤT\nQuẻ nầy là tượng Chí Khí Siêng Năng, phàm việc gì nên thủ thường thì tốt." },
+            { number: 96, meaning: "QUẺ SỐ 96 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 96 - Xăm Quan Âm\nSỐ 096 - THƯỢNG\nNguy nguy bảo tháp bất tầm thường,\nBát diện linh lung tận phóng quang.\nKhuyết quân lập chí cần đảnh lễ,\nTác thiện, hoàng thiên giáng cát tường.\nDỊCH NGHĨA\nTháp báu cao vời vợi chẳng tầm thường,\nTám mặt rạng ngời đều phóng hào quang.\nKhuyên ngươi lập chí siêng năng đảnh lễ,\nHễ làm lành thì trời giáng điềm hay.\nGIẢI RẰNG\nCái phước phận ấy,\nMọi người đều thấy.\nChẳng cần rộn lòng,\nPhước đức tiền định.\nCUNG TUẤT\nQuẻ nầy là tượng Phước Đức Hiện Tiền, hễ là người làm lành thì được phước đức." },
+            { number: 97, meaning: "QUẺ SỐ 97 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 97 - Xăm Quan Âm\nSỐ 097 - TRUNG\nĐương phong điểm chúc không sơ ảnh,\nHoảng hốt phô thành dương lý hoa.\nLủy bị nhi đồng lai thập khử,\nThẩm tri chỉ thị tự phù ta.\nDỊCH NGHĨA\nNgang chỗ gió thắp đuốc, bóng rọi lơ thơ,\nThắp thoáng trải thành những hoa trong cây dương.\nThường bị con nít lại lượm đi mất,\nBiết đâu chỉ là sự phù không mà thôi.\nGIẢI RẰNG\nSang giàu ở Trời,\nBần cùng tại số.\nChẳng cần mưu cầu,\nĐều là tiền định.\nCUNG HỢI\nQuẻ nầy là tượng Đương Gió Thắp Đuốc, phàm việc gì chỉ có tiếng không, chớ ít phần lợi thiệt." },
+            { number: 98, meaning: "QUẺ SỐ 98 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 98 - Xăm Quan Âm\nSỐ 098 - HẠ\nXuất nhập cầu mưu, sự vi nghi,\nChỉ khủng nhàn sầu nhạ thị phi.\nNhư điểu phi nhập thiên la võng,\nTương phùng năng hữu kỷ đa thì?\nDỊCH NGHĨA\nRa vô cầu mưu, nhưng việc chưa nên,\nChỉ e mối sầu mang tiếng thị phi.\nNhư Con Chim Bay Vào Lưới Trời,\nGặp gỡ nhau, còn được mấy lúc?\nGIẢI RẰNG\nThủ cựu tùy duyên,\nChờ quý nhân đến.\nNếu hỏi mọi bề,\nChủ việc nên chậm.\nCUNG HỢI\nQuẻ nầy là tượng Thủ Cựu Tùy Duyên, phàm việc phần nhiều chẳng được như ý." },
+            { number: 99, meaning: "QUẺ SỐ 99 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 99 - Xăm Quan Âm\nSỐ 099 - HẠ\nLặc mã trì tiên trực quá lại,\nBán vi hung hiểm, bán vi tai.\nCáp như tao hỏa phần thiệu ốc,\nThiên giáng vũ thì tẫn hóa hôi.\nDỊCH NGHĨA\nDắt ngựa cầm roi đi thẳng lại,\nNửa là hung hiểm, nửa là tai.\nHệch như gặp lửa đốt cháy nhà,\nKhi trời mưa xuống thảy thành tro.\nGIẢI RẰNG\nLao lực trọn đời,\nChẳng quản phải quấy.\nGòng cùm tới mình,\nOán thù đem đến.\nCUNG HỢI\nQuẻ nầy là tượng Nhọc Lòng Nửa Măng, phàm việc gì cũng chỉ nên làm lành." },
+            { number: 100, meaning: "QUẺ SỐ 100 - XĂM QUAN ÂM\nDưới đây là lời giảng Quẻ số 100 - Xăm Quan Âm\nSỐ 100 - HẠ\nPhật thần thuyết tận dữ quân tri,\nTranh nại si nhân bất tỉnh si.\nCầu đắc thử Xâm nghi vật động,\nChỉ ưng thủ cựu đãi thì nhi.\nDỊCH NGHĨA\nPhật thần đã nói hết cho người biết,\nNhưng ngặt nổi người ngu chẳng tỉnh ra.\nCầu được Xâm nầy thì đừng làm gì,\nChỉ nên thủ cựu đợi thời là phải.\nGIẢI RẰNG\nĐủ hết linh Xâm,\nChỉ báo ngươi biết.\nThủ cựu đừng động,\nHãy nên đợi thời.\nCUNG HỢI\nQuẻ nầy là tượng Thủ Thường Đừng Động, phàm việc gì cứ đợi thời là tốt." },
+        ];
+
+        // Tạo danh sách 100 quẻ nếu chưa đủ
+        for (let i = xamList.length + 1; i <= 100; i++) {
+            xamList.push({
+                number: i,
+                meaning: `Quẻ số ${i}: Ý nghĩa chi tiết của quẻ xăm số ${i}, mang lại điềm báo về cuộc sống, tình duyên và sự nghiệp.`
+            });
+        }
+
+        function startShake() {
+            const tube = document.getElementById("tube");
+            const stick = document.getElementById("stick");
+
+            // Reset stick
+            stick.style.display = "none";
+            stick.classList.remove("fall");
+
+            // Thêm hiệu ứng lắc
+            tube.classList.add("shaking");
+
+            // Sau 10 giây thì dừng lắc và thả thẻ xăm
+            setTimeout(() => {
+                tube.classList.remove("shaking");
+
+                const randomNumber = Math.floor(Math.random() * 100) + 1;
+                stick.innerText = randomNumber;
+                stick.style.display = "block";
+                stick.style.top = "0px"; // Bắt đầu từ trong ống tre
+                stick.classList.add("fall");
+            }, 10000); // Giữ nguyên 10 giây
+        }
+
+        function toggleTable() {
+            const table = document.getElementById("resultTable");
+            if (table.style.display === "none" || table.style.display === "") {
+                table.style.display = "table";
+            } else {
+                table.style.display = "none";
+            }
+        }
+
+        function showPopup(xamNumber) {
+            const popup = document.getElementById("popup");
+            const popupTitle = document.getElementById("popupTitle");
+            const popupContent = document.getElementById("popupContent");
+
+            const xam = xamList.find(x => x.number === xamNumber);
+            popupTitle.textContent = `Xăm số ${xam.number}`;
+
+            // Xử lý chuỗi meaning: thay \n bằng <br> và thêm <br> sau dấu chấm
+            let formattedMeaning = xam.meaning
+                .replace(/\n/g, "<br>") // Thay ký tự xuống dòng bằng <br>
+                .replace(/\.(?!\s*$)/g, ".<br>"); // Thêm <br> sau mỗi dấu chấm (trừ dấu chấm cuối)
+            popupContent.innerHTML = formattedMeaning; // Sử dụng innerHTML để hiển thị HTML
+
+            popup.style.display = "block";
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+        }
+
+        // Tạo bảng kết quả
+        const tableBody = document.getElementById("tableBody");
+        xamList.forEach(xam => {
+            const row = document.createElement("tr");
+            const numberCell = document.createElement("td");
+            const meaningCell = document.createElement("td");
+
+            numberCell.textContent = xam.number;
+            meaningCell.textContent = "Nhấn để xem chi tiết";
+
+            row.addEventListener("click", () => showPopup(xam.number));
+            row.appendChild(numberCell);
+            row.appendChild(meaningCell);
+            tableBody.appendChild(row);
+        });
+    </script>
+</body>
+</html>
