@@ -91,7 +91,7 @@ $(document).ready(function(){
 <body bgcolor="#CCCCCC" topmargin="20" leftmargin="0" rightmargin="0" bottommargin="0">
 
 <div align="center">
-  <table border="0" width="600">
+  <table border="0" width="900">
     <tr>
       <td>
         <!-- Banner trên cùng -->
@@ -108,8 +108,134 @@ $(document).ready(function(){
           <tr>
             <!-- Bảng nhập -->
             <td align="center" valign="top">
-              <!-- (toàn bộ phần form giữ nguyên như bạn đã đưa) -->
-              ...
+              <table border="2" width="300" height="600" bordercolor="#000000" bgcolor="#FF8000">
+                <tr>
+                  <td align="center">
+
+                    <!-- Bảng nhập PHẢI / TRÁI -->
+                    <table border="0" width="40" id="dontable">
+                      <tr>
+                        <td width="67">PHẢI</td>
+                        <td bgcolor="#FFFFFF"><input type="text" name="phai" class="txtDon" value="1" /></td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td width="67">TRÁI</td>
+                        <td bgcolor="#FFFFFF"><input type="text" name="trai" class="txtDon" value="1" /></td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td width="67">&nbsp;</td>
+                        <td bgcolor="#C0C0C0"><input type="button" class="btnDon" value="ĐỘN" /></td>
+                        <td></td>
+                      </tr>
+                    </table>
+
+                    <!-- Giải thích -->
+                    <table border="0" width="85%" height="155">
+                      <tr>
+                        <td align="center" valign="top" height="79">
+                          <p align="justify" style="margin-bottom: -19px">
+                            Cửa sổ <b>PHẢI</b> <i>là số</i> <i><b>X</b></i> 
+                            của <i>tay Phải</i>&nbsp; Cửa sổ<b> TRÁI</b> 
+                            <i>là số</i>&nbsp; <i><b>Y</b></i> của
+                            <i>tay Trái</i>&nbsp; <i> Đặt <b>XY</b> 
+                            vào cửa xong nhấn&nbsp; </i> <b>ĐỘN </b>
+                          </p>
+                          <p align="justify" style="margin-bottom: -19px">
+                            &nbsp;______________________________
+                          </p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td align="center" valign="top">
+                          <p align="justify" style="margin-top: 0; margin-bottom: 0">
+                            <i>Dùng 3 cửa bên dưới để tìm bảng quái 
+                            kiện đã biết <b>quái số</b>, <b>hào động</b>. 
+                            PHẢI thượng quái số, TRÁI hạ quái số, ĐỘNG = hào động số. 
+                            Nhấn <b>TÌM</b></i>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Bảng nhập TÌM -->
+                    <table border="0" width="40" id="timtable">
+                      <tr>
+                        <td width="67">PHẢI</td>
+                        <td bgcolor="#CC6600"><input type="text" name="phai" class="txtDon" value="1" /></td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td width="67">TRÁI</td>
+                        <td bgcolor="#CC6600"><input type="text" name="trai" class="txtDon" value="1" /></td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td width="67">ĐỘNG</td>
+                        <td bgcolor="#CC6600"><input type="text" name="dong" class="txtDon" value="1" /></td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td width="67">&nbsp;</td>
+                        <td bgcolor="#993300"><input type="button" class="btnDon" value="TÌM" /></td>
+                        <td></td>
+                      </tr>
+                    </table>
+
+                    <br />
+
+                    <!-- Bảng THỜI QUÁI KIỆN -->
+                    <p><b><font size="5" color="#FFFFFF">THỜI QUÁI KIỆN</font></b></p>
+                    <table border="0" width="40" id="namthangtable">
+                      <tr>
+                        <td align="center">NĂM</td>
+                        <td align="center">THÁNG</td>
+                      </tr>
+                      <tr>
+                        <td bgcolor="#CC6600"><input type="text" name="nam" class="txtDon" /></td>
+                        <td bgcolor="#CC6600"><input type="text" name="thang" class="txtDon" /></td>
+                      </tr>
+                      <tr>
+                        <td align="center">NGÀY</td>
+                        <td align="center">GIỜ</td>
+                      </tr>
+                      <tr>
+                        <td bgcolor="#CC6600"><input type="text" name="ngay" class="txtDon" /></td>
+                        <td bgcolor="#CC6600"><input type="text" name="gio" class="txtDon" /></td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" align="center">
+                          <input style="background-color:#993300 !important" type="button" class="btnDon" value="ĐỘN" />
+                        </td>
+                      </tr>
+                    </table>
+
+                    <br />
+
+                    <!-- Bảng MAI HOA -->
+                    <p><b><font size="5" color="#FFFFFF">MAI HOA</font></b></p>
+                    <table border="0" width="40" id="maihoatable">
+                      <tr>
+                        <td align="center">NĂM</td>
+                        <td align="center">THÁNG</td>
+                        <td align="center">NGÀY</td>
+                      </tr>
+                      <tr>
+                        <td bgcolor="#CC6600"><input type="text" name="nam" class="txtDon" /></td>
+                        <td bgcolor="#CC6600"><input type="text" name="thang" class="txtDon" /></td>
+                        <td bgcolor="#CC6600"><input type="text" name="ngay" class="txtDon" /></td>
+                      </tr>
+                      <tr>
+                        <td colspan="3" align="center">
+                          <input style="background-color:#993300 !important" type="button" class="btnDon" value="QUAI" />
+                        </td>
+                      </tr>
+                    </table>
+
+                  </td>
+                </tr>
+              </table>
             </td>
             <!-- Khu vực hiển thị quẻ -->
             <td width="100%" align="right" valign="top" id="canvas">&nbsp;</td>
