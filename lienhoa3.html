@@ -96,8 +96,8 @@
         .canvas-section {
             width: 100%;
             max-height: 400px; /* Giới hạn chiều cao để kích hoạt cuộn */
-            overflow-y: auto; /* Cho phép cuộn dọc */
-            overflow-x: auto; /* Cho phép cuộn ngang nếu cần */
+            max-width: 100%; /* Giới hạn chiều rộng để kích hoạt cuộn ngang */
+            overflow: auto; /* Cho phép cuộn dọc và ngang */
             padding: 20px;
             text-align: center;
             -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
@@ -105,9 +105,10 @@
             position: relative;
         }
         .canvas-section canvas, .canvas-section svg {
-            width: 100%;
+            width: auto; /* Cho phép mở rộng tự nhiên */
             height: auto;
-            min-height: 1200px; /* Tăng chiều cao tối thiểu để chứa quẻ dài */
+            min-height: 1200px; /* Tăng chiều cao tối thiểu cho quẻ dài */
+            min-width: 2000px; /* Tăng chiều rộng tối thiểu để chứa các cột không thời 1-13 */
             display: block;
         }
         .history-section {
@@ -189,6 +190,7 @@
                     const index = $(this).data('index');
                     const item = history[index];
                     Khiet.drawKhongThoi('canvas', item.phai, item.trai, item.dong, 200);
+                    adjustCanvasSize();
                     checkCanvasSize();
                 });
             }
@@ -196,6 +198,21 @@
             // Reset form
             function resetForm($form) {
                 $form.find('input[type="text"]').val('');
+            }
+
+            // Adjust canvas size dynamically
+            function adjustCanvasSize() {
+                const $canvas = $('#canvas');
+                const $svg = $canvas.find('svg')[0];
+                if ($svg) {
+                    // Get the bounding box of the SVG content
+                    const bbox = $svg.getBBox();
+                    // Set SVG attributes to fit content
+                    $svg.setAttribute('width', bbox.width + 40); // Add padding
+                    $svg.setAttribute('height', bbox.height + 40);
+                    $svg.style.minWidth = '2000px'; // Ensure minimum width for wide quẻ
+                    $svg.style.minHeight = '1200px'; // Ensure minimum height for long quẻ
+                }
             }
 
             // Debug canvas size
@@ -222,6 +239,7 @@
                 const dong = null;
 
                 Khiet.drawKhongThoi('canvas', phai, trai, dong, 200);
+                adjustCanvasSize();
                 saveToHistory({ type: 'Độn Quái', inputs: `PHẢI: ${phai}, TRÁI: ${trai}`, phai, trai, dong });
                 checkCanvasSize();
             });
@@ -238,6 +256,7 @@
                 const dong = $.trim($dong.val());
 
                 Khiet.drawKhongThoi('canvas', phai, trai, dong, 200);
+                adjustCanvasSize();
                 saveToHistory({ type: 'Tìm Quái', inputs: `PHẢI: ${phai}, TRÁI: ${trai}, ĐỘNG: ${dong}`, phai, trai, dong });
                 checkCanvasSize();
             });
@@ -260,6 +279,7 @@
                 const dong = trai;
 
                 Khiet.drawKhongThoi('canvas', phai, trai, dong, 200);
+                adjustCanvasSize();
                 saveToHistory({ type: 'Thời Quái Kiện', inputs: `NĂM: ${nam}, THÁNG: ${thang}, NGÀY: ${ngay}, GIỜ: ${gio}`, phai, trai, dong });
                 checkCanvasSize();
             });
@@ -278,6 +298,7 @@
                 const phai = nam + thang + ngay;
 
                 Khiet.drawKhongThoiMaiHoa('canvas', phai, 200);
+                adjustCanvasSize();
                 saveToHistory({ type: 'Mai Hoa', inputs: `NĂM: ${nam}, THÁNG: ${thang}, NGÀY: ${ngay}`, phai });
                 checkCanvasSize();
             });
