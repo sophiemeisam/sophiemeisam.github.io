@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NguyenK - Quẻ Kiện</title>
+    <style type="text/css">
+        body {
+            background-color: #f0f0f0;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            overscroll-behavior: none; /* Ngăn cuộn ngoài không mong muốn */
+        }
+        a { text-decoration: none; }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .banner {
+            position: relative;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .banner img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        .home-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: #ff8000;
+            color: #fff;
+            font-weight: bold;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+        .home-btn:hover {
+            background-color: #e67300;
+        }
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background: #fff;
+        }
+        .input-table {
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #ffe0b2;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .input-table input[type="text"] {
+            width: 60px;
+            font-size: 16px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+            margin: 5px;
+        }
+        .input-table input[type="button"] {
+            padding: 8px 16px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #993300;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .input-table input[type="button"]:hover {
+            background-color: #7a2900;
+        }
+        .reset-btn {
+            background-color: #555;
+            margin-top: 10px;
+        }
+        .reset-btn:hover {
+            background-color: #333;
+        }
+        .canvas-section {
+            width: 100%;
+            max-height: 400px; /* Giới hạn chiều cao để kích hoạt cuộn */
+            overflow-y: auto; /* Cho phép cuộn dọc */
+            overflow-x: auto; /* Cho phép cuộn ngang nếu cần */
+            padding: 20px;
+            text-align: center;
+            -webkit-overflow-scrolling: touch; /* Cuộn mượt trên iOS */
+            touch-action: auto; /* Đảm bảo cuộn hoạt động */
+            position: relative;
+        }
+        .canvas-section canvas, .canvas-section svg {
+            width: 100%;
+            height: auto;
+            min-height: 1200px; /* Tăng chiều cao tối thiểu để chứa quẻ dài */
+            display: block;
+        }
+        .history-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .history-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        .history-section li {
+            padding: 5px 0;
+            cursor: pointer;
+        }
+        .history-section li:hover {
+            background: #eee;
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 100%;
+                padding: 10px;
+            }
+            .input-table {
+                width: 100%;
+            }
+            .home-btn {
+                font-size: 16px;
+                padding: 10px 15px;
+            }
+            .canvas-section {
+                max-height: 300px; /* Giảm chiều cao trên mobile */
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://sophiemeisam.github.io/saveSvgAsPng.js"></script>
+    <script src="https://sophiemeisam.github.io/raphael.js"></script>
+    <script src="https://sophiemeisam.github.io/khiet.js?v=2.1"></script>
+    <script>
+        $(document).ready(function() {
+            // Load history from localStorage
+            loadHistory();
+
+            // Validation function
+            function validateInputs(inputs) {
+                return inputs.every(input => {
+                    const value = $.trim(input.val());
+                    if (!value || isNaN(value)) {
+                        alert("Vui lòng nhập số hợp lệ cho tất cả các trường!");
+                        return false;
+                    }
+                    return true;
+                });
+            }
+
+            // Save to history
+            function saveToHistory(data) {
+                let history = JSON.parse(localStorage.getItem('queHistory') || '[]');
+                history.push(data);
+                if (history.length > 10) history.shift();
+                localStorage.setItem('queHistory', JSON.stringify(history));
+                loadHistory();
+            }
+
+            // Load history
+            function loadHistory() {
+                const history = JSON.parse(localStorage.getItem('queHistory') || '[]');
+                const $historyList = $('#history-list');
+                $historyList.empty();
+                history.forEach((item, index) => {
+                    $historyList.append(
+                        `<li data-index="${index}">${item.type}: ${item.inputs}</li>`
+                    );
+                });
+                $historyList.find('li').click(function() {
+                    const index = $(this).data('index');
+                    const item = history[index];
+                    Khiet.drawKhongThoi('canvas', item.phai, item.trai, item.dong, 200);
+                    checkCanvasSize();
+                });
+            }
+
+            // Reset form
+            function resetForm($form) {
+                $form.find('input[type="text"]').val('');
+            }
+
+            // Debug canvas size
+            function checkCanvasSize() {
+                const $canvas = $('#canvas');
+                const $svg = $canvas.find('svg');
+                const $canvasElement = $canvas.find('canvas');
+                if ($svg.length) {
+                    console.log('SVG Size:', $svg[0].getBoundingClientRect());
+                }
+                if ($canvasElement.length) {
+                    console.log('Canvas Size:', $canvasElement[0].getBoundingClientRect());
+                }
+            }
+
+            // Độn Quái
+            $('#dontable input[type="button"]').click(function() {
+                const $phai = $('#dontable input[name="phai"]');
+                const $trai = $('#dontable input[name="trai"]');
+                if (!validateInputs([$phai, $trai])) return;
+
+                const phai = $.trim($phai.val());
+                const trai = $.trim($trai.val());
+                const dong = null;
+
+                Khiet.drawKhongThoi('canvas', phai, trai, dong, 200);
+                saveToHistory({ type: 'Độn Quái', inputs: `PHẢI: ${phai}, TRÁI: ${trai}`, phai, trai, dong });
+                checkCanvasSize();
+            });
+
+            // Tìm Quái
+            $('#timtable input[type="button"]').click(function() {
+                const $phai = $('#timtable input[name="phai"]');
+                const $trai = $('#timtable input[name="trai"]');
+                const $dong = $('#timtable input[name="dong"]');
+                if (!validateInputs([$phai, $trai, $dong])) return;
+
+                const phai = $.trim($phai.val());
+                const trai = $.trim($trai.val());
+                const dong = $.trim($dong.val());
+
+                Khiet.drawKhongThoi('canvas', phai, trai, dong, 200);
+                saveToHistory({ type: 'Tìm Quái', inputs: `PHẢI: ${phai}, TRÁI: ${trai}, ĐỘNG: ${dong}`, phai, trai, dong });
+                checkCanvasSize();
+            });
+
+            // Thời Quái Kiện
+            $('#namthangtable input[type="button"]').click(function() {
+                const $nam = $('#namthangtable input[name="nam"]');
+                const $thang = $('#namthangtable input[name="thang"]');
+                const $ngay = $('#namthangtable input[name="ngay"]');
+                const $gio = $('#namthangtable input[name="gio"]');
+                if (!validateInputs([$nam, $thang, $ngay, $gio])) return;
+
+                const nam = parseFloat($.trim($nam.val()));
+                const thang = parseFloat($.trim($thang.val()));
+                const ngay = parseFloat($.trim($ngay.val()));
+                const gio = parseFloat($.trim($gio.val()));
+
+                const phai = nam + thang + ngay;
+                const trai = phai + gio;
+                const dong = trai;
+
+                Khiet.drawKhongThoi('canvas', phai, trai, dong, 200);
+                saveToHistory({ type: 'Thời Quái Kiện', inputs: `NĂM: ${nam}, THÁNG: ${thang}, NGÀY: ${ngay}, GIỜ: ${gio}`, phai, trai, dong });
+                checkCanvasSize();
+            });
+
+            // Mai Hoa
+            $('#maihoatable input[type="button"]').click(function() {
+                const $nam = $('#maihoatable input[name="nam"]');
+                const $thang = $('#maihoatable input[name="thang"]');
+                const $ngay = $('#maihoatable input[name="ngay"]');
+                if (!validateInputs([$nam, $thang, $ngay])) return;
+
+                const nam = parseFloat($.trim($nam.val()));
+                const thang = parseFloat($.trim($thang.val()));
+                const ngay = parseFloat($.trim($ngay.val()));
+
+                const phai = nam + thang + ngay;
+
+                Khiet.drawKhongThoiMaiHoa('canvas', phai, 200);
+                saveToHistory({ type: 'Mai Hoa', inputs: `NĂM: ${nam}, THÁNG: ${thang}, NGÀY: ${ngay}`, phai });
+                checkCanvasSize();
+            });
+
+            // Reset buttons
+            $('.reset-btn').click(function() {
+                const $form = $(this).closest('.input-table');
+                resetForm($form);
+            });
+
+            // Long press to download canvas as image
+            let longPressTimer;
+            const longPressDuration = 1000; // 1 second
+            let touchStartX, touchStartY;
+            const touchThreshold = 10; // Pixel threshold to detect swipe
+
+            $('.canvas-section').on('touchstart', function(e) {
+                e.stopPropagation(); // Ngăn sự kiện touch lan lên body
+                const touch = e.originalEvent.touches[0];
+                touchStartX = touch.pageX;
+                touchStartY = touch.pageY;
+
+                longPressTimer = setTimeout(function() {
+                    const $canvas = $('#canvas');
+                    const $svg = $canvas.find('svg')[0];
+                    if ($svg) {
+                        saveSvgAsPng($svg, `que_${new Date().toISOString()}.png`, {
+                            scale: 2,
+                            backgroundColor: '#fff'
+                        });
+                    } else {
+                        alert('Không tìm thấy nội dung quẻ để tải xuống. Vui lòng tạo quẻ trước!');
+                    }
+                }, longPressDuration);
+            }).on('touchmove', function(e) {
+                const touch = e.originalEvent.touches[0];
+                const deltaX = Math.abs(touch.pageX - touchStartX);
+                const deltaY = Math.abs(touch.pageY - touchStartY);
+                if (deltaX > touchThreshold || deltaY > touchThreshold) {
+                    clearTimeout(longPressTimer); // Hủy nhấn giữ nếu vuốt
+                }
+            }).on('touchend touchcancel', function() {
+                clearTimeout(longPressTimer);
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="banner">
+            <img src="https://sophiemeisam.github.io/bannerlienhoa.jpg" alt="Banner Liên Hoa">
+            <a href="https://chudich.github.io/IChing.html" class="home-btn">Về Trang Chủ</a>
+        </div>
+        <div class="input-section">
+            <!-- Độn Quái -->
+            <div class="input-table" id="dontable">
+                <h3>ĐỘN QUÁI</h3>
+                <input type="text" name="phai" placeholder="PHẢI" value="1">
+                <input type="text" name="trai" placeholder="TRÁI" value="1">
+                <input type="button" value="ĐỘN">
+                <input type="button" class="reset-btn" value="XÓA">
+                <p>Cửa sổ <b>PHẢI</b> là số <b>X</b> của tay Phải. Cửa sổ <b>TRÁI</b> là số <b>Y</b> của tay Trái. Đặt <b>XY</b> vào cửa xong nhấn <b>ĐỘN</b>.</p>
+            </div>
+
+            <!-- Tìm Quái -->
+            <div class="input-table" id="timtable">
+                <h3>TÌM QUÁI</h3>
+                <input type="text" name="phai" placeholder="PHẢI" value="1">
+                <input type="text" name="trai" placeholder="TRÁI" value="1">
+                <input type="text" name="dong" placeholder="ĐỘNG" value="1">
+                <input type="button" value="TÌM">
+                <input type="button" class="reset-btn" value="XÓA">
+                <p>PHẢI: Thượng quái số, TRÁI: Hạ quái số, ĐỘNG: Hào động số. Nhấn <b>TÌM</b>.</p>
+            </div>
+
+            <!-- Thời Quái Kiện -->
+            <div class="input-table" id="namthangtable">
+                <h3>THỜI QUÁI KIỆN</h3>
+                <input type="text" name="nam" placeholder="NĂM">
+                <input type="text" name="thang" placeholder="THÁNG">
+                <input type="text" name="ngay" placeholder="NGÀY">
+                <input type="text" name="gio" placeholder="GIỜ">
+                <input type="button" value="ĐỘN">
+                <input type="button" class="reset-btn" value="XÓA">
+            </div>
+
+            <!-- Mai Hoa -->
+            <div class="input-table" id="maihoatable">
+                <h3>MAI HOA</h3>
+                <input type="text" name="nam" placeholder="NĂM">
+                <input type="text" name="thang" placeholder="THÁNG">
+                <input type="text" name="ngay" placeholder="NGÀY">
+                <input type="button" value="QUAI">
+                <input type="button" class="reset-btn" value="XÓA">
+            </div>
+
+            <!-- History -->
+            <div class="history-section">
+                <h3>Lịch Sử Quẻ</h3>
+                <ul id="history-list"></ul>
+            </div>
+        </div>
+        <div class="canvas-section" id="canvas"></div>
+    </div>
+</body>
+</html>
