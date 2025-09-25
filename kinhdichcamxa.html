@@ -343,7 +343,7 @@
         let isSwinging = false;
         let hexagramLines = [];
         let hexagramCount = 0;
-        let changedLines = []; // Khai báo toàn cục để sử dụng trong downloadImage
+        let changedLines = [];
 
         // Dữ liệu quẻ đơn
         const singleHexagrams = {
@@ -533,7 +533,7 @@
 
             // Tạo quẻ biến
             let changedHexagramName = '';
-            changedLines = [...hexagramLines]; // Lưu vào biến toàn cục
+            changedLines = [...hexagramLines];
             if (movingLines.length > 0) {
                 changedLines = hexagramLines.map(line => {
                     if (line === 'yang-moving') return 'yin';
@@ -567,13 +567,13 @@
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
 
-            // Tăng độ phân giải cho di động
-            const scale = 2; // Tăng gấp đôi để nét hơn
+            // Tăng độ phân giải
+            const scale = 2;
             canvas.width = 600 * scale;
             canvas.height = 900 * scale;
             ctx.scale(scale, scale);
 
-            // Nền trắng với viền nhẹ
+            // Nền trắng với viền
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, 600, 900);
             ctx.strokeStyle = '#8b0000';
@@ -595,7 +595,8 @@
 
             // Vẽ thời gian
             const now = new Date();
-            const timeStr = `${now.getHours()} : ${now.getDate()} : ${now.getMonth() + 1} : ${now.getFullYear()}`;
+            const timeStr = `${now.getHours().toString().padStart(2, '0')}h${now.getMinutes().toString().padStart(2, '0')} ${now.getDate().toString().padStart(2, '0')}:${(now.getMonth() + 1).toString().padStart(2, '0')}:${now.getFullYear()}`;
+            ctx.font = 'bold 16px Poppins';
             ctx.fillStyle = '#00cc00';
             ctx.fillText(timeStr, 20, 110);
 
