@@ -124,7 +124,7 @@
         .hexagram-line {
             display: flex;
             align-items: center;
-            margin: 10px 0;
+            margin: 12px 0;
             width: 170px;
             justify-content: flex-start;
             gap: 10px;
@@ -141,7 +141,7 @@
         .yang-line {
             width: 100px;
             height: 12px;
-            background: #ff3333; /* Đỏ cho hào Dương */
+            background: #ff3333;
             border-radius: 3px;
         }
 
@@ -154,18 +154,18 @@
         .yin-line div {
             width: 45px;
             height: 12px;
-            background: #333; /* Đen cho hào Âm */
+            background: #333;
             border-radius: 3px;
         }
 
         .moving-blink {
-            animation: blink 1s ease-in-out infinite;
-            box-shadow: 0 0 5px #ffaa00; /* Viền sáng cho điểm nhấn */
+            animation: blink 0.8s ease-in-out infinite;
+            box-shadow: 0 0 8px #ffaa00;
         }
 
         @keyframes blink {
             0% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.4; }
             100% { opacity: 1; }
         }
 
@@ -176,7 +176,7 @@
         .yang-moving::after, .yin-moving::after {
             content: '✦';
             font-size: 14px;
-            color: #ffaa00; /* Cam cho dấu hào động */
+            color: #ffaa00;
             position: absolute;
             right: -20px;
             top: 50%;
@@ -201,7 +201,7 @@
             display: none;
         }
 
-        #result-section h2 {
+        #result-section h2, #result-section h3 {
             font-family: 'Noto Serif SC', serif;
             color: #8b0000;
         }
@@ -238,7 +238,7 @@
         }
 
         .time-stamp {
-            color: #00cc00; /* Xanh lá cho thời gian */
+            color: #00cc00;
             font-weight: bold;
         }
 
@@ -266,6 +266,22 @@
             #button-container {
                 flex-direction: column;
                 gap: 10px;
+            }
+
+            .hexagram-line {
+                width: 140px;
+            }
+
+            .yang-line {
+                width: 80px;
+            }
+
+            .yin-line {
+                width: 80px;
+            }
+
+            .yin-line div {
+                width: 35px;
             }
         }
     </style>
@@ -327,6 +343,7 @@
         let isSwinging = false;
         let hexagramLines = [];
         let hexagramCount = 0;
+        let changedLines = []; // Khai báo toàn cục để sử dụng trong downloadImage
 
         // Dữ liệu quẻ đơn
         const singleHexagrams = {
@@ -455,7 +472,6 @@
         function updateHexagramDisplay() {
             const linesContainer = document.getElementById('hexagram-lines');
             const lineElements = linesContainer.getElementsByClassName('hexagram-line');
-            // Điền hào từ dưới lên (hào 1 ở dưới cùng)
             for (let i = 0; i < 6; i++) {
                 const lineInner = lineElements[5 - i].getElementsByTagName('div')[0];
                 if (i < hexagramLines.length) {
@@ -484,7 +500,6 @@
         function updateChangedHexagramDisplay(changedLines) {
             const linesContainer = document.getElementById('changed-hexagram-lines');
             const lineElements = linesContainer.getElementsByClassName('hexagram-line');
-            // Điền hào từ dưới lên (hào 1 ở dưới cùng)
             for (let i = 0; i < 6; i++) {
                 const lineInner = lineElements[5 - i].getElementsByTagName('div')[0];
                 const line = changedLines[i];
@@ -503,11 +518,9 @@
             document.getElementById('hexagram-progress').textContent = `Hoàn tất gieo quẻ!`;
             const question = document.getElementById('question-input').value || 'sự việc';
 
-            // Tạo mã quẻ chính: theo thứ tự gieo [hào 1, 2, 3, 4, 5, 6]
+            // Tạo mã quẻ chính
             const hexagramCode = hexagramLines.map(line => line.includes('yang') ? '1' : '0');
-            // Quẻ Thượng: hào 6, 5, 4 (hexagramCode[5,4,3])
             const upperTrigram = [hexagramCode[5], hexagramCode[4], hexagramCode[3]].join('');
-            // Quẻ Hạ: hào 3, 2, 1 (hexagramCode[2,1,0])
             const lowerTrigram = [hexagramCode[2], hexagramCode[1], hexagramCode[0]].join('');
             const hexagramKey = upperTrigram + lowerTrigram;
             const hexagramName = doubleHexagrams[hexagramKey] || "Quẻ Không Xác Định";
@@ -520,14 +533,13 @@
 
             // Tạo quẻ biến
             let changedHexagramName = '';
-            let changedLines = [...hexagramLines];
+            changedLines = [...hexagramLines]; // Lưu vào biến toàn cục
             if (movingLines.length > 0) {
                 changedLines = hexagramLines.map(line => {
                     if (line === 'yang-moving') return 'yin';
                     if (line === 'yin-moving') return 'yang';
                     return line.replace('-moving', '');
                 });
-                // Tạo mã quẻ biến
                 const changedHexagramCode = changedLines.map(line => line.includes('yang') ? '1' : '0');
                 const changedUpperTrigram = [changedHexagramCode[5], changedHexagramCode[4], changedHexagramCode[3]].join('');
                 const changedLowerTrigram = [changedHexagramCode[2], changedHexagramCode[1], changedHexagramCode[0]].join('');
@@ -540,11 +552,9 @@
                 document.getElementById('changed-hexagram').style.display = 'none';
             }
 
-            // Hiển thị tên quẻ chính và ý nghĩa
+            // Hiển thị kết quả
             document.getElementById('hexagram-name').textContent = hexagramName;
             document.getElementById('hexagram-meaning').textContent = hexagramMeaning;
-
-            // Hiển thị hào động
             const movingLinesText = movingLines.length > 0 
                 ? `${hexagramName} động hào ${movingLines.join(', ')}`
                 : `${hexagramName} (không có hào động)`;
@@ -556,51 +566,71 @@
         function downloadImage() {
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
-            canvas.width = 400;
-            canvas.height = 600;
+
+            // Tăng độ phân giải cho di động
+            const scale = 2; // Tăng gấp đôi để nét hơn
+            canvas.width = 600 * scale;
+            canvas.height = 900 * scale;
+            ctx.scale(scale, scale);
+
+            // Nền trắng với viền nhẹ
             ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillRect(0, 0, 600, 900);
+            ctx.strokeStyle = '#8b0000';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(10, 10, 580, 880);
 
             // Vẽ tiêu đề
-            ctx.font = 'bold 20px "Noto Serif SC"';
+            ctx.font = 'bold 24px "Noto Serif SC"';
             ctx.fillStyle = '#8b0000';
-            ctx.fillText('Kinh Dịch Cảm Xạ', 100, 40);
+            ctx.textAlign = 'center';
+            ctx.fillText('Kinh Dịch Cảm Xạ', 300, 40);
 
             // Vẽ sự việc / câu hỏi
             const question = document.getElementById('question-input').value || 'Sự việc';
             ctx.font = '16px Poppins';
             ctx.fillStyle = '#333';
-            ctx.fillText(`Sự việc: ${question}`, 20, 70);
+            ctx.textAlign = 'left';
+            ctx.fillText(`Sự việc: ${question.substring(0, 50)}...`, 20, 80);
 
             // Vẽ thời gian
             const now = new Date();
             const timeStr = `${now.getHours()} : ${now.getDate()} : ${now.getMonth() + 1} : ${now.getFullYear()}`;
-            ctx.fillStyle = '#00cc00'; /* Xanh lá */
-            ctx.fillText(timeStr, 20, 100);
+            ctx.fillStyle = '#00cc00';
+            ctx.fillText(timeStr, 20, 110);
 
             // Vẽ quẻ chính
-            ctx.font = 'bold 18px "Noto Serif SC"';
+            ctx.font = 'bold 20px "Noto Serif SC"';
             ctx.fillStyle = '#ff3333';
-            ctx.fillText('Quẻ Chính: ' + document.getElementById('hexagram-name').textContent, 20, 130);
-            drawHexagram(ctx, hexagramLines, 20, 150);
+            ctx.fillText('Quẻ Chính: ' + document.getElementById('hexagram-name').textContent, 20, 150);
+            drawHexagram(ctx, hexagramLines, 20, 180);
 
             // Vẽ quẻ biến nếu có
             if (document.getElementById('changed-hexagram').style.display !== 'none') {
                 ctx.fillStyle = '#333';
-                ctx.fillText('Quẻ Biến: ' + document.getElementById('changed-hexagram-name').textContent, 20, 350);
-                drawHexagram(ctx, changedLines, 20, 370);
+                ctx.fillText('Quẻ Biến: ' + document.getElementById('changed-hexagram-name').textContent, 20, 400);
+                drawHexagram(ctx, changedLines, 20, 430);
             }
 
             // Vẽ thông báo hào động
             ctx.font = '16px Poppins';
             ctx.fillStyle = '#ff4040';
-            ctx.fillText(document.getElementById('moving-lines').textContent, 20, 550);
+            ctx.fillText(document.getElementById('moving-lines').textContent, 20, 650);
 
             // Tải ảnh
-            const link = document.createElement('a');
-            link.download = 'QueDich_' + document.getElementById('hexagram-name').textContent + '.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            try {
+                const dataURL = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = `QueDich_${document.getElementById('hexagram-name').textContent}.png`;
+                link.href = dataURL;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                alert('Ảnh đã được tải về!');
+            } catch (error) {
+                console.error('Lỗi khi tải ảnh:', error);
+                alert('Có lỗi xảy ra khi tải ảnh. Vui lòng thử lại!');
+            }
         }
 
         function drawHexagram(ctx, lines, x, y) {
@@ -613,12 +643,18 @@
                     ctx.fillRect(x, y, 45, 12);
                     ctx.fillRect(x + 55, y, 45, 12);
                 }
-                y += 30;
+                if (line.includes('moving')) {
+                    ctx.fillStyle = '#ffaa00';
+                    ctx.font = '16px Poppins';
+                    ctx.fillText('✦', x + 120, y + 10);
+                }
+                y += 35;
             }
         }
 
         function resetHexagram() {
             hexagramLines = [];
+            changedLines = [];
             hexagramCount = 0;
             updateHexagramDisplay();
             document.getElementById('hexagram-progress').textContent = `Lần gieo: 0/6`;
