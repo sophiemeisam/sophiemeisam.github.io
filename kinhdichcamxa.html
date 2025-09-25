@@ -58,6 +58,7 @@
             border-radius: 15px;
             padding: 20px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            touch-action: none; /* Ngăn cuộn khi vuốt */
         }
 
         #hand {
@@ -68,7 +69,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 30px; /* Tăng kích thước bàn tay */
             cursor: pointer;
             user-select: none;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
@@ -82,14 +83,14 @@
         #string {
             width: 3px;
             height: 180px;
-            background: linear-gradient(#333, #666);
+            background: linear-gradient(#FFC1CC, #FFB6C1); /* Gradient hồng thạch anh */
             position: relative;
         }
 
         #bob {
             width: 40px;
             height: 40px;
-            background: radial-gradient(circle, #ff0000, #b30000);
+            background: radial-gradient(circle, #FFC1CC, #FF9999); /* Hồng thạch anh */
             border-radius: 50%;
             position: absolute;
             bottom: -20px;
@@ -99,9 +100,9 @@
 
         @keyframes swing {
             0% { transform: rotate(0deg); }
-            25% { transform: rotate(35deg); }
+            25% { transform: rotate(45deg); } /* Tăng biên độ lên ±45° */
             50% { transform: rotate(0deg); }
-            75% { transform: rotate(-35deg); }
+            75% { transform: rotate(-45deg); }
             100% { transform: rotate(0deg); }
         }
 
@@ -294,7 +295,7 @@
     </div>
 
     <div id="pendulum-container">
-        <div id="hand" onclick="toggleSwing()">✋</div>
+        <div id="hand" onclick="toggleSwing()">🫲</div>
         <div id="string">
             <div id="bob"></div>
         </div>
@@ -344,6 +345,7 @@
         let hexagramLines = [];
         let hexagramCount = 0;
         let changedLines = [];
+        const swingSound = new Audio('https://www.soundjay.com/buttons/sounds/button-3.mp3'); // Thay bằng URL âm thanh phù hợp
 
         // Dữ liệu quẻ đơn
         const singleHexagrams = {
@@ -425,7 +427,7 @@
             "010000": "Thủy Địa Tỷ"
         };
 
-        // Dữ liệu ý nghĩa quẻ (mẫu, thay thế cho AI)
+        // Dữ liệu ý nghĩa quẻ
         const hexagramMeanings = {
             "Thuần Kiền": "Biểu thị sự mạnh mẽ, sáng tạo. Đây là thời điểm để hành động quyết đoán, nhưng cần giữ sự cân bằng.",
             "Thiên Phong Cấu": "Gợi ý sự gặp gỡ, kết nối. Hãy cẩn thận trong các mối quan hệ mới.",
@@ -443,15 +445,29 @@
             if (!isSwinging) {
                 isSwinging = true;
                 document.getElementById('string').classList.add('swinging');
+                swingSound.play().catch(error => console.error('Lỗi phát âm thanh:', error));
             }
         }
+
+        // Xử lý cử chỉ vuốt
+        let touchStartX = 0;
+        document.getElementById('pendulum-container').addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.getElementById('pendulum-container').addEventListener('touchmove', (e) => {
+            const touchEndX = e.touches[0].clientX;
+            const deltaX = touchEndX - touchStartX;
+            if (Math.abs(deltaX) > 30) { // Ngưỡng vuốt
+                toggleSwing();
+            }
+        });
 
         function gieoQue() {
             if (isSwinging) {
                 document.getElementById('string').classList.remove('swinging');
                 isSwinging = false;
 
-                // Tạo hào ngẫu nhiên
                 const states = ['yang', 'yang-moving', 'yin', 'yin-moving'];
                 const result = states[Math.floor(Math.random() * 4)];
                 hexagramLines.push(result);
@@ -518,7 +534,6 @@
             document.getElementById('hexagram-progress').textContent = `Hoàn tất gieo quẻ!`;
             const question = document.getElementById('question-input').value || 'sự việc';
 
-            // Tạo mã quẻ chính
             const hexagramCode = hexagramLines.map(line => line.includes('yang') ? '1' : '0');
             const upperTrigram = [hexagramCode[5], hexagramCode[4], hexagramCode[3]].join('');
             const lowerTrigram = [hexagramCode[2], hexagramCode[1], hexagramCode[0]].join('');
@@ -526,12 +541,10 @@
             const hexagramName = doubleHexagrams[hexagramKey] || "Quẻ Không Xác Định";
             const hexagramMeaning = hexagramMeanings[hexagramName] || `Dựa trên câu hỏi "${question}", quẻ này khuyên bạn nên suy nghĩ kỹ lưỡng và tìm thêm thông tin trước khi quyết định.`;
 
-            // Tìm các hào động
             const movingLines = hexagramLines
                 .map((line, index) => line.includes('moving') ? index + 1 : null)
                 .filter(line => line !== null);
 
-            // Tạo quẻ biến
             let changedHexagramName = '';
             changedLines = [...hexagramLines];
             if (movingLines.length > 0) {
@@ -552,7 +565,6 @@
                 document.getElementById('changed-hexagram').style.display = 'none';
             }
 
-            // Hiển thị kết quả
             document.getElementById('hexagram-name').textContent = hexagramName;
             document.getElementById('hexagram-meaning').textContent = hexagramMeaning;
             const movingLinesText = movingLines.length > 0 
@@ -567,58 +579,49 @@
             const canvas = document.getElementById('canvas');
             const ctx = canvas.getContext('2d');
 
-            // Tăng độ phân giải
             const scale = 2;
             canvas.width = 600 * scale;
             canvas.height = 900 * scale;
             ctx.scale(scale, scale);
 
-            // Nền trắng với viền
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, 600, 900);
             ctx.strokeStyle = '#8b0000';
             ctx.lineWidth = 2;
             ctx.strokeRect(10, 10, 580, 880);
 
-            // Vẽ tiêu đề
             ctx.font = 'bold 24px "Noto Serif SC"';
             ctx.fillStyle = '#8b0000';
             ctx.textAlign = 'center';
             ctx.fillText('Kinh Dịch Cảm Xạ', 300, 40);
 
-            // Vẽ sự việc / câu hỏi
             const question = document.getElementById('question-input').value || 'Sự việc';
             ctx.font = '16px Poppins';
             ctx.fillStyle = '#333';
             ctx.textAlign = 'left';
             ctx.fillText(`Sự việc: ${question.substring(0, 50)}...`, 20, 80);
 
-            // Vẽ thời gian
             const now = new Date();
             const timeStr = `${now.getHours().toString().padStart(2, '0')}h${now.getMinutes().toString().padStart(2, '0')} ${now.getDate().toString().padStart(2, '0')}:${(now.getMonth() + 1).toString().padStart(2, '0')}:${now.getFullYear()}`;
             ctx.font = 'bold 16px Poppins';
             ctx.fillStyle = '#00cc00';
             ctx.fillText(timeStr, 20, 110);
 
-            // Vẽ quẻ chính
             ctx.font = 'bold 20px "Noto Serif SC"';
             ctx.fillStyle = '#ff3333';
             ctx.fillText('Quẻ Chính: ' + document.getElementById('hexagram-name').textContent, 20, 150);
             drawHexagram(ctx, hexagramLines, 20, 180);
 
-            // Vẽ quẻ biến nếu có
             if (document.getElementById('changed-hexagram').style.display !== 'none') {
                 ctx.fillStyle = '#333';
                 ctx.fillText('Quẻ Biến: ' + document.getElementById('changed-hexagram-name').textContent, 20, 400);
                 drawHexagram(ctx, changedLines, 20, 430);
             }
 
-            // Vẽ thông báo hào động
             ctx.font = '16px Poppins';
             ctx.fillStyle = '#ff4040';
             ctx.fillText(document.getElementById('moving-lines').textContent, 20, 650);
 
-            // Tải ảnh
             try {
                 const dataURL = canvas.toDataURL('image/png');
                 const link = document.createElement('a');
