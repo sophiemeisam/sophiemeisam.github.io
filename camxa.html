@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head> Con lắc Cảm xạ Dịch Lý
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Con lắc Cảm xạ Dịch Lý</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #e0eafc, #cfdef3);
+            color: #333;
+        }
+
+        #input-section {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        #energy-input {
+            padding: 12px;
+            width: 350px;
+            font-size: 16px;
+            border: 2px solid #6a11cb;
+            border-radius: 25px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #energy-input:focus {
+            border-color: #2575fc;
+            box-shadow: 0 0 8px rgba(37, 117, 252, 0.5);
+        }
+
+        #feature-toggle {
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        #feature-toggle button {
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(45deg, #6a11cb, #2575fc);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        #feature-toggle button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        #pendulum-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        #hand {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #ffd700, #ffaa00);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        #hand:hover {
+            transform: scale(1.1);
+        }
+
+        #string {
+            width: 3px;
+            height: 180px;
+            background: linear-gradient(#333, #666);
+            position: relative;
+        }
+
+        #bob {
+            width: 40px;
+            height: 40px;
+            background: radial-gradient(circle, #ff0000, #b30000);
+            border-radius: 50%;
+            position: absolute;
+            bottom: -20px;
+            left: -18.5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes swing {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(35deg); }
+            50% { transform: rotate(0deg); }
+            75% { transform: rotate(-35deg); }
+            100% { transform: rotate(0deg); }
+        }
+
+        .swinging #bob {
+            animation: swing 1.8s ease-in-out infinite;
+            transform-origin: top center;
+        }
+
+        #yin-yang-section, #four-symbols-section, #hexagram-section {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .yin-yang, .four-symbol, .hexagram-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .yin-yang:hover, .four-symbol:hover, .hexagram-state:hover {
+            transform: translateY(-5px);
+        }
+
+        .yang-line {
+            width: 70px;
+            height: 12px;
+            background: #ff3333;
+            margin: 6px 0;
+            border-radius: 3px;
+        }
+
+        .yin-line {
+            width: 70px;
+            height: 12px;
+            border: 2px dashed #333;
+            margin: 6px 0;
+            border-radius: 3px;
+        }
+
+        .yang-moving::after, .yin-moving::after {
+            content: '✦';
+            position: absolute;
+            font-size: 14px;
+            color: #333;
+            margin-left: 80px;
+        }
+
+        .thai-duong .yang-line { background: #8b0000; }
+        .thieu-duong .yang-line { background: #ff4040; }
+        .thieu-am .yin-line { border-color: #666; }
+        .thai-am .yin-line { border-color: #000; }
+
+        .blinking {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        #hexagram-progress {
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #6a11cb;
+        }
+
+        @media (max-width: 600px) {
+            #energy-input {
+                width: 90%;
+            }
+
+            #pendulum-container {
+                width: 250px;
+                height: 250px;
+            }
+
+            #feature-toggle {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            #feature-toggle button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="input-section">
+        <label for="energy-input">Nhập sự việc cần kiểm tra:</label><br>
+        <input type="text" id="energy-input" placeholder="Ví dụ: Năng lượng của một sự việc">
+    </div>
+
+    <div id="feature-toggle">
+        <button onclick="showYinYang()">Đo Âm/Dương</button>
+        <button onclick="showFourSymbols()">Đo Tứ Tượng</button>
+        <button onclick="showHexagram()">Đo Quẻ Dịch</button>
+    </div>
+
+    <div id="pendulum-container">
+        <div id="hand" onmousedown="startSwing()" onmouseup="stopSwing()" ontouchstart="startSwing()" ontouchend="stopSwing()">✋</div>
+        <div id="string">
+            <div id="bob"></div>
+        </div>
+    </div>
+
+    <div id="yin-yang-section" style="display: none;">
+        <div class="yin-yang" id="yang">
+            <div class="yang-line"></div>
+            <span>Dương</span>
+        </div>
+        <div class="yin-yang" id="yin">
+            <div class="yin-line"></div>
+            <span>Âm</span>
+        </div>
+    </div>
+
+    <div id="four-symbols-section" style="display: none;">
+        <div class="four-symbol thai-duong" id="thai-duong">
+            <div class="yang-line"></div>
+            <div class="yang-line"></div>
+            <span>Thái Dương</span>
+        </div>
+        <div class="four-symbol thieu-duong" id="thieu-duong">
+            <div class="yin-line"></div>
+            <div class="yang-line"></div>
+            <span>Thiếu Dương</span>
+        </div>
+        <div class="four-symbol thieu-am" id="thieu-am">
+            <div class="yang-line"></div>
+            <div class="yin-line"></div>
+            <span>Thiếu Âm</span>
+        </div>
+        <div class="four-symbol thai-am" id="thai-am">
+            <div class="yin-line"></div>
+            <div class="yin-line"></div>
+            <span>Thái Âm</span>
+        </div>
+    </div>
+
+    <div id="hexagram-section" style="display: none;">
+        <div class="hexagram-state" id="yang-state">
+            <div class="yang-line"></div>
+            <span>Dương</span>
+        </div>
+        <div class="hexagram-state" id="yang-moving">
+            <div class="yang-line yang-moving"></div>
+            <span>Dương Động</span>
+        </div>
+        <div class="hexagram-state" id="yin-state">
+            <div class="yin-line"></div>
+            <span>Âm</span>
+        </div>
+        <div class="hexagram-state" id="yin-moving">
+            <div class="yin-line yin-moving"></div>
+            <span>Âm Động</span>
+        </div>
+        <div id="hexagram-progress">Lần bấm: 0/6</div>
+    </div>
+
+    <script>
+        let timer;
+        let isSwinging = false;
+        let currentFeature = 'yin-yang';
+        let hexagramResults = [];
+        let hexagramCount = 0;
+
+        function showYinYang() {
+            document.getElementById('yin-yang-section').style.display = 'flex';
+            document.getElementById('four-symbols-section').style.display = 'none';
+            document.getElementById('hexagram-section').style.display = 'none';
+            currentFeature = 'yin-yang';
+            resetBlinking();
+            resetHexagram();
+        }
+
+        function showFourSymbols() {
+            document.getElementById('yin-yang-section').style.display = 'none';
+            document.getElementById('four-symbols-section').style.display = 'flex';
+            document.getElementById('hexagram-section').style.display = 'none';
+            currentFeature = 'four-symbols';
+            resetBlinking();
+            resetHexagram();
+        }
+
+        function showHexagram() {
+            document.getElementById('yin-yang-section').style.display = 'none';
+            document.getElementById('four-symbols-section').style.display = 'none';
+            document.getElementById('hexagram-section').style.display = 'flex';
+            currentFeature = 'hexagram';
+            resetBlinking();
+            resetHexagram();
+            updateProgress();
+        }
+
+        function resetBlinking() {
+            document.querySelectorAll('.yin-yang, .four-symbol, .hexagram-state').forEach(el => {
+                el.classList.remove('blinking');
+            });
+        }
+
+        function resetHexagram() {
+            hexagramResults = [];
+            hexagramCount = 0;
+            updateProgress();
+        }
+
+        function updateProgress() {
+            document.getElementById('hexagram-progress').textContent = `Lần bấm: ${hexagramCount}/6`;
+        }
+
+        function startSwing() {
+            if (!isSwinging) {
+                isSwinging = true;
+                document.getElementById('string').classList.add('swinging');
+                timer = setTimeout(showResult, 10000);
+            }
+        }
+
+        function stopSwing() {
+            // Không dừng ngay, để chạy đủ 10 giây
+        }
+
+        function showResult() {
+            document.getElementById('string').classList.remove('swinging');
+            isSwinging = false;
+            const input = document.getElementById('energy-input').value || 'sự việc';
+            resetBlinking();
+
+            if (currentFeature === 'yin-yang') {
+                const result = Math.random() > 0.5 ? 'yang' : 'yin';
+                document.getElementById(result).classList.add('blinking');
+                alert(`Trạng thái của "${input}" là: ${result === 'yang' ? 'Dương' : 'Âm'}`);
+            } else if (currentFeature === 'four-symbols') {
+                const symbols = ['thai-duong', 'thieu-duong', 'thieu-am', 'thai-am'];
+                const result = symbols[Math.floor(Math.random() * 4)];
+                document.getElementById(result).classList.add('blinking');
+                const labels = {
+                    'thai-duong': 'Thái Dương',
+                    'thieu-duong': 'Thiếu Dương',
+                    'thieu-am': 'Thiếu Âm',
+                    'thai-am': 'Thái Âm'
+                };
+                alert(`Trạng thái Tứ Tượng của "${input}" là: ${labels[result]}`);
+            } else if (currentFeature === 'hexagram') {
+                const states = ['yang-state', 'yang-moving', 'yin-state', 'yin-moving'];
+                const labels = {
+                    'yang-state': 'Dương',
+                    'yang-moving': 'Dương Động',
+                    'yin-state': 'Âm',
+                    'yin-moving': 'Âm Động'
+                };
+                const result = states[Math.floor(Math.random() * 4)];
+                document.getElementById(result).classList.add('blinking');
+                hexagramResults.push(labels[result]);
+                hexagramCount++;
+                updateProgress();
+
+                if (hexagramCount < 6) {
+                    alert(`Lần ${hexagramCount}: Trạng thái của "${input}" là: ${labels[result]}. Vui lòng bấm tiếp để đo lần ${hexagramCount + 1}.`);
+                } else {
+                    alert(`Kết quả 6 lần đo quẻ của "${input}":\n` +
+                          `Lần 1: ${hexagramResults[0]}\n` +
+                          `Lần 2: ${hexagramResults[1]}\n` +
+                          `Lần 3: ${hexagramResults[2]}\n` +
+                          `Lần 4: ${hexagramResults[3]}\n` +
+                          `Lần 5: ${hexagramResults[4]}\n` +
+                          `Lần 6: ${hexagramResults[5]}`);
+                    resetHexagram();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
