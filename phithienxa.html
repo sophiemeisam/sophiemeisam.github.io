@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phi Thiên Xá</title>
+    <style>
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 0;
+            margin: 20px auto;
+            width: 300px;
+        }
+        .cell {
+            border: 2px solid red;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: red;
+            font-family: cursive; /* To mimic handwritten style */
+        }
+        #cell4 { grid-area: 1 / 1; }
+        #cell9 { grid-area: 1 / 2; }
+        #cell2 { grid-area: 1 / 3; }
+        #cell3 { grid-area: 2 / 1; }
+        #cell5 { grid-area: 2 / 2; }
+        #cell7 { grid-area: 2 / 3; }
+        #cell8 { grid-area: 3 / 1; }
+        #cell1 { grid-area: 3 / 2; }
+        #cell6 { grid-area: 3 / 3; }
+        .controls {
+            text-align: center;
+            margin: 20px;
+        }
+        select {
+            margin: 10px;
+            padding: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        #result {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;">Địa Bàn Lạc Thư - Phi Thiên Xá</h1>
+    <div class="grid">
+        <div class="cell" id="cell4">4</div>
+        <div class="cell" id="cell9">9</div>
+        <div class="cell" id="cell2">2</div>
+        <div class="cell" id="cell3">3</div>
+        <div class="cell" id="cell5">5</div>
+        <div class="cell" id="cell7">7</div>
+        <div class="cell" id="cell8">8</div>
+        <div class="cell" id="cell1">1</div>
+        <div class="cell" id="cell6">6</div>
+    </div>
+    <div class="controls">
+        <label for="selectA">Button A: Tháng (Hoa Giáp)</label><br>
+        <select id="selectA">
+            <option value="Giáp Tý">Giáp Tý</option>
+            <option value="Ất Sửu">Ất Sửu</option>
+            <option value="Bính Dần">Bính Dần</option>
+            <option value="Đinh Mão">Đinh Mão</option>
+            <option value="Mậu Thìn">Mậu Thìn</option>
+            <option value="Kỷ Tị">Kỷ Tị</option>
+            <option value="Canh Ngọ">Canh Ngọ</option>
+            <option value="Tân Mùi">Tân Mùi</option>
+            <option value="Nhâm Thân">Nhâm Thân</option>
+            <option value="Quý Dậu">Quý Dậu</option>
+            <option value="Giáp Tuất">Giáp Tuất</option>
+            <option value="Ất Hợi">Ất Hợi</option>
+            <option value="Bính Tý">Bính Tý</option>
+            <option value="Đinh Sửu">Đinh Sửu</option>
+            <option value="Mậu Dần">Mậu Dần</option>
+            <option value="Kỷ Mão">Kỷ Mão</option>
+            <option value="Canh Thìn">Canh Thìn</option>
+            <option value="Tân Tị">Tân Tị</option>
+            <option value="Nhâm Ngọ">Nhâm Ngọ</option>
+            <option value="Quý Mùi">Quý Mùi</option>
+            <option value="Giáp Thân">Giáp Thân</option>
+            <option value="Ất Dậu">Ất Dậu</option>
+            <option value="Bính Tuất">Bính Tuất</option>
+            <option value="Đinh Hợi">Đinh Hợi</option>
+            <option value="Mậu Tý">Mậu Tý</option>
+            <option value="Kỷ Sửu">Kỷ Sửu</option>
+            <option value="Canh Dần">Canh Dần</option>
+            <option value="Tân Mão">Tân Mão</option>
+            <option value="Nhâm Thìn">Nhâm Thìn</option>
+            <option value="Quý Tị">Quý Tị</option>
+            <option value="Giáp Ngọ">Giáp Ngọ</option>
+            <option value="Ất Mùi">Ất Mùi</option>
+            <option value="Bính Thân">Bính Thân</option>
+            <option value="Đinh Dậu">Đinh Dậu</option>
+            <option value="Mậu Tuất">Mậu Tuất</option>
+            <option value="Kỷ Hợi">Kỷ Hợi</option>
+            <option value="Canh Tý">Canh Tý</option>
+            <option value="Tân Sửu">Tân Sửu</option>
+            <option value="Nhâm Dần">Nhâm Dần</option>
+            <option value="Quý Mão">Quý Mão</option>
+            <option value="Giáp Thìn">Giáp Thìn</option>
+            <option value="Ất Tị">Ất Tị</option>
+            <option value="Bính Ngọ">Bính Ngọ</option>
+            <option value="Đinh Mùi">Đinh Mùi</option>
+            <option value="Mậu Thân">Mậu Thân</option>
+            <option value="Kỷ Dậu">Kỷ Dậu</option>
+            <option value="Canh Tuất">Canh Tuất</option>
+            <option value="Tân Hợi">Tân Hợi</option>
+            <option value="Nhâm Tý">Nhâm Tý</option>
+            <option value="Quý Sửu">Quý Sửu</option>
+            <option value="Giáp Dần">Giáp Dần</option>
+            <option value="Ất Mão">Ất Mão</option>
+            <option value="Bính Thìn">Bính Thìn</option>
+            <option value="Đinh Tị">Đinh Tị</option>
+            <option value="Mậu Ngọ">Mậu Ngọ</option>
+            <option value="Kỷ Mùi">Kỷ Mùi</option>
+            <option value="Canh Thân">Canh Thân</option>
+            <option value="Tân Dậu">Tân Dậu</option>
+            <option value="Nhâm Tuất">Nhâm Tuất</option>
+            <option value="Quý Hợi">Quý Hợi</option>
+        </select>
+        <br>
+        <label for="selectB">Button B: Ngày Thiên Xá</label><br>
+        <select id="selectB">
+            <option value="Mậu Dần">Mậu Dần</option>
+            <option value="Giáp Ngọ">Giáp Ngọ</option>
+            <option value="Mậu Thân">Mậu Thân</option>
+            <option value="Giáp Tý">Giáp Tý</option>
+        </select>
+        <br>
+        <button onclick="calculate()">Tính Phi Thiên Xá</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        const hoaGiap = [
+            "Giáp Tý", "Ất Sửu", "Bính Dần", "Đinh Mão", "Mậu Thìn", "Kỷ Tị", "Canh Ngọ", "Tân Mùi", "Nhâm Thân", "Quý Dậu",
+            "Giáp Tuất", "Ất Hợi", "Bính Tý", "Đinh Sửu", "Mậu Dần", "Kỷ Mão", "Canh Thìn", "Tân Tị", "Nhâm Ngọ", "Quý Mùi",
+            "Giáp Thân", "Ất Dậu", "Bính Tuất", "Đinh Hợi", "Mậu Tý", "Kỷ Sửu", "Canh Dần", "Tân Mão", "Nhâm Thìn", "Quý Tị",
+            "Giáp Ngọ", "Ất Mùi", "Bính Thân", "Đinh Dậu", "Mậu Tuất", "Kỷ Hợi", "Canh Tý", "Tân Sửu", "Nhâm Dần", "Quý Mão",
+            "Giáp Thìn", "Ất Tị", "Bính Ngọ", "Đinh Mùi", "Mậu Thân", "Kỷ Dậu", "Canh Tuất", "Tân Hợi", "Nhâm Tý", "Quý Sửu",
+            "Giáp Dần", "Ất Mão", "Bính Thìn", "Đinh Tị", "Mậu Ngọ", "Kỷ Mùi", "Canh Thân", "Tân Dậu", "Nhâm Tuất", "Quý Hợi"
+        ];
+
+        const cycle = [5, 6, 7, 8, 9, 1, 2, 3, 4];
+
+        const cungNames = {
+            1: "Khảm",
+            2: "Khôn",
+            3: "Chấn",
+            4: "Tốn",
+            5: "Trung Cung",
+            6: "Kiền",
+            7: "Đoài",
+            8: "Cấn",
+            9: "Ly"
+        };
+
+        function resetHighlights() {
+            for (let i = 1; i <= 9; i++) {
+                document.getElementById("cell" + i).style.backgroundColor = "";
+            }
+        }
+
+        function calculate() {
+            resetHighlights();
+            const A = document.getElementById("selectA").value;
+            const B = document.getElementById("selectB").value;
+            const indexA = hoaGiap.indexOf(A);
+            const indexB = hoaGiap.indexOf(B);
+            let d = (indexB - indexA + 60) % 60;
+            const posIndex = d % 9;
+            const cellNum = cycle[posIndex];
+            document.getElementById("cell" + cellNum).style.backgroundColor = "rgba(255, 0, 0, 0.3)"; // Light red highlight
+            const resultDiv = document.getElementById("result");
+            resultDiv.innerHTML = `Ngày Thiên Xá (${B}) ở cung: ${cungNames[cellNum]} (ô số ${cellNum})`;
+        }
+    </script>
+</body>
+</html>
