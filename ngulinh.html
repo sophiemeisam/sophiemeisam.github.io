@@ -1,90 +1,107 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Quẻ Ngũ Linh</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f9f9f9; padding: 20px; }
-    h2 { margin-top: 0; }
-    .hours { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 20px; }
-    button { padding: 10px; border: none; border-radius: 6px; cursor: pointer; background: #0077cc; color: white; font-weight: bold; }
-    button:hover { background: #005fa3; }
-    .result { margin-top: 20px; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    .result h3 { margin-top: 0; }
-    .line { margin: 5px 0; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ngũ Linh Dịch — 12 giờ (embedded)</title>
+<style>
+body{font-family: system-ui,Arial, sans-serif; background:#f6f8fb; color:#111; padding:18px}
+.header{display:flex;gap:12px;align-items:center}
+.controls{margin-top:8px}
+.hours{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
+.btn{padding:10px;border-radius:8px;border:none;background:#0b5ed7;color:#fff;cursor:pointer}
+.card{background:#fff;border-radius:10px;padding:12px;margin-top:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
+.gua{display:inline-block;vertical-align:top;padding:8px;margin-right:12px;border-radius:8px;background:#fff;border:1px solid #e6eef8}
+.line{font-family:monospace;font-size:18px;margin:6px 0}
+.small{font-size:13px;color:#444}
+.key{font-weight:700}
+</style>
 </head>
 <body>
-  <h2>Xem Quẻ Ngũ Linh</h2>
-  
-  <label>Ngày: <input type="number" id="day" min="1" max="31"></label>
-  <label>Tháng: <input type="number" id="month" min="1" max="12"></label>
-  <label>Năm: <input type="number" id="year" min="1900" max="2100"></label>
-  <button onclick="showHours()">Lấy quẻ</button>
+<div class="header"><h2>Ngũ Linh Dịch — 12 giờ (embedded)</h2></div>
 
+<div class="controls card">
+  <label>Ngày (DL): <input type="date" id="dl" /></label>
+  <button class="btn" id="genBtn">Lấy 12 quẻ</button>
+  <span class="small" style="margin-left:12px">Dữ liệu quẻ được trích từ workbook của bạn (nếu có).</span>
+</div>
+
+<div id="hoursCard" class="card" style="display:none">
+  <h3>12 giờ trong ngày</h3>
   <div id="hours" class="hours"></div>
-  <div id="result" class="result"></div>
+</div>
 
-  <script>
-    // ⚡ Dữ liệu quẻ (ví dụ mẫu)
-    const DATA_QUE = {
-      "Tý": {
-        "Chánh": "Càn",
-        "Hỗ": "Khôn",
-        "Biến": "Khảm",
-        "Nạp giáp": "Giáp Tý",
-        "Lục thân": "Phụ mẫu",
-        "Lục thần": "Thanh Long",
-        "Thập thần": "Thiên Bồng"
-      },
-      "Sửu": {
-        "Chánh": "Khôn",
-        "Hỗ": "Ly",
-        "Biến": "Đoài",
-        "Nạp giáp": "Ất Sửu",
-        "Lục thân": "Huynh đệ",
-        "Lục thần": "Chu Tước",
-        "Thập thần": "Thiên Trụ"
-      }
-      // 👉 Bạn điền thêm dữ liệu cho Dần, Mão, Thìn... Hợi
-    };
+<div id="detailCard" class="card" style="display:none">
+  <h3 id="title"></h3>
+  <div id="guaArea"></div>
+  <div id="metaArea" class="small" style="margin-top:8px"></div>
+</div>
 
-    function showHours() {
-      const day = document.getElementById("day").value;
-      const month = document.getElementById("month").value;
-      const year = document.getElementById("year").value;
-      if (!day || !month || !year) {
-        alert("Bạn phải nhập đủ Ngày - Tháng - Năm!");
-        return;
-      }
+<script>
+const DATA_QUE = {"Tỵ": {"Chánh": {"name": "Chấn trên Đoài", "lines": [1, 1, 0, 0, 1, 1]}, "Hỗ": {"name": "Hỗ", "lines": [1, 1, 0, 0, 1, 0]}, "Biến": {"name": "Biến", "lines": [0, 0, 1, 1, 0, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Tý": {"Chánh": {"name": "Càn trên Càn", "lines": [1, 1, 1, 1, 1, 1]}, "Hỗ": {"name": "Hỗ", "lines": [1, 1, 1, 1, 1, 1]}, "Biến": {"name": "Biến", "lines": [0, 0, 0, 0, 0, 0]}, "Nạp giáp": ["Giáp Tý"], "Lục thân": [], "Lục thần": [], "Thập thần": ["Thiên bồng"]}, "Tuất": {"Chánh": {"name": "Chấn trên Ly", "lines": [1, 0, 1, 1, 0, 1]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 1, 1, 0, 1]}, "Biến": {"name": "Biến", "lines": [0, 1, 0, 0, 1, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Mão": {"Chánh": {"name": "Tốn trên Khôn", "lines": [0, 1, 1, 0, 0, 0]}, "Hỗ": {"name": "Hỗ", "lines": [1, 1, 0, 0, 0, 0]}, "Biến": {"name": "Biến", "lines": [0, 0, 1, 1, 1, 1]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Dần": {"Chánh": {"name": "Khảm trên Cấn", "lines": [1, 0, 0, 1, 0, 0]}, "Hỗ": {"name": "Hỗ", "lines": [0, 0, 1, 0, 1, 0]}, "Biến": {"name": "Biến", "lines": [0, 1, 1, 0, 1, 1]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Dậu": {"Chánh": {"name": "Khôn trên Ly", "lines": [0, 0, 1, 0, 1, 0]}, "Hỗ": {"name": "Hỗ", "lines": [1, 0, 1, 1, 0, 1]}, "Biến": {"name": "Biến", "lines": [0, 1, 0, 0, 1, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Mùi": {"Chánh": {"name": "Tốn trên Tốn", "lines": [0, 1, 1, 0, 1, 1]}, "Hỗ": {"name": "Hỗ", "lines": [1, 1, 1, 0, 1, 1]}, "Biến": {"name": "Biến", "lines": [0, 0, 0, 1, 0, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Sửu": {"Chánh": {"name": "Khôn trên Khôn", "lines": [0, 0, 0, 0, 0, 0]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 0, 0, 1, 0]}, "Biến": {"name": "Biến", "lines": [1, 1, 0, 1, 1, 0]}, "Nạp giáp": ["Ất Sửu"], "Lục thân": [], "Lục thần": [], "Thập thần": ["Thiên trụ"]}, "Thìn": {"Chánh": {"name": "Chấn trên Khảm", "lines": [1, 0, 1, 1, 0, 1]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 0, 1, 1, 0]}, "Biến": {"name": "Biến", "lines": [1, 1, 1, 0, 0, 1]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Ngọ": {"Chánh": {"name": "Ly trên Đoài", "lines": [1, 0, 1, 0, 0, 1]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 0, 1, 0, 0]}, "Biến": {"name": "Biến", "lines": [0, 0, 1, 1, 1, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Thân": {"Chánh": {"name": "Cấn trên Khôn", "lines": [0, 1, 0, 0, 0, 0]}, "Hỗ": {"name": "Hỗ", "lines": [1, 0, 1, 0, 1, 0]}, "Biến": {"name": "Biến", "lines": [0, 1, 0, 1, 0, 1]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Hợi": {"Chánh": {"name": "Khảm trên Khảm", "lines": [1, 0, 1, 1, 0, 1]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 1, 0, 1, 1]}, "Biến": {"name": "Biến", "lines": [1, 1, 0, 0, 1, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}};
 
-      const hoursDiv = document.getElementById("hours");
-      hoursDiv.innerHTML = "";
+const zodiac = ["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
 
-      const canChi = ["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
-      canChi.forEach(chi => {
-        const btn = document.createElement("button");
-        btn.innerText = chi;
-        btn.onclick = () => showResult(chi);
-        hoursDiv.appendChild(btn);
-      });
+function bitsToLines(arr){
+  if(!arr || arr.length!==6) return Array.from({length:6},()=>"(?)");
+  const topDown = arr.slice().reverse();
+  return topDown.map(v=> v===1 ? "———" : v===0 ? "— —" : "(?)");
+}
 
-      document.getElementById("result").innerHTML = "";
-    }
+function renderGuaBlock(title, obj){
+  const lines = obj.lines;
+  const display = bitsToLines(lines);
+  let html = '<div class="gua"><div class="key">'+title+'</div>';
+  for(let i=0;i<6;i++){
+    html += '<div class="line">'+display[i]+'</div>';
+  }
+  html += '</div>';
+  return html;
+}
 
-    function showResult(chi) {
-      const data = DATA_QUE[chi];
-      if (!data) {
-        document.getElementById("result").innerHTML = `<h3>Giờ ${chi}</h3><p>Chưa có dữ liệu.</p>`;
-        return;
-      }
+document.getElementById('genBtn').onclick = ()=>{
+  const dt = document.getElementById('dl').value;
+  if(!dt){ alert('Chọn ngày DL trước'); return; }
+  const hoursDiv = document.getElementById('hours');
+  hoursDiv.innerHTML = '';
+  zodiac.forEach(z=>{
+    const b = document.createElement('button');
+    b.className='btn';
+    b.textContent = z;
+    b.onclick = ()=> showDetail(z);
+    hoursDiv.appendChild(b);
+  });
+  document.getElementById('hoursCard').style.display='block';
+  document.getElementById('detailCard').style.display='none';
+};
 
-      let html = `<h3>Giờ ${chi}</h3>`;
-      for (let key in data) {
-        html += `<div class="line"><b>${key}:</b> ${data[key]}</div>`;
-      }
-      document.getElementById("result").innerHTML = html;
-    }
-  </script>
+function showDetail(z){
+  const data = DATA_QUE[z];
+  if(!data){
+    alert('Không có dữ liệu cho giờ '+z);
+    return;
+  }
+  document.getElementById('title').textContent = 'Giờ ' + z;
+  let html = '';
+  html += renderGuaBlock('Chánh — ' + (data.Chánh.name||''), data.Chánh);
+  html += renderGuaBlock('Hỗ — ' + (data.Hỗ.name||''), data.Hỗ);
+  html += renderGuaBlock('Biến — ' + (data.Biến.name||''), data.Biến);
+  document.getElementById('guaArea').innerHTML = html;
+  let meta = '';
+  meta += '<div><span class="key">Nạp giáp:</span> ' + (Array.isArray(data['Nạp giáp'])? data['Nạp giáp'].join(', '): data['Nạp giáp'] || '') + '</div>';
+  meta += '<div><span class="key">Lục thân:</span> ' + (data['Lục thân'] && data['Lục thân'].length? data['Lục thân'].join(', '): data['Lục thân']||'') + '</div>';
+  meta += '<div><span class="key">Lục thần:</span> ' + (data['Lục thần'] && data['Lục thần'].length? data['Lục thần'].join(', '): data['Lục thần']||'') + '</div>';
+  meta += '<div><span class="key">Thập thần:</span> ' + (Array.isArray(data['Thập thần'])? data['Thập thần'].join(', '): data['Thập thần']||'') + '</div>';
+  document.getElementById('metaArea').innerHTML = meta;
+  document.getElementById('detailCard').style.display='block';
+}
+
+window.addEventListener('load', ()=>{
+  const inp = document.getElementById('dl');
+  const today = new Date().toISOString().slice(0,10);
+  inp.value = today;
+});
+</script>
+
 </body>
 </html>
