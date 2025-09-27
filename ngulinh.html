@@ -1,107 +1,551 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Ngũ Linh Dịch — 12 giờ (embedded)</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Ngũ Linh Dịch — Lập quẻ (1 file)</title>
 <style>
-body{font-family: system-ui,Arial, sans-serif; background:#f6f8fb; color:#111; padding:18px}
-.header{display:flex;gap:12px;align-items:center}
-.controls{margin-top:8px}
-.hours{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:12px}
-.btn{padding:10px;border-radius:8px;border:none;background:#0b5ed7;color:#fff;cursor:pointer}
-.card{background:#fff;border-radius:10px;padding:12px;margin-top:12px;box-shadow:0 6px 18px rgba(0,0,0,0.04)}
-.gua{display:inline-block;vertical-align:top;padding:8px;margin-right:12px;border-radius:8px;background:#fff;border:1px solid #e6eef8}
-.line{font-family:monospace;font-size:18px;margin:6px 0}
-.small{font-size:13px;color:#444}
-.key{font-weight:700}
+  body{font-family:system-ui, -apple-system, "Segoe UI", Roboto; padding:18px; background:#fafafa; color:#111}
+  h1{margin:0 0 8px}
+  .panel{background:#fff;border:1px solid #e6e6e6;padding:12px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+  label{display:block;margin:8px 0 4px;font-weight:600}
+  input[type="date"], select, button{padding:8px;border-radius:6px;border:1px solid #ddd}
+  .hours{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px}
+  .hourCard{padding:10px;border-radius:8px;border:1px solid #eee;background:#fff;cursor:pointer}
+  .hourCard:hover{box-shadow:0 4px 10px rgba(0,0,0,0.06)}
+  .hex{font-family:monospace;line-height:1.1;background:#f3f4f6;padding:8px;border-radius:6px;margin:6px 0}
+  .line{padding:6px 8px;border-radius:4px;margin:4px 0;text-align:center}
+  .yang{background:#fff;border:1px solid #cbd5e1}
+  .yin{background:linear-gradient(90deg,#fff 60%,rgba(0,0,0,0.04) 60%);border:1px dashed #cbd5e1}
+  .small{font-size:13px;color:#555}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .note{font-size:13px;color:#444;margin-top:10px}
+  .config{margin-top:12px;font-size:13px}
+  pre{background:#0f172a;color:#e6eef8;padding:12px;border-radius:6px;overflow:auto}
 </style>
 </head>
 <body>
-<div class="header"><h2>Ngũ Linh Dịch — 12 giờ (embedded)</h2></div>
 
-<div class="controls card">
-  <label>Ngày (DL): <input type="date" id="dl" /></label>
-  <button class="btn" id="genBtn">Lấy 12 quẻ</button>
-  <span class="small" style="margin-left:12px">Dữ liệu quẻ được trích từ workbook của bạn (nếu có).</span>
+<h1>Ngũ Linh Dịch — máy tính (một file)</h1>
+<div class="panel">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <div>
+      <label>Chọn ngày (dùng để xác lập Nguyệt-kiến, Can ngày...)</label>
+      <input id="dateInput" type="date" value="">
+    </div>
+    <div>
+      <label>Chọn giờ tham chiếu (nếu muốn xem quẻ giờ cụ thể)</label>
+      <select id="hourSelect">
+        <option value="0">Tý (23:00-01:00)</option>
+        <option value="1">Sửu (01:00-03:00)</option>
+        <option value="2">Dần (03:00-05:00)</option>
+        <option value="3">Mão (05:00-07:00)</option>
+        <option value="4">Thìn (07:00-09:00)</option>
+        <option value="5">Tỵ (09:00-11:00)</option>
+        <option value="6">Ngọ (11:00-13:00)</option>
+        <option value="7">Mùi (13:00-15:00)</option>
+        <option value="8">Thân (15:00-17:00)</option>
+        <option value="9">Dậu (17:00-19:00)</option>
+        <option value="10">Tuất (19:00-21:00)</option>
+        <option value="11">Hợi (21:00-23:00)</option>
+      </select>
+    </div>
+
+    <div style="align-self:end">
+      <label style="visibility:hidden">btn</label>
+      <button id="makeBtn">Tạo 12 quẻ cho ngày</button>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Giải thích nhanh:</strong>
+    mã thực hiện theo quy tắc bạn cung cấp: Nguyệt-kiến → tiến ngày → dừng làm "Tý" → tiến tới giờ lấy quẻ để xác định cung Chủ → lấy Tiên thiên/Hậu thiên → nạp sao Thiên bồng → tính hào Nguyên & hào Động → quẻ Chánh/Hỗ/Biến.
+    (Có khung cấu hình trong mã để chỉnh chi tiết nếu cần.)
+  </div>
 </div>
 
-<div id="hoursCard" class="card" style="display:none">
-  <h3>12 giờ trong ngày</h3>
-  <div id="hours" class="hours"></div>
-</div>
+<div id="result" style="margin-top:14px"></div>
 
-<div id="detailCard" class="card" style="display:none">
-  <h3 id="title"></h3>
-  <div id="guaArea"></div>
-  <div id="metaArea" class="small" style="margin-top:8px"></div>
+<hr style="margin:20px 0">
+
+<div class="panel">
+  <h3>Cấu hình (nếu muốn tinh chỉnh cho đúng file Excel của bạn)</h3>
+  <div class="config">
+    <div class="small">- Mảng <code>trigramSequence</code> = thứ tự Tiên thiên bát quái dùng để đặt vào 12 cung (có thể chỉnh).<br/>
+    - Mảng <code>stars</code> = thứ tự và hành của 10 sao Thiên bồng (không đổi trừ khi bạn có quy ước khác).<br/>
+    - Nếu Excel gốc của bạn có thứ tự khác, mở file HTML rồi sửa mảng (các comment trong mã hướng dẫn chỗ sửa).</div>
+  </div>
 </div>
 
 <script>
-const DATA_QUE = {"Tỵ": {"Chánh": {"name": "Chấn trên Đoài", "lines": [1, 1, 0, 0, 1, 1]}, "Hỗ": {"name": "Hỗ", "lines": [1, 1, 0, 0, 1, 0]}, "Biến": {"name": "Biến", "lines": [0, 0, 1, 1, 0, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Tý": {"Chánh": {"name": "Càn trên Càn", "lines": [1, 1, 1, 1, 1, 1]}, "Hỗ": {"name": "Hỗ", "lines": [1, 1, 1, 1, 1, 1]}, "Biến": {"name": "Biến", "lines": [0, 0, 0, 0, 0, 0]}, "Nạp giáp": ["Giáp Tý"], "Lục thân": [], "Lục thần": [], "Thập thần": ["Thiên bồng"]}, "Tuất": {"Chánh": {"name": "Chấn trên Ly", "lines": [1, 0, 1, 1, 0, 1]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 1, 1, 0, 1]}, "Biến": {"name": "Biến", "lines": [0, 1, 0, 0, 1, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Mão": {"Chánh": {"name": "Tốn trên Khôn", "lines": [0, 1, 1, 0, 0, 0]}, "Hỗ": {"name": "Hỗ", "lines": [1, 1, 0, 0, 0, 0]}, "Biến": {"name": "Biến", "lines": [0, 0, 1, 1, 1, 1]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Dần": {"Chánh": {"name": "Khảm trên Cấn", "lines": [1, 0, 0, 1, 0, 0]}, "Hỗ": {"name": "Hỗ", "lines": [0, 0, 1, 0, 1, 0]}, "Biến": {"name": "Biến", "lines": [0, 1, 1, 0, 1, 1]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Dậu": {"Chánh": {"name": "Khôn trên Ly", "lines": [0, 0, 1, 0, 1, 0]}, "Hỗ": {"name": "Hỗ", "lines": [1, 0, 1, 1, 0, 1]}, "Biến": {"name": "Biến", "lines": [0, 1, 0, 0, 1, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Mùi": {"Chánh": {"name": "Tốn trên Tốn", "lines": [0, 1, 1, 0, 1, 1]}, "Hỗ": {"name": "Hỗ", "lines": [1, 1, 1, 0, 1, 1]}, "Biến": {"name": "Biến", "lines": [0, 0, 0, 1, 0, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Sửu": {"Chánh": {"name": "Khôn trên Khôn", "lines": [0, 0, 0, 0, 0, 0]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 0, 0, 1, 0]}, "Biến": {"name": "Biến", "lines": [1, 1, 0, 1, 1, 0]}, "Nạp giáp": ["Ất Sửu"], "Lục thân": [], "Lục thần": [], "Thập thần": ["Thiên trụ"]}, "Thìn": {"Chánh": {"name": "Chấn trên Khảm", "lines": [1, 0, 1, 1, 0, 1]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 0, 1, 1, 0]}, "Biến": {"name": "Biến", "lines": [1, 1, 1, 0, 0, 1]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Ngọ": {"Chánh": {"name": "Ly trên Đoài", "lines": [1, 0, 1, 0, 0, 1]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 0, 1, 0, 0]}, "Biến": {"name": "Biến", "lines": [0, 0, 1, 1, 1, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Thân": {"Chánh": {"name": "Cấn trên Khôn", "lines": [0, 1, 0, 0, 0, 0]}, "Hỗ": {"name": "Hỗ", "lines": [1, 0, 1, 0, 1, 0]}, "Biến": {"name": "Biến", "lines": [0, 1, 0, 1, 0, 1]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}, "Hợi": {"Chánh": {"name": "Khảm trên Khảm", "lines": [1, 0, 1, 1, 0, 1]}, "Hỗ": {"name": "Hỗ", "lines": [0, 1, 1, 0, 1, 1]}, "Biến": {"name": "Biến", "lines": [1, 1, 0, 0, 1, 0]}, "Nạp giáp": [], "Lục thân": [], "Lục thần": [], "Thập thần": []}};
+/* ***************** QUY ƯỚC VÀ BẢNG DỮ LIỆU *****************
+   - Địa chi (12 cung)
+   - Nguyệt-kiến: mapping month -> Chi (theo bạn đưa)
+   - Tiên thiên bát quái: mặc định sequence (có thể chỉnh)
+   - Sao Thiên bồng: số & hành & dấu (+: dương, -: âm)
+   - Công thức JDN -> Can/Chi ngày (dùng công thức JD_noon -> mod)
+   - Quy trình: Hậu thiên từ (Nguyệt kiến + (day-1) + giờ) %12
+*/
 
-const zodiac = ["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
+/* 12 Địa chi */
+const branches = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
 
-function bitsToLines(arr){
-  if(!arr || arr.length!==6) return Array.from({length:6},()=>"(?)");
-  const topDown = arr.slice().reverse();
-  return topDown.map(v=> v===1 ? "———" : v===0 ? "— —" : "(?)");
-}
-
-function renderGuaBlock(title, obj){
-  const lines = obj.lines;
-  const display = bitsToLines(lines);
-  let html = '<div class="gua"><div class="key">'+title+'</div>';
-  for(let i=0;i<6;i++){
-    html += '<div class="line">'+display[i]+'</div>';
-  }
-  html += '</div>';
-  return html;
-}
-
-document.getElementById('genBtn').onclick = ()=>{
-  const dt = document.getElementById('dl').value;
-  if(!dt){ alert('Chọn ngày DL trước'); return; }
-  const hoursDiv = document.getElementById('hours');
-  hoursDiv.innerHTML = '';
-  zodiac.forEach(z=>{
-    const b = document.createElement('button');
-    b.className='btn';
-    b.textContent = z;
-    b.onclick = ()=> showDetail(z);
-    hoursDiv.appendChild(b);
-  });
-  document.getElementById('hoursCard').style.display='block';
-  document.getElementById('detailCard').style.display='none';
+/* Nguyệt kiến (tháng 1..12 -> chi) theo bạn đưa */
+const nguyetKien = {
+  1:'Dần',2:'Mão',3:'Thìn',4:'Tỵ',5:'Ngọ',6:'Mùi',
+  7:'Thân',8:'Dậu',9:'Tuất',10:'Hợi',11:'Tý',12:'Sửu'
 };
 
-function showDetail(z){
-  const data = DATA_QUE[z];
-  if(!data){
-    alert('Không có dữ liệu cho giờ '+z);
-    return;
-  }
-  document.getElementById('title').textContent = 'Giờ ' + z;
-  let html = '';
-  html += renderGuaBlock('Chánh — ' + (data.Chánh.name||''), data.Chánh);
-  html += renderGuaBlock('Hỗ — ' + (data.Hỗ.name||''), data.Hỗ);
-  html += renderGuaBlock('Biến — ' + (data.Biến.name||''), data.Biến);
-  document.getElementById('guaArea').innerHTML = html;
-  let meta = '';
-  meta += '<div><span class="key">Nạp giáp:</span> ' + (Array.isArray(data['Nạp giáp'])? data['Nạp giáp'].join(', '): data['Nạp giáp'] || '') + '</div>';
-  meta += '<div><span class="key">Lục thân:</span> ' + (data['Lục thân'] && data['Lục thân'].length? data['Lục thân'].join(', '): data['Lục thân']||'') + '</div>';
-  meta += '<div><span class="key">Lục thần:</span> ' + (data['Lục thần'] && data['Lục thần'].length? data['Lục thần'].join(', '): data['Lục thần']||'') + '</div>';
-  meta += '<div><span class="key">Thập thần:</span> ' + (Array.isArray(data['Thập thần'])? data['Thập thần'].join(', '): data['Thập thần']||'') + '</div>';
-  document.getElementById('metaArea').innerHTML = meta;
-  document.getElementById('detailCard').style.display='block';
+/* Tiên thiên bát quái (thứ tự - có thể chỉnh nếu bạn có mapping khác) 
+   Tôi dùng thứ tự (1..8): Càn, Đoài, Ly, Chấn, Tốn, Khảm, Cấn, Khôn
+   (và gán số 1..8 tương ứng). Nếu Excel của bạn dùng thứ tự khác, chỉnh mảng này.
+*/
+let trigramSequence = ['Càn','Đoài','Ly','Chấn','Tốn','Khảm','Cấn','Khôn'];
+
+/* Mã nhị phân của quái (dưới -> trên), 1 = hào dương (—), 0 = hào âm (— —)
+   mapping thô (thường dùng)
+*/
+const trigramBits = {
+  'Càn':[1,1,1],
+  'Đoài':[1,1,0],
+  'Ly':[1,0,1],
+  'Chấn':[1,0,0],
+  'Tốn':[0,1,1],
+  'Cấn':[0,1,0],
+  'Khảm':[0,0,1],
+  'Khôn':[0,0,0]
+};
+
+/* Map tên quái -> index (1..8) theo trigramSequence */
+function trigramIndex(name){
+  const i = trigramSequence.indexOf(name);
+  return i>=0 ? i+1 : null;
 }
 
-window.addEventListener('load', ()=>{
-  const inp = document.getElementById('dl');
-  const today = new Date().toISOString().slice(0,10);
-  inp.value = today;
-});
-</script>
+/* Thập thiên tinh Thiên bồng (tên, hành, dấu) — theo quy tắc bạn đưa */
+const stars = [
+  {id:1, name:'Thiên bồng', element:'Thủy', sign:'+'},
+  {id:2, name:'Thiên nhuế', element:'Thổ', sign:'-'},
+  {id:3, name:'Thiên xung', element:'Mộc', sign:'+'},
+  {id:4, name:'Thiên phụ', element:'Mộc', sign:'-'},
+  {id:5, name:'Thiên cầm', element:'Hỏa', sign:'+'},
+  {id:6, name:'Thiên tâm', element:'Kim', sign:'+'},
+  {id:7, name:'Thiên trụ', element:'Kim', sign:'-'},
+  {id:8, name:'Thiên nhậm', element:'Thổ', sign:'+'},
+  {id:9, name:'Thiên anh', element:'Hỏa', sign:'-'},
+  {id:10,name:'Thiên không', element:'Thủy', sign:'-'}
+];
 
+/* Heavenly stems (Can) và element/polarity */
+const stems = ['Giáp','Ất','Bính','Đinh','Mậu','Kỷ','Canh','Tân','Nhâm','Quý'];
+const stemElement = { 'Giáp':'Mộc','Ất':'Mộc','Bính':'Hỏa','Đinh':'Hỏa','Mậu':'Thổ','Kỷ':'Thổ','Canh':'Kim','Tân':'Kim','Nhâm':'Thủy','Quý':'Thủy' };
+function isYangStem(name){ return stems.indexOf(name) % 2 === 0 } // Giáp index 0 => yang
+
+/* Giúp: lấy chỉ số chi trong mảng branches */
+function idxBranch(name){ return branches.indexOf(name); }
+
+/* Tính JDN (Gregorian) — trả JDN nguyên (noon-based) dùng công thức chuẩn */
+function jdnOfGregorian(year, month, day){
+  // algorithm returns JDN for the date (integer)
+  let a = Math.floor((14 - month)/12);
+  let y = year + 4800 - a;
+  let m = month + 12*a - 3;
+  let jdn = day + Math.floor((153*m + 2)/5) + 365*y + Math.floor(y/4) - Math.floor(y/100) + Math.floor(y/400) - 32045;
+  return jdn; // this corresponds to noon JD integer per convention above
+}
+
+/* Từ JDN -> stem & branch của ngày: công thức từ trang Sexagenary cycle (tham chiếu trong mã)
+   T = 1 + mod(JD_noon - 1, 10)
+   B = 1 + mod(JD_noon + 1, 12)
+*/
+function dayStemBranchFromDate(year,month,day){
+  const JD = jdnOfGregorian(year,month,day);
+  const tIdx = ((JD - 1) % 10 + 10) % 10; // 0..9
+  const bIdx = ((JD + 1) % 12 + 12) % 12; // 0..11
+  return { stem: stems[tIdx], branch: branches[bIdx], JD };
+}
+
+/* Bảng xác định Can(của giờ Tý) theo Can của ngày (theo thơ/quy ước bạn đưa
+   -> nhóm 2-can => Tý-start:
+   Giáp/Kỷ -> Tý bắt đầu Giáp
+   Ất/Canh -> Tý bắt đầu Bính
+   Bính/Tân -> Tý bắt đầu Mậu
+   Đinh/Nhâm -> Tý bắt đầu Canh
+   Mậu/Quý -> Tý bắt đầu Nhâm
+*/
+function tyStemStartFromDayStem(dayStem){
+  if(['Giáp','Kỷ'].includes(dayStem)) return 'Giáp';
+  if(['Ất','Canh'].includes(dayStem)) return 'Bính';
+  if(['Bính','Tân'].includes(dayStem)) return 'Mậu';
+  if(['Đinh','Nhâm'].includes(dayStem)) return 'Canh';
+  if(['Mậu','Quý'].includes(dayStem)) return 'Nhâm';
+  return 'Giáp';
+}
+
+/* Lấy Can của 1 giờ (hourIndex 0..11 tương ứng Tý..Hợi) dựa trên Can của Tý (tyStart)
+   công thức: đếm thuận số giờ từ Tý.
+*/
+function hourStemFromTyStart(tyStart, hourIndex){
+  const startIndex = stems.indexOf(tyStart);
+  const idx = (startIndex + hourIndex) % 10;
+  return stems[idx];
+}
+
+/* Lấy Chi của một giờ dựa vào giờ (số 0..23). Hàm tiện (nếu muốn).
+   Nhưng UI dùng hourIndex 0..11 (double-hour slots).
+*/
+function hourIndexFromClockHour(h24){
+  if(h24>=23 || h24<1) return 0; // Tý
+  if(h24>=1 && h24<3) return 1; // Sửu
+  if(h24>=3 && h24<5) return 2;
+  if(h24>=5 && h24<7) return 3;
+  if(h24>=7 && h24<9) return 4;
+  if(h24>=9 && h24<11) return 5;
+  if(h24>=11 && h24<13) return 6;
+  if(h24>=13 && h24<15) return 7;
+  if(h24>=15 && h24<17) return 8;
+  if(h24>=17 && h24<19) return 9;
+  if(h24>=19 && h24<21) return 10;
+  return 11;
+}
+
+/* Xác định vị trí bắt đầu đặt quái Càn trên 12 cung theo tam-hợp năm (theo bạn):
+   - Năm Dần/Ngọ/Tuất -> Càn khởi tại Ngọ (branch 'Ngọ')
+   - Năm Thân/Tý/Thìn -> Càn khởi tại Tý
+   - Năm Tỵ/Dậu/Sửu -> Càn khởi tại Dậu
+   - Năm Hợi/Mão/Mùi -> Càn khởi tại Mão
+*/
+function startPosCangForYear(year){
+  const yearBranch = branches[((year - 4) % 12 + 12) % 12]; // năm %12 -> branch
+  if(['Dần','Ngọ','Tuất'].includes(yearBranch)) return idxBranch('Ngọ');
+  if(['Thân','Tý','Thìn'].includes(yearBranch)) return idxBranch('Tý');
+  if(['Tỵ','Dậu','Sửu'].includes(yearBranch)) return idxBranch('Dậu');
+  if(['Hợi','Mão','Mùi'].includes(yearBranch)) return idxBranch('Mão');
+  return 0;
+}
+
+/* Tạo mảng 12 vị trí (trên 12-cung) chứa Tiên thiên bát quái, bắt đầu đặt Càn tại vị trí startPos.
+   Quy tắc: lặp chuỗi trigramSequence (8) theo chiều thuận quanh 12 cung.
+*/
+function buildTrigramAt12(startPos){
+  const res = new Array(12);
+  for(let i=0;i<12;i++){
+    // vị trí i trên vòng thực (0..11) sẽ nhận trigram trigramSequence[(i - startPos) mod 8]
+    const qIdx = ((i - startPos) % 8 + 8) % 8;
+    res[i] = trigramSequence[qIdx];
+  }
+  return res;
+}
+
+/* Đặt vòng sao Thiên bồng: 10 sao trên 12 cung.
+   - Quy ước: đặt sao có Hành trùng Hành của giờ lấy quẻ (có polarity khớp nếu có) ở cung Tý,
+     sau đó đặt tiếp theo thuận quanh vòng.
+   - Khi số sao (10) < 12 thì 2 cung sẽ nhận lại sao đã lặp (tự động do modulo)
+*/
+function buildStarsAt12(startStarIndex/*0..9*/){
+  const arr = new Array(12);
+  for(let i=0;i<12;i++){
+    arr[i] = stars[(startStarIndex + i) % 10];
+  }
+  return arr;
+}
+
+/* Tính hào Nguyên đường theo quy tắc:
+   - lấy tổng (số hiệu quẻ Hậu thiên theo Tiên thiên bát quái) + (số hiệu Thiên tinh ra quẻ Tiên thiên)
+   - nếu tổng <= 6 thì lấy luôn; else lấy tổng %6; nếu %6==0 -> lấy 6
+*/
+function computeNguyenDuong(hauIndex, starId){
+  const s = hauIndex + starId;
+  if(s <= 6) return s;
+  const r = s % 6;
+  return r === 0 ? 6 : r;
+}
+
+/* Tạo trình bày 6 hào (mảng 6 bit bottom->top)
+   - Gộp theo thứ tự bottomTrigram bits + topTrigram bits
+   - Lưu ý thứ tự: bottom (hạ) là 3 hào thấp, top (thượng) 3 hào cao.
+*/
+function makeHexFromTrigrams(bottomTrig, topTrig){
+  const bot = trigramBits[bottomTrig]; // [b1,b2,b3] bottom->top
+  const top = trigramBits[topTrig];
+  return bot.concat(top); // length 6, indices 0..5 bottom->top
+}
+
+/* Chuyển hào (mảng bits) thành dạng hiển thị (string) — show top->bottom */
+function renderHexLines(bits){
+  // bits array bottom->top; for display thường hiển thị top->bottom
+  const out = [];
+  for(let i=5;i>=0;i--){
+    out.push(bits[i] === 1 ? {cls:'yang',txt:'---------'} : {cls:'yin',txt:'-- -- --'});
+  }
+  return out;
+}
+
+/* Flip (đảo) 1 hào (1..6) trong mảng bits (bottom->top) */
+function flipLine(bits, lineNo){
+  const b = bits.slice();
+  const idx = lineNo - 1;
+  b[idx] = b[idx] === 1 ? 0 : 1;
+  return b;
+}
+
+/* Tạo quẻ Hỗ theo quy tắc: lấy nhị, tam, tứ, ngũ (hào 2..5),
+   Hạ = nhị, tam, tứ
+   Thượng = tam, tứ, ngũ
+   ghép Thượng lên Hạ => quẻ Hỗ
+*/
+function makeHo(hexBits){
+  // hexBits bottom->top indices [0..5]
+  const h2 = hexBits[1], h3 = hexBits[2], h4 = hexBits[3], h5 = hexBits[4];
+  const lower = [h2,h3,h4];
+  const upper = [h3,h4,h5];
+  return lower.concat(upper);
+}
+
+/* Nạp giáp (gán Can cho 6 hào) - phương án tối giản:
+   - khởi từ Can của giờ (hourStem) và gán lần lượt 6 can theo chu kỳ 10.
+   (Bạn có thể thay bằng luật nạp giáp chính xác hơn nếu Excel gốc có cách khác.)
+*/
+function napGiapForLines(hourStem){
+  const start = stems.indexOf(hourStem);
+  const res = [];
+  for(let i=0;i<6;i++){
+    res.push(stems[(start + i) % 10]);
+  }
+  return res; // bottom->top tương ứng hào 1..6
+}
+
+/* Map element → thập thần cơ bản so với Can ngày
+   Simplified: tính quan hệ Ngũ hành giữa "Can ngày" và "Can hào" và trả tên thập-thần căn bản (chỉ ví dụ)
+   (Đây chỉ là bản tóm tắt; nếu bạn cần quy chuẩn tên/thứ tự EXACT theo Excel, ta sẽ đặt bảng mapping chi tiết).
+*/
+function basicThapThan(dayStem, lineStem){
+  const dayEl = stemElement[dayStem];
+  const lineEl = stemElement[lineStem];
+  if(dayEl === lineEl){
+    return isYangStem(lineStem) ? 'Chính Ấn (đồng hành dương)' : 'Thiếu Ấn (đồng hành âm)';
+  }
+  // tương sinh: dayEl -> lineEl hay lineEl -> dayEl?
+  // quy ước cơ bản (tạm): Thổ sinh Kim, Kim sinh Thủy, Thủy sinh Mộc, Mộc sinh Hỏa, Hỏa sinh Thổ
+  const order = ['Thổ','Kim','Thủy','Mộc','Hỏa']; // tuần hoàn
+  const idxDay = order.indexOf(dayEl), idxLine = order.indexOf(lineEl);
+  if(idxDay>=0 && idxLine>=0){
+    if((idxDay + 1) %5 === idxLine) return 'Thiên Tài (được sinh)';
+    if((idxLine + 1) %5 === idxDay) return 'Tỷ Thân (khắc/chi phối)';
+  }
+  return 'Khác';
+}
+
+/* ************** UI + xử lý **************/
+const dateInput = document.getElementById('dateInput');
+const makeBtn = document.getElementById('makeBtn');
+const resultDiv = document.getElementById('result');
+const hourSelect = document.getElementById('hourSelect');
+
+// set default date = today
+const today = new Date();
+dateInput.valueAsDate = today;
+
+makeBtn.addEventListener('click', ()=> {
+  const dt = dateInput.value;
+  if(!dt){ alert('Chọn ngày trước'); return; }
+  const d = new Date(dt + 'T00:00:00'); // local
+  const year = d.getFullYear(), month = d.getMonth()+1, day = d.getDate();
+  renderAllHoursForDate(year,month,day);
+});
+
+function renderAllHoursForDate(year,month,day){
+  resultDiv.innerHTML = '';
+  // compute day stem/branch
+  const daySB = dayStemBranchFromDate(year,month,day);
+  const dayStem = daySB.stem, dayBranch = daySB.branch;
+  const JD = daySB.JD;
+  // Nguyet kien
+  const monthForNguyet = month;
+  const nguyetChi = nguyetKien[monthForNguyet];
+  const nguyetIdx = idxBranch(nguyetChi);
+  // build Tiên thiên position with start pos for Càn according to year tam-hợp
+  const startCang = startPosCangForYear(year);
+  const trigramAt12 = buildTrigramAt12(startCang);
+
+  // show header
+  const header = document.createElement('div');
+  header.className = 'panel';
+  header.innerHTML = `<div><strong>Ngày lấy quẻ:</strong> ${day}/${month}/${year} — Can ngày: <strong>${dayStem}</strong>, Chi ngày: <strong>${dayBranch}</strong> (JDN=${JD})</div>
+                      <div class="small">Nguyệt-kiến tháng ${month} → <strong>${nguyetChi}</strong></div>
+                      <div class="small">Bố trí Tiên thiên bát quái (vị trí Càn khởi tại ${branches[startCang]})</div>`;
+  resultDiv.appendChild(header);
+
+  // produce 12 hour cards
+  const container = document.createElement('div');
+  container.className = 'hours';
+  resultDiv.appendChild(container);
+
+  for(let h=0; h<12; h++){
+    const card = document.createElement('div');
+    card.className = 'hourCard panel';
+    // compute core items for hour h
+    // Hậu thiên: posIndex = (NguyetIdx + (day-1) + hourIndex) % 12
+    const posIdx = (nguyetIdx + (day-1) + h) % 12;
+    const hauTrig = trigramAt12[posIdx];
+    const hauIndex = trigramIndex(hauTrig); // 1..8
+    // Tiên thiên: compute hourStem via dayStem->tyStart -> advance h
+    const tyStart = tyStemStartFromDayStem(dayStem);
+    const hourStem = hourStemFromTyStart(tyStart, h);
+    const hourElement = stemElement[hourStem];
+    const hourPolarity = isYangStem(hourStem) ? '+' : '-';
+
+    // pick star start: first star with same element and same sign if possible
+    let startStarIdx = stars.findIndex(s => s.element === hourElement && s.sign === hourPolarity);
+    if(startStarIdx === -1){
+      // fallback: first star with same element
+      startStarIdx = stars.findIndex(s => s.element === hourElement);
+      if(startStarIdx === -1) startStarIdx = 0;
+    }
+    const starsAt12 = buildStarsAt12(startStarIdx);
+    const starAtPos = starsAt12[posIdx];
+    // compute Tiên thiên quái index from star id (if >8 subtract 8)
+    let tienIndex = starAtPos.id > 8 ? starAtPos.id - 8 : starAtPos.id;
+    const tienTrig = trigramSequence[tienIndex - 1];
+
+    // compute Nguyên đường
+    const nguyen = computeNguyenDuong(hauIndex, starAtPos.id);
+
+    // compute hào Động: từ hào Nguyên (coi là Tý) đếm thuận đến giờ lấy quẻ (hãy lấy offset = hourIndex)
+    const haoDong = ((nguyen - 1) + h) % 6 + 1;
+
+    // compose final quẻ kép: theo ngày dương/âm quyết định quẻ trên/dưới
+    const dayIsYang = isYangStem(dayStem);
+    let bottomTrig, topTrig;
+    if(dayIsYang){ // ngày dương: Tiên thiên nằm trên, Hậu thiên nằm dưới
+      bottomTrig = hauTrig;
+      topTrig = tienTrig;
+    } else { // ngày âm: Hậu thiên nằm trên, Tiên thiên nằm dưới
+      bottomTrig = tienTrig;
+      topTrig = hauTrig;
+    }
+
+    const chanhBits = makeHexFromTrigrams(bottomTrig, topTrig); // bottom->top
+    const bienBits  = flipLine(chanhBits, haoDong); // flip hào động
+    const hoBits    = makeHo(chanhBits);
+
+    const napGiap = napGiapForLines(hourStem); // bottom->top
+    const thapThan = napGiap.map(s=> basicThapThan(dayStem,s));
+
+    // card content
+    card.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <strong>Giờ ${branches[h]}</strong>
+          <div class="small">Can giờ (ước lượng): <strong>${hourStem}${branches[h]}</strong> — Hành: ${hourElement} ${hourPolarity}</div>
+        </div>
+        <div class="small" style="text-align:right">Hậu: <strong>${hauTrig}</strong> | Tiên: <strong>${tienTrig}</strong><br/>
+          Sao tại cung: <strong>${starAtPos.name} (#${starAtPos.id})</strong>
+        </div>
+      </div>
+      <hr/>
+      <div class="small">Nguyên đường: <strong>${nguyen}</strong> — Hào động: <strong>${haoDong}</strong></div>
+      <div style="margin-top:8px">
+        <div class="small">Quẻ Chánh (bottom→top): <strong>${bottomTrig}</strong> / <strong>${topTrig}</strong></div>
+        <div class="hex" id="hex-${h}">
+          ${renderHexLines(chanhBits).map(l => `<div class="line ${l.cls}">${l.txt}</div>`).join('')}
+        </div>
+      </div>
+      <div class="small">Quẻ Hỗ:</div>
+      <div class="hex">${renderHexLines(hoBits).map(l => `<div class="line ${l.cls}">${l.txt}</div>`).join('')}</div>
+      <div class="small">Quẻ Biến (đổi hào ${haoDong}):</div>
+      <div class="hex">${renderHexLines(bienBits).map(l => `<div class="line ${l.cls}">${l.txt}</div>`).join('')}</div>
+      <div class="small" style="margin-top:6px">Nạp Giáp (hào 1..6 bottom→top): ${napGiap.join(', ')}</div>
+      <div class="small">Thập Thần (cơ bản): ${thapThan.join(' | ')}</div>
+      <div style="margin-top:6px"><button data-hour="${h}" class="detailBtn">Xem chi tiết</button></div>
+    `;
+
+    container.appendChild(card);
+
+    // click handler: scroll to a larger detail below
+    card.querySelector('.detailBtn').addEventListener('click', (ev)=>{
+      renderDetailHour({
+        year,month,day,h, dayStem, dayBranch, JD,
+        nguyetChi, posIdx, hauTrig, hauIndex,
+        tyStart, hourStem, hourElement, hourPolarity,
+        startStarIdx, starsAt12, starAtPos, tienTrig, tienIndex,
+        nguyen, haoDong, chanhBits, bienBits, hoBits, napGiap, thapThan, trigramAt12
+      });
+    });
+  } // end for hours
+}
+
+/* Chi tiết (modal-like dưới cùng) */
+function renderDetailHour(obj){
+  // clear existing detail
+  let detailEl = document.getElementById('detailPanel');
+  if(detailEl) detailEl.remove();
+
+  detailEl = document.createElement('div');
+  detailEl.id = 'detailPanel';
+  detailEl.className = 'panel';
+  const {
+    year,month,day,h, dayStem, dayBranch, JD,
+    nguyetChi, posIdx, hauTrig, hauIndex,
+    tyStart, hourStem, hourElement, hourPolarity,
+    startStarIdx, starsAt12, starAtPos, tienTrig, tienIndex,
+    nguyen, haoDong, chanhBits, bienBits, hoBits, napGiap, thapThan, trigramAt12
+  } = obj;
+
+  const posBranch = branches[posIdx];
+  const trigAt12 = trigramAt12.map((q,i)=> `${branches[i]}:${q}`).join(', ');
+
+  detailEl.innerHTML = `<h3>Chi tiết: giờ ${branches[h]} — ${day}/${month}/${year}</h3>
+    <div class="small">Can ngày: <strong>${dayStem}</strong> — Chi ngày: <strong>${dayBranch}</strong> (JDN=${JD})</div>
+    <div class="small">Nguyệt-kiến: <strong>${nguyetChi}</strong> — Cung Chủ thời lệnh: <strong>${posBranch}</strong></div>
+    <div class="small" style="margin-top:8px">Hậu thiên tại cung ${posBranch}: <strong>${hauTrig}</strong> (index ${hauIndex})</div>
+    <div class="small">Tiên thiên (ra từ sao): <strong>${tienTrig}</strong> (từ sao ${starAtPos.name} #${starAtPos.id})</div>
+    <div class="small">Sao tại tất cả 12 cung (bắt đầu tại cung Tý sao #${starsAt12[0].id}):<br/><span class="small">${starsAt12.map((s,i)=> branches[i]+':'+s.name+'(#'+s.id+')').join('; ')}</span></div>
+    <div style="margin-top:10px" class="grid2">
+      <div>
+        <div class="small"><strong>Quẻ Chánh (bottom→top):</strong> ${ (isYangStem(dayStem) ? hauTrig + ' (Hậu dưới)' : tienTrig+' (Hậu trên)') } / ${ (isYangStem(dayStem) ? tienTrig+' (Tiên trên)' : hauTrig+' (Tiên dưới)') }</div>
+        <div class="hex">${renderHexLines(chanhBits).map(l=>`<div class="line ${l.cls}">${l.txt}</div>`).join('')}</div>
+      </div>
+      <div>
+        <div class="small"><strong>Quẻ Biến:</strong> (đổi hào ${haoDong})</div>
+        <div class="hex">${renderHexLines(bienBits).map(l=>`<div class="line ${l.cls}">${l.txt}</div>`).join('')}</div>
+      </div>
+
+      <div>
+        <div class="small"><strong>Quẻ Hỗ (quy nạp):</strong></div>
+        <div class="hex">${renderHexLines(hoBits).map(l=>`<div class="line ${l.cls}">${l.txt}</div>`).join('')}</div>
+      </div>
+
+      <div>
+        <div class="small"><strong>Nạp Giáp (6 hào bottom→top):</strong></div>
+        <div class="small">${napGiap.map((s,i)=> `H${i+1}:${s}`).join(' | ')}</div>
+        <div style="margin-top:6px" class="small"><strong>Thập Thần (cơ bản so với Can ngày):</strong><br/>${thapThan.join(' | ')}</div>
+      </div>
+    </div>
+
+    <div style="margin-top:10px" class="small">
+      <strong>Ghi chú kỹ thuật (tóm tắt):</strong>
+      <ul>
+        <li>Tiên thiên bát quái được đặt quanh 12 cung theo <code>trigramSequence</code>, bắt đầu đặt Càn tại vị trí do <em>tam-hợp năm</em> quyết định.</li>
+        <li>Sao Thiên bồng được đặt bắt đầu tại cung Tý với sao có <em>hành</em> và <em>dấu</em> trùng Can giờ (nếu có), rồi đặt tiếp thuận quanh vòng.</li>
+        <li>Hào Nguyên = (số hiệu quẻ Hậu theo Tiên thiên) + (số hiệu sao Thiên bồng) rồi xử lý mod6 theo quy tắc bạn nêu.</li>
+        <li>Hào Động = từ hào Nguyên coi là Tý, đếm thuận tới giờ lấy quẻ (mỗi bước tương ứng 1 hào).</li>
+      </ul>
+    </div>
+    <div style="margin-top:8px"><button id="closeDetail">Đóng</button></div>
+    <hr/>
+    <div class="small">Trị trí Tiên thiên trên 12 cung: ${trigAt12}</div>
+  `;
+
+  resultDiv.appendChild(detailEl);
+  document.getElementById('closeDetail').onclick = ()=> detailEl.remove();
+
+  // scroll to detail
+  detailEl.scrollIntoView({behavior:'smooth'});
+}
+
+/* Auto create initial sample */
+renderAllHoursForDate(today.getFullYear(), today.getMonth()+1, today.getDate());
+
+</script>
 </body>
 </html>
