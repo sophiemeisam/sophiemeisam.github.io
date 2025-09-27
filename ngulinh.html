@@ -60,17 +60,14 @@
         <option value="11">Hợi (21:00-23:00)</option>
       </select>
     </div>
-
     <div style="align-self:end">
       <label style="visibility:hidden">btn</label>
       <button id="makeBtn">Tạo 12 quẻ cho ngày</button>
     </div>
   </div>
-
   <div class="note">
     <strong>Giải thích nhanh:</strong>
-    Mã thực hiện theo quy tắc hướng dẫn lập quẻ Ngũ Linh Dịch: Nguyệt-kiến → tiến ngày → dừng làm "Tý" → tiến tới giờ lấy quẻ để xác định cung Chủ → lấy Tiên thiên/Hậu thiên → nạp sao Thiên bồng (dựa trên Hành từ nạp âm giờ) → tính hào Nguyên & hào Động → quẻ Chánh/Hỗ/Biến.
-    (Có khung cấu hình trong mã để chỉnh chi tiết nếu cần.)
+    Mã thực hiện theo quy tắc lập quẻ Ngũ Linh Dịch: Nguyệt-kiến → tiến ngày → dừng làm "Tý" → tiến tới giờ lấy quẻ để xác định cung Chủ → lấy Tiên thiên/Hậu thiên → nạp sao Thiên bồng (dựa trên Hành từ nạp âm giờ) → tính hào Nguyên & hào Động → quẻ Chánh/Hỗ/Biến.
   </div>
 </div>
 
@@ -79,11 +76,11 @@
 <hr style="margin:20px 0">
 
 <div class="panel">
-  <h3>Cấu hình (nếu muốn tinh chỉnh cho đúng file Excel của bạn)</h3>
+  <h3>Cấu hình (nếu muốn tinh chỉnh)</h3>
   <div class="config">
     <div class="small">- Mảng <code>trigramSequence</code> = thứ tự Tiên thiên bát quái dùng để đặt vào 12 cung (có thể chỉnh).<br/>
     - Mảng <code>stars</code> = thứ tự và hành của 10 sao Thiên bồng (không đổi trừ khi bạn có quy ước khác).<br/>
-    - Nếu Excel gốc của bạn có thứ tự khác, mở file HTML rồi sửa mảng (các comment trong mã hướng dẫn chỗ sửa).</div>
+    - Nếu cần chỉnh thứ tự quẻ hoặc sao, mở file HTML và sửa mảng tương ứng.</div>
   </div>
 </div>
 
@@ -93,7 +90,7 @@
 // 12 Địa chi
 const branches = ['Tý','Sửu','Dần','Mão','Thìn','Tỵ','Ngọ','Mùi','Thân','Dậu','Tuất','Hợi'];
 
-// Nguyệt kiến (tháng 1..12 -> chi) theo hướng dẫn
+// Nguyệt kiến
 const nguyetKien = {
   1:'Dần',2:'Mão',3:'Thìn',4:'Tỵ',5:'Ngọ',6:'Mùi',
   7:'Thân',8:'Dậu',9:'Tuất',10:'Hợi',11:'Tý',12:'Sửu'
@@ -102,16 +99,16 @@ const nguyetKien = {
 // Tiên thiên bát quái thứ tự
 let trigramSequence = ['Càn','Đoài','Ly','Chấn','Tốn','Khảm','Cấn','Khôn'];
 
-// Mã nhị phân quái
+// Mã nhị phân quái (trái -> phải ứng với trên -> dưới, tức hào 3, 2, 1)
 const trigramBits = {
-  'Càn':[1,1,1],
-  'Đoài':[1,1,0],
-  'Ly':[1,0,1],
-  'Chấn':[1,0,0],
-  'Tốn':[0,1,1],
-  'Khảm':[0,0,1],
-  'Cấn':[0,1,0],
-  'Khôn':[0,0,0]
+  'Càn': [1,1,1],   // 111
+  'Đoài': [0,1,1],  // 011
+  'Ly': [1,0,1],    // 101
+  'Chấn': [0,0,1],  // 001
+  'Tốn': [1,1,0],   // 110
+  'Khảm': [0,1,0],  // 010
+  'Cấn': [1,0,0],   // 100
+  'Khôn': [0,0,0]   // 000
 };
 
 // Thập thiên tinh
@@ -152,15 +149,13 @@ function getCycleNumber(stemIdx, branchIdx) {
   return -1;
 }
 
-// Lấy Hành từ nạp âm cho giờ (stem, branch)
+// Lấy Hành từ nạp âm
 function getHourElement(stemName, branchName) {
   const stemIdx = stems.indexOf(stemName);
   const branchIdx = branches.indexOf(branchName);
   const cycle = getCycleNumber(stemIdx, branchIdx);
-  return napYinElements[cycle] || 'Thủy'; // fallback
+  return napYinElements[cycle] || 'Thủy';
 }
-
-// Các hàm khác giữ nguyên, chỉ chỉnh ở chỗ lấy hourElement = getHourElement(hourStem, branches[h])
 
 function trigramIndex(name){
   const i = trigramSequence.indexOf(name);
@@ -234,16 +229,17 @@ function computeNguyenDuong(hauIndex, starId){
 }
 
 function makeHexFromTrigrams(bottomTrig, topTrig){
-  const bot = trigramBits[bottomTrig];
-  const top = trigramBits[topTrig];
-  return bot.concat(top);
+  const bot = trigramBits[bottomTrig]; // [hào 3, hào 2, hào 1]
+  const top = trigramBits[topTrig];    // [hào 3, hào 2, hào 1]
+  // Ghép thành quẻ kép: bot (hào 1,2,3) + top (hào 4,5,6)
+  return bot.concat(top); // [hào 1,2,3,4,5,6] bottom -> top
 }
 
 function renderHexLines(bits, haoDong = 0){
   let html = '';
   for(let displayIdx = 0; displayIdx < 6; displayIdx++){
-    const bitIdx = 5 - displayIdx; // top to bottom
-    const lineNo = bitIdx + 1; // hào 1 bottom, 6 top
+    const bitIdx = 5 - displayIdx; // Hiển thị từ trên xuống (hào 6 -> hào 1)
+    const lineNo = bitIdx + 1; // Hào 1 bottom, 6 top
     const isYang = bits[bitIdx] === 1;
     const isDong = (haoDong > 0 && lineNo === haoDong);
     const className = `line ${isYang ? 'yang' : 'yin'} ${isDong ? 'dong' : ''}`;
@@ -343,7 +339,7 @@ function renderAllHoursForDate(year,month,day){
     const tyStart = tyStemStartFromDayStem(dayStem);
     const hourStem = hourStemFromTyStart(tyStart, h);
     const hourBranch = branches[h];
-    const hourElement = getHourElement(hourStem, hourBranch); // Sử dụng nạp âm
+    const hourElement = getHourElement(hourStem, hourBranch);
     const hourPolarity = isYangStem(hourStem) ? '+' : '-';
     let startStarIdx = stars.findIndex(s => s.element === hourElement && s.sign === hourPolarity);
     if(startStarIdx === -1){
@@ -444,21 +440,18 @@ function renderDetailHour(obj){
         <div class="small"><strong>Quẻ Biến:</strong> (đổi hào ${haoDong})</div>
         <div class="hex">${renderHexLines(bienBits)}</div>
       </div>
-
       <div>
         <div class="small"><strong>Quẻ Hỗ (quy nạp):</strong></div>
         <div class="hex">${renderHexLines(hoBits)}</div>
       </div>
-
       <div>
         <div class="small"><strong>Nạp Giáp (6 hào bottom→top):</strong></div>
         <div class="small">${napGiap.map((s,i)=> `H${i+1}:${s}`).join(' | ')}</div>
         <div style="margin-top:6px" class="small"><strong>Thập Thần (cơ bản so với Can ngày):</strong><br/>${thapThan.join(' | ')}</div>
       </div>
     </div>
-
     <div style="margin-top:10px" class="small">
-      <strong>Ghi chú kỹ thuật (tóm tắt theo hướng dẫn):</strong>
+      <strong>Ghi chú kỹ thuật (tóm tắt):</strong>
       <ul>
         <li>Tiên thiên bát quái đặt quanh 12 cung theo tam-hợp năm.</li>
         <li>Hành giờ từ nạp âm Can Chi giờ, sao Thiên bồng đặt tại Tý với sao trùng Hành (và dấu nếu có), thuận quanh vòng.</li>
