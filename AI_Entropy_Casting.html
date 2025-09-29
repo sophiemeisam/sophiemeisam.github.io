@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device=device-width, initial-scale=1.0">
     <title>Grok's AI-Entropy Casting - Lấy Quẻ Dịch</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Vietnamese:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
@@ -76,6 +76,7 @@
             padding: 15px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            touch-action: manipulation; /* Cho phép xử lý sự kiện long press */
         }
 
         .hao {
@@ -153,6 +154,12 @@
             margin-bottom: 10px;
         }
 
+        .download-time {
+            font-weight: bold;
+            color: red;
+            margin-top: 10px;
+        }
+
         @media (max-width: 400px) {
             .container {
                 max-width: 100%;
@@ -180,12 +187,12 @@
     <div class="container">
         <div>
             <h2>Grok's AI-Entropy Casting</h2>
-            <p>Nhập thông tin để tính entropy và lấy quẻ. Các trường không bắt buộc có thể bỏ trống để thuật toán tự xử lý.</p>
+            <p>Nhập thông tin để tính entropy và lấy quẻ. Các trường không bắt buộc có thể bỏ trống.</p>
             <input type="text" id="ho_ten" placeholder="Họ tên đầy đủ">
             <input type="text" id="tuoi_cha" placeholder="Tuổi cha (dương/âm lịch)">
             <input type="text" id="tuoi_me" placeholder="Tuổi mẹ (dương/âm lịch)">
-            <input type="date" id="ngay_sinh" placeholder="Ngày tháng năm sinh">
-            <input type="time" id="gio_sinh" placeholder="Giờ sinh (tùy chọn)">
+            <input type="date" id="ngay_sinh" placeholder="Ngày - tháng - năm sinh của người xin quẻ">
+            <input type="time" id="gio_sinh" placeholder="Giờ sinh của người xin quẻ (tùy chọn)">
             <select id="gioi_tinh">
                 <option value="">Giới tính</option>
                 <option value="Nam">Nam</option>
@@ -228,6 +235,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script>
         const queDon = {
             '111': 'Kiền', '011': 'Đoài', '101': 'Ly', '001': 'Chấn',
@@ -252,6 +260,8 @@
             '001111': 'Lôi Thiên Đại Tráng', '011111': 'Trạch Thiên Quải', '010111': 'Thủy Thiên Nhu', '010000': 'Thủy Địa Tỷ'
         };
 
+        let longPressTimeout;
+
         async function castHexagram() {
             const suViec = document.getElementById('su_viec').value;
             if (!suViec) {
@@ -267,12 +277,27 @@
             const tinhTrangGiaDinh = document.getElementById('tinh_trang_gia_dinh').value || '';
             const tonGiao = document.getElementById('ton_giao').value || '';
             const mucDich = document.getElementById('muc_dich').value || '';
-            const currentTime = '02:32 PM +07, 29/9/2025';
+            const currentTime = '03:03 PM +07, 29/9/2025'; // Cập nhật theo ngày giờ hiện tại
             let entropyInput = suViec + ' | HoTen: ' + hoTen + ' | TuoiCha: ' + tuoiCha + ' | TuoiMe: ' + tuoiMe + 
                                ' | NgaySinh: ' + ngaySinh + ' | GioSinh: ' + gioSinh + ' | GioiTinh: ' + gioiTinh + 
                                ' | TinhTrangGiaDinh: ' + tinhTrangGiaDinh + ' | TonGiao: ' + tonGiao + 
                                ' | MucDich: ' + mucDich + ' | Time: ' + currentTime;
             
+            // Kiểm tra và cảnh báo các form bị bỏ qua
+            let skippedFields = [];
+            if (!hoTen) skippedFields.push('Họ tên');
+            if (!tuoiCha) skippedFields.push('Tuổi cha');
+            if (!tuoiMe) skippedFields.push('Tuổi mẹ');
+            if (!ngaySinh) skippedFields.push('Ngày - tháng - năm sinh');
+            if (!gioSinh) skippedFields.push('Giờ sinh');
+            if (!gioiTinh) skippedFields.push('Giới tính');
+            if (!tinhTrangGiaDinh) skippedFields.push('Tình trạng gia đình');
+            if (!tonGiao) skippedFields.push('Tôn giáo');
+            if (!mucDich) skippedFields.push('Mục đích');
+            if (skippedFields.length > 0) {
+                alert('Cảnh báo: Form bị bỏ qua (' + skippedFields.join(', ') + ') sẽ thiếu Entropy, quẻ lấy được có thể không thể hiện hết thông tin.');
+            }
+
             if (document.getElementById('useGPS').checked) {
                 try {
                     const position = await getLocation();
@@ -383,8 +408,18 @@
                 }
                 changedHexagramDiv.style.display = 'block';
             }
+
+            // Thêm sự kiện long press để tải ảnh
+            const ketQuaElement = document.getElementById('ket_qua');
+            ketQuaElement.onmousedown = ketQuaElement.ontouchstart = function(e) {
+                clearTimeout(longPressTimeout);
+                longPressTimeout = setTimeout(() => downloadHexagram(), 1000); // 1 giây giữ để trigger
+            };
+            ketQuaElement.onmouseup = ketQuaElement.ontouchend = function() {
+                clearTimeout(longPressTimeout);
+            };
         }
-        
+
         function getLocation() {
             return new Promise((resolve, reject) => {
                 if (navigator.geolocation) {
@@ -392,6 +427,75 @@
                 } else {
                     reject('Geolocation không được hỗ trợ trên trình duyệt này.');
                 }
+            });
+        }
+
+        function downloadHexagram() {
+            const ketQua = document.getElementById('ket_qua');
+            const tenQue = document.getElementById('ten_que').textContent;
+            const changedHexagram = document.getElementById('changed-hexagram');
+            const currentTime = '03:03 PM +07, 29/9/2025';
+
+            // Vùng tạm (off-screen)
+            const tmp = document.createElement("div");
+            tmp.style.position = "fixed";
+            tmp.style.left = "-9999px";
+            tmp.style.top = "0";
+            tmp.style.background = "#ffffff";
+            tmp.style.padding = "12px";
+            tmp.style.boxSizing = "border-box";
+            tmp.style.fontFamily = "'Noto Serif Vietnamese', serif";
+
+            // Thêm dòng thời gian
+            const timeDiv = document.createElement("div");
+            timeDiv.textContent = `Giờ ; Ngày - Tháng - Năm lấy quẻ: ${currentTime}`;
+            timeDiv.className = 'download-time';
+            tmp.appendChild(timeDiv);
+
+            // Thêm nội dung muốn xem
+            const suViecDiv = document.createElement("div");
+            suViecDiv.textContent = `Nội dung muốn xem: ${document.getElementById('su_viec').value || 'Không nhập'}`;
+            suViecDiv.style.marginBottom = "10px";
+            tmp.appendChild(suViecDiv);
+
+            // Thêm tên quẻ và số hào động
+            const tenQueDiv = document.createElement("div");
+            tenQueDiv.textContent = tenQue;
+            tenQueDiv.style.marginBottom = "10px";
+            tmp.appendChild(tenQueDiv);
+
+            // Thêm quẻ chính
+            tmp.appendChild(ketQua.cloneNode(true));
+
+            // Thêm quẻ biến nếu có
+            if (changedHexagram.style.display !== 'none') {
+                tmp.appendChild(changedHexagram.cloneNode(true));
+            }
+
+            document.body.appendChild(tmp);
+
+            html2canvas(tmp, {
+                useCORS: true,
+                scale: window.devicePixelRatio || 2,
+                backgroundColor: "#ffffff"
+            }).then(canvas => {
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement("a");
+                    a.href = url;
+                    a.download = "que_kinh_dich.png";
+                    document.body.appendChild(a);
+                    a.click();
+                    setTimeout(() => {
+                        URL.revokeObjectURL(url);
+                        if (a.parentNode) a.parentNode.removeChild(a);
+                        if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
+                    }, 150);
+                }, "image/png");
+            }).catch(err => {
+                if (tmp.parentNode) tmp.parentNode.removeChild(tmp);
+                console.error("html2canvas error:", err);
+                alert("Chụp ảnh thất bại — kiểm tra console.");
             });
         }
     </script>
