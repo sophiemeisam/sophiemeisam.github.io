@@ -239,6 +239,8 @@
                 <option value="#0000FF" style="background-color: #0000FF;">Xanh dương</option>
                 <option value="#FFFF00" style="background-color: #FFFF00;">Vàng</option>
                 <option value="#FF00FF" style="background-color: #FF00FF;">Tím</option>
+                <option value="#000000" style="background-color: #000000; color: white;">Đen</option>
+                <option value="#FFFFFF" style="background-color: #FFFFFF;">Trắng</option>
             </select>
             <div id="color-preview" class="color-preview" style="background-color: #ffffff;"></div>
             <input type="checkbox" id="useGPS"> Sử dụng GPS để bổ sung dữ liệu vị trí (nếu browser hỗ trợ và bạn cho phép)<br>
@@ -302,7 +304,7 @@
             const mucDich = document.getElementById('muc_dich').value || '';
             const daySo = document.getElementById('day_so').value || '';
             const mauSac = document.getElementById('mau_sac').value || '';
-            const currentTime = '03:27 PM +07, 29/9/2025';
+            const currentTime = '03:34 PM +07, 29/9/2025'; // Cập nhật theo thời gian hiện tại
             let entropyInput = suViec + ' | HoTen: ' + hoTen + ' | TuoiCha: ' + tuoiCha + ' | TuoiMe: ' + tuoiMe + 
                                ' | NgaySinh: ' + ngaySinh + ' | GioSinh: ' + gioSinh + ' | GioiTinh: ' + gioiTinh + 
                                ' | TinhTrangGiaDinh: ' + tinhTrangGiaDinh + ' | TonGiao: ' + tonGiao + 
@@ -315,7 +317,7 @@
             if (!tuoiMe) skippedFields.push('Tuổi mẹ');
             if (!ngaySinh) skippedFields.push('Ngày - tháng - năm sinh');
             if (!gioSinh) skippedFields.push('Giờ sinh');
-            if (!gioiTinh) skippedFields.push('Giới tính');
+            if (!gioi_tinh) skippedFields.push('Giới tính');
             if (!tinhTrangGiaDinh) skippedFields.push('Tình trạng gia đình');
             if (!tonGiao) skippedFields.push('Tôn giáo');
             if (!mucDich) skippedFields.push('Mục đích');
@@ -451,7 +453,7 @@
             const ketQua = document.getElementById('ket_qua');
             const tenQue = document.getElementById('ten_que').textContent;
             const changedHexagram = document.getElementById('changed-hexagram');
-            const currentTime = '03:27 PM +07, 29/9/2025';
+            const currentTime = '03:34 PM +07, 29/9/2025';
 
             const tmp = document.createElement("div");
             tmp.style.position = "fixed";
