@@ -160,6 +160,14 @@
             margin-top: 10px;
         }
 
+        .form-label {
+            font-weight: bold;
+            color: #8b0000;
+            text-align: left;
+            margin-bottom: 5px;
+            display: block;
+        }
+
         @media (max-width: 400px) {
             .container {
                 max-width: 100%;
@@ -188,16 +196,23 @@
         <div>
             <h2>Grok's AI-Entropy Casting</h2>
             <p>Nhập thông tin để tính entropy và lấy quẻ. Các trường không bắt buộc có thể bỏ trống.</p>
+            <span class="form-label">Họ tên đầy đủ</span>
             <input type="text" id="ho_ten" placeholder="Họ tên đầy đủ">
+            <span class="form-label">Tuổi cha (dương/âm lịch)</span>
             <input type="text" id="tuoi_cha" placeholder="Tuổi cha (dương/âm lịch)">
+            <span class="form-label">Tuổi mẹ (dương/âm lịch)</span>
             <input type="text" id="tuoi_me" placeholder="Tuổi mẹ (dương/âm lịch)">
+            <span class="form-label">Ngày - tháng - năm sinh của người xin quẻ</span>
             <input type="date" id="ngay_sinh" placeholder="Ngày - tháng - năm sinh của người xin quẻ">
+            <span class="form-label">Giờ sinh của người xin quẻ (tùy chọn)</span>
             <input type="time" id="gio_sinh" placeholder="Giờ sinh của người xin quẻ (tùy chọn)">
+            <span class="form-label">Giới tính</span>
             <select id="gioi_tinh">
                 <option value="">Giới tính</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
             </select>
+            <span class="form-label">Tình trạng gia đình</span>
             <select id="tinh_trang_gia_dinh">
                 <option value="">Tình trạng gia đình</option>
                 <option value="Độc thân">Độc thân</option>
@@ -206,6 +221,7 @@
                 <option value="Ly dị">Ly dị</option>
                 <option value="Đang hẹn hò">Đang hẹn hò</option>
             </select>
+            <span class="form-label">Tôn giáo</span>
             <select id="ton_giao">
                 <option value="">Tôn giáo</option>
                 <option value="Không">Không</option>
@@ -217,12 +233,14 @@
                 <option value="Hồi Giáo">Hồi Giáo</option>
                 <option value="Khác">Khác</option>
             </select>
+            <span class="form-label">Mục đích</span>
             <select id="muc_dich">
                 <option value="">Mục đích</option>
                 <option value="Giải trí">Giải trí</option>
                 <option value="Tò mò">Tò mò</option>
                 <option value="Thành tâm xem">Thành tâm xem</option>
             </select>
+            <span class="form-label">Nội dung muốn xem</span>
             <input type="text" id="su_viec" placeholder="Nhập sự việc cần xem">
             <input type="checkbox" id="useGPS"> Sử dụng GPS để bổ sung dữ liệu vị trí (nếu browser hỗ trợ và bạn cho phép)<br>
             <button onclick="castHexagram()">Lấy Quẻ</button>
@@ -277,7 +295,7 @@
             const tinhTrangGiaDinh = document.getElementById('tinh_trang_gia_dinh').value || '';
             const tonGiao = document.getElementById('ton_giao').value || '';
             const mucDich = document.getElementById('muc_dich').value || '';
-            const currentTime = '03:03 PM +07, 29/9/2025'; // Cập nhật theo ngày giờ hiện tại
+            const currentTime = '03:10 PM +07, 29/9/2025'; // Cập nhật theo ngày giờ hiện tại
             let entropyInput = suViec + ' | HoTen: ' + hoTen + ' | TuoiCha: ' + tuoiCha + ' | TuoiMe: ' + tuoiMe + 
                                ' | NgaySinh: ' + ngaySinh + ' | GioSinh: ' + gioSinh + ' | GioiTinh: ' + gioiTinh + 
                                ' | TinhTrangGiaDinh: ' + tinhTrangGiaDinh + ' | TonGiao: ' + tonGiao + 
@@ -434,7 +452,7 @@
             const ketQua = document.getElementById('ket_qua');
             const tenQue = document.getElementById('ten_que').textContent;
             const changedHexagram = document.getElementById('changed-hexagram');
-            const currentTime = '03:03 PM +07, 29/9/2025';
+            const currentTime = '03:10 PM +07, 29/9/2025';
 
             // Vùng tạm (off-screen)
             const tmp = document.createElement("div");
