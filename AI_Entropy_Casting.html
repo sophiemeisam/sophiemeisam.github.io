@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grok's AI-Entropy Casting - Lấy Quẻ Dịch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Vietnamese:wght@400;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Serif Vietnamese', serif;
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #fff3e0, #ffd6cc);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 450px;
+            margin: 0 auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h2 {
+            color: #8b0000;
+            font-size: 2rem;
+            margin: 20px 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            border: 2px solid #8b0000;
+            border-radius: 30px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #ff4040;
+            box-shadow: 0 0 10px rgba(255, 64, 64, 0.3);
+        }
+
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(45deg, #d32f2f, #b71c1c);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            margin: 5px 0;
+            border-radius: 30px;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #b71c1c, #9a0007);
+            transform: scale(1.05);
+        }
+
+        #ket_qua {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .hao {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .line-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .yang-line {
+            width: 100px;
+            height: 10px;
+            background: #ff3333;
+            border-radius: 3px;
+        }
+
+        .yin-line {
+            display: flex;
+            gap: 10px;
+        }
+
+        .yin-line div {
+            width: 45px;
+            height: 10px;
+            background: #808080;
+            border-radius: 3px;
+        }
+
+        .hao-status {
+            font-size: 14px;
+            margin-left: 10px;
+            color: #ff4040;
+        }
+
+        .dong-text {
+            font-weight: bold;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        #ten_que {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #8b0000;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        #changed-hexagram {
+            margin-top: 20px;
+            text-align: left;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #changed-hexagram-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #8b0000;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .yang-line {
+                width: 80px;
+            }
+
+            .yin-line div {
+                width: 35px;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h2>Grok's AI-Entropy Casting</h2>
+            <p>Nhập thông tin để tính entropy và lấy quẻ. Các trường không bắt buộc có thể bỏ trống để thuật toán tự xử lý.</p>
+            <input type="text" id="ho_ten" placeholder="Họ tên đầy đủ">
+            <input type="text" id="tuoi_cha" placeholder="Tuổi cha (dương/âm lịch)">
+            <input type="text" id="tuoi_me" placeholder="Tuổi mẹ (dương/âm lịch)">
+            <input type="date" id="ngay_sinh" placeholder="Ngày tháng năm sinh">
+            <input type="time" id="gio_sinh" placeholder="Giờ sinh (tùy chọn)">
+            <select id="gioi_tinh">
+                <option value="">Giới tính</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+            </select>
+            <select id="tinh_trang_gia_dinh">
+                <option value="">Tình trạng gia đình</option>
+                <option value="Độc thân">Độc thân</option>
+                <option value="Đã kết hôn">Đã kết hôn</option>
+                <option value="Ly thân">Ly thân</option>
+                <option value="Ly dị">Ly dị</option>
+                <option value="Đang hẹn hò">Đang hẹn hò</option>
+            </select>
+            <select id="ton_giao">
+                <option value="">Tôn giáo</option>
+                <option value="Không">Không</option>
+                <option value="Phật">Phật</option>
+                <option value="Cao Đài">Cao Đài</option>
+                <option value="Hoà Hảo">Hoà Hảo</option>
+                <option value="Thiên Chúa">Thiên Chúa</option>
+                <option value="Tin Lành">Tin Lành</option>
+                <option value="Hồi Giáo">Hồi Giáo</option>
+                <option value="Khác">Khác</option>
+            </select>
+            <select id="muc_dich">
+                <option value="">Mục đích</option>
+                <option value="Giải trí">Giải trí</option>
+                <option value="Tò mò">Tò mò</option>
+                <option value="Thành tâm xem">Thành tâm xem</option>
+            </select>
+            <input type="text" id="su_viec" placeholder="Nhập sự việc cần xem">
+            <input type="checkbox" id="useGPS"> Sử dụng GPS để bổ sung dữ liệu vị trí (nếu browser hỗ trợ và bạn cho phép)<br>
+            <button onclick="castHexagram()">Lấy Quẻ</button>
+            <div id="ten_que"></div>
+        </div>
+        <div id="ket_qua"></div>
+        <div id="changed-hexagram" style="display: none;">
+            <div id="changed-hexagram-name"></div>
+            <div id="changed-hexagram-lines"></div>
+        </div>
+    </div>
+
+    <script>
+        const queDon = {
+            '111': 'Kiền', '011': 'Đoài', '101': 'Ly', '001': 'Chấn',
+            '110': 'Tốn', '010': 'Khảm', '100': 'Cấn', '000': 'Khôn'
+        };
+        const queKep = {
+            '111111': 'Thuần Kiền', '111110': 'Thiên Phong Cấu', '111100': 'Thiên Sơn Độn', '111000': 'Thiên Địa Bĩ',
+            '110000': 'Phong Địa Quán', '100000': 'Sơn Địa Bác', '101000': 'Hoả Địa Tấn', '101111': 'Hoả Thiên Đại Hữu',
+            '011011': 'Thuần Đoài', '011010': 'Trạch Thủy Khốn', '011000': 'Trạch Địa Tụy', '011100': 'Trạch Sơn Hàm',
+            '010100': 'Thủy Sơn Kiển', '000100': 'Địa Sơn Khiêm', '001100': 'Lôi Sơn Tiểu Quá', '001011': 'Lôi Trạch Quy Muội',
+            '101101': 'Thuần Ly', '101100': 'Hoả Sơn Lữ', '101110': 'Hoả Phong Đỉnh', '101010': 'Hoả Thủy Vị Tế',
+            '100010': 'Sơn Thủy Mông', '110010': 'Phong Thủy Hoán', '111010': 'Thiên Thủy Tụng', '111101': 'Thiên Hoả Đồng Nhân',
+            '001001': 'Thuần Chấn', '001000': 'Lôi Địa Dự', '001010': 'Lôi Thủy Giải', '001110': 'Lôi Phong Hằng',
+            '000110': 'Địa Phong Thăng', '010110': 'Thủy Phong Tĩnh', '011110': 'Trạch Phong Đại Quá', '011001': 'Trạch Lôi Tùy',
+            '110110': 'Thuần Tốn', '110111': 'Phong Thiên Tiểu Súc', '110101': 'Phong Hoả Gia Nhân', '110001': 'Phong Lôi Ích',
+            '111001': 'Thiên Lôi Vô Vọng', '101001': 'Hoả Lôi Phệ Hạp', '100001': 'Sơn Lôi Di', '100110': 'Sơn Phong Cổ',
+            '010010': 'Thuần Khảm', '010011': 'Thủy Trạch Tiết', '010001': 'Thủy Lôi Truân', '010101': 'Thủy Hoả Ký Tế',
+            '011101': 'Trạch Hoả Cách', '001101': 'Lôi Hoả Phong', '000101': 'Địa Hoả Minh Di', '000010': 'Địa Thủy Sư',
+            '100100': 'Thuần Cấn', '100101': 'Sơn Hoả Bí', '100111': 'Sơn Thiên Đại Súc', '100011': 'Sơn Trạch Tổn',
+            '101011': 'Hoả Trạch Khuê', '111011': 'Thiên Trạch Lý', '110011': 'Phong Trạch Trung Phu', '110100': 'Phong Sơn Tiệm',
+            '000000': 'Thuần Khôn', '000001': 'Địa Lôi Phục', '000011': 'Địa Trạch Lâm', '000111': 'Địa Thiên Thái',
+            '001111': 'Lôi Thiên Đại Tráng', '011111': 'Trạch Thiên Quải', '010111': 'Thủy Thiên Nhu', '010000': 'Thủy Địa Tỷ'
+        };
+
+        async function castHexagram() {
+            const suViec = document.getElementById('su_viec').value;
+            if (!suViec) {
+                alert('Vui lòng nhập sự việc cần xem!');
+                return;
+            }
+            const hoTen = document.getElementById('ho_ten').value || '';
+            const tuoiCha = document.getElementById('tuoi_cha').value || '';
+            const tuoiMe = document.getElementById('tuoi_me').value || '';
+            const ngaySinh = document.getElementById('ngay_sinh').value || '';
+            const gioSinh = document.getElementById('gio_sinh').value || '';
+            const gioiTinh = document.getElementById('gioi_tinh').value || '';
+            const tinhTrangGiaDinh = document.getElementById('tinh_trang_gia_dinh').value || '';
+            const tonGiao = document.getElementById('ton_giao').value || '';
+            const mucDich = document.getElementById('muc_dich').value || '';
+            const currentTime = '02:32 PM +07, 29/9/2025';
+            let entropyInput = suViec + ' | HoTen: ' + hoTen + ' | TuoiCha: ' + tuoiCha + ' | TuoiMe: ' + tuoiMe + 
+                               ' | NgaySinh: ' + ngaySinh + ' | GioSinh: ' + gioSinh + ' | GioiTinh: ' + gioiTinh + 
+                               ' | TinhTrangGiaDinh: ' + tinhTrangGiaDinh + ' | TonGiao: ' + tonGiao + 
+                               ' | MucDich: ' + mucDich + ' | Time: ' + currentTime;
+            
+            if (document.getElementById('useGPS').checked) {
+                try {
+                    const position = await getLocation();
+                    entropyInput += ' | Lat: ' + position.coords.latitude + ' | Lon: ' + position.coords.longitude;
+                } catch (error) {
+                    console.log('GPS Error:', error);
+                    alert('Không thể lấy GPS. Có thể bạn cần cấp quyền truy cập vị trí trong cài đặt trình duyệt/thiết bị. Tiếp tục mà không có vị trí.');
+                }
+            }
+            
+            // Hash input using SHA-256
+            const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(entropyInput));
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            
+            // Generate hexagram: 6 lines, each from 3 "coins" (simulate with bits)
+            let lines = [];
+            let dongHao = [];
+            for (let i = 0; i < 6; i++) { // i=0 top (hào 6), i=5 bottom (hào 1)
+                let coinSum = 0;
+                for (let j = 0; j < 3; j++) {
+                    const byte = hashArray[(i * 3 + j) % hashArray.length];
+                    coinSum += (byte % 2 === 0 ? 2 : 3); // 2=tails (even), 3=heads (odd)
+                }
+                // 6=old yin (moving), 7=young yang, 8=young yin, 9=old yang (moving)
+                const haoType = (coinSum % 2 === 1) ? 'duong' : 'am';
+                const isDong = (coinSum === 6 || coinSum === 9);
+                lines.push({ type: haoType, isDong: isDong });
+                if (isDong) dongHao.push(6 - i); // Line number from bottom (1-6)
+            }
+            
+            const ketQuaDiv = document.getElementById('ket_qua');
+            const tenQueDiv = document.getElementById('ten_que');
+            const changedHexagramDiv = document.getElementById('changed-hexagram');
+
+            // Reset giao diện
+            ketQuaDiv.innerHTML = `<p>Sự việc: ${suViec || 'Không nhập'}</p>`;
+            tenQueDiv.innerHTML = '';
+            changedHexagramDiv.style.display = 'none';
+
+            // Hiển thị quẻ chính
+            for (let haoNum = 6; haoNum >= 1; haoNum--) {
+                const index = 6 - haoNum; // index 0=top (hào6), 5=bottom (hào1)
+                const line = lines[index];
+                let haoDisplay;
+                if (line.type === 'duong') {
+                    haoDisplay = '<div class="line-container"><div class="yang-line"></div><span class="hao-status">' + 
+                                (line.isDong ? '(dương, <span class="dong-text">động</span>)' : '(dương)') + '</span></div>';
+                } else {
+                    haoDisplay = '<div class="line-container"><div class="yin-line"><div></div><div></div></div><span class="hao-status">' + 
+                                (line.isDong ? '(âm, <span class="dong-text">động</span>)' : '(âm)') + '</span></div>';
+                }
+                const haoDiv = document.createElement('div');
+                haoDiv.className = 'hao';
+                haoDiv.innerHTML = `Hào ${haoNum}: ${haoDisplay}`;
+                ketQuaDiv.appendChild(haoDiv);
+            }
+
+            // Tính tên quẻ chính
+            const binaryLines = lines.map(line => line.type === 'duong' ? '1' : '0'); // Đã từ top to bottom
+            const thuongQuai = binaryLines.slice(0, 3).join('');
+            const haQuai = binaryLines.slice(3, 6).join('');
+            const queKepCode = thuongQuai + haQuai;
+            const tenThuongQuai = queDon[thuongQuai] || 'Không xác định';
+            const tenHaQuai = queDon[haQuai] || 'Không xác định';
+            const tenQueKep = queKep[queKepCode] || 'Không xác định';
+
+            let displayText = `Quẻ chủ: ${tenQueKep} (Thượng: ${tenThuongQuai}, Hạ: ${tenHaQuai})`;
+            if (dongHao.length > 0) {
+                displayText += `, động hào ${dongHao.sort((a, b) => a - b).join(', ')}`;
+            } else {
+                displayText += ', không có hào động';
+            }
+            tenQueDiv.innerHTML = displayText;
+
+            // Tính và hiển thị quẻ biến nếu có hào động
+            if (dongHao.length > 0) {
+                const changedBinaryLines = binaryLines.slice();
+                dongHao.forEach(haoNum => {
+                    const index = 6 - haoNum; // index in array (0=top)
+                    changedBinaryLines[index] = changedBinaryLines[index] === '1' ? '0' : '1';
+                });
+                const changedThuongQuai = changedBinaryLines.slice(0, 3).join('');
+                const changedHaQuai = changedBinaryLines.slice(3, 6).join('');
+                const changedQueKepCode = changedThuongQuai + changedHaQuai;
+                const changedTenQueKep = queKep[changedQueKepCode] || 'Không xác định';
+                const changedTenThuongQuai = queDon[changedThuongQuai] || 'Không xác định';
+                const changedTenHaQuai = queDon[changedHaQuai] || 'Không xác định';
+
+                const changedHexagramName = document.getElementById('changed-hexagram-name');
+                const changedHexagramLines = document.getElementById('changed-hexagram-lines');
+
+                changedHexagramName.textContent = `Quẻ biến: ${changedTenQueKep} (Thượng: ${changedTenThuongQuai}, Hạ: ${changedTenHaQuai})`;
+                changedHexagramLines.innerHTML = '';
+
+                for (let haoNum = 6; haoNum >= 1; haoNum--) {
+                    const index = 6 - haoNum;
+                    const bit = changedBinaryLines[index];
+                    let lineHTML = `Hào ${haoNum}: `;
+                    if (bit === '1') {
+                        lineHTML += '<div class="line-container"><div class="yang-line"></div><span class="hao-status">(dương)</span></div>';
+                    } else {
+                        lineHTML += '<div class="line-container"><div class="yin-line"><div></div><div></div></div><span class="hao-status">(âm)</span></div>';
+                    }
+                    const haoDiv = document.createElement('div');
+                    haoDiv.className = 'hao';
+                    haoDiv.innerHTML = lineHTML;
+                    changedHexagramLines.appendChild(haoDiv);
+                }
+                changedHexagramDiv.style.display = 'block';
+            }
+        }
+        
+        function getLocation() {
+            return new Promise((resolve, reject) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 });
+                } else {
+                    reject('Geolocation không được hỗ trợ trên trình duyệt này.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
