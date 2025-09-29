@@ -322,10 +322,13 @@
         }
 
         function resetForm() {
+            // Xóa kết quả hiện tại
             document.getElementById('ket_qua').innerHTML = '';
             document.getElementById('ten_que').innerHTML = '';
             document.getElementById('changed-hexagram').style.display = 'none';
-            castHexagram(); // Tự động lấy quẻ mới sau khi reset
+            
+            // Lấy quẻ mới dựa trên dữ liệu hiện tại
+            castHexagram();
         }
 
         async function castHexagram() {
@@ -345,7 +348,7 @@
             const mucDich = document.getElementById('muc_dich').value || '';
             const daySo = document.getElementById('day_so').value || '';
             const mauSac = document.getElementById('mau_sac').value || '';
-            const currentTime = '03:51 PM +07, 29/9/2025'; // Cập nhật theo thời gian hiện tại
+            const currentTime = '04:00 PM +07, 29/9/2025'; // Cập nhật theo thời gian hiện tại
             let entropyInput = suViec + ' | HoTen: ' + hoTen + ' | TuoiCha: ' + tuoiCha + ' | TuoiMe: ' + tuoiMe + 
                                ' | NgaySinh: ' + ngaySinh + ' | GioSinh: ' + gioSinh + ' | GioiTinh: ' + gioiTinh + 
                                ' | TinhTrangGiaDinh: ' + tinhTrangGiaDinh + ' | TonGiao: ' + tonGiao + 
@@ -494,7 +497,7 @@
             const ketQua = document.getElementById('ket_qua');
             const tenQue = document.getElementById('ten_que').textContent;
             const changedHexagram = document.getElementById('changed-hexagram');
-            const currentTime = '03:51 PM +07, 29/9/2025';
+            const currentTime = '04:00 PM +07, 29/9/2025';
 
             const tmp = document.createElement("div");
             tmp.style.position = "fixed";
