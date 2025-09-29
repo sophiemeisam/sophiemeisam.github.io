@@ -76,7 +76,7 @@
             padding: 15px;
             border-radius: 15px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            touch-action: manipulation; /* Cho phép xử lý sự kiện long press */
+            touch-action: manipulation;
         }
 
         .hao {
@@ -168,26 +168,13 @@
             display: block;
         }
 
-        @media (max-width: 400px) {
-            .container {
-                max-width: 100%;
-            }
-
-            .yang-line {
-                width: 80px;
-            }
-
-            .yin-line div {
-                width: 35px;
-            }
-
-            button {
-                width: 100%;
-            }
-
-            h2 {
-                font-size: 1.5rem;
-            }
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -242,6 +229,18 @@
             </select>
             <span class="form-label">Nội dung muốn xem</span>
             <input type="text" id="su_viec" placeholder="Nhập sự việc cần xem">
+            <span class="form-label">Dãy số ngẫu nhiên bạn nghĩ đến / yêu thích</span>
+            <input type="text" id="day_so" placeholder="Ví dụ: 3 7 12">
+            <span class="form-label">Màu sắc bạn nghĩ đến / yêu thích</span>
+            <select id="mau_sac" onchange="updateColorPreview()">
+                <option value="">Chọn màu</option>
+                <option value="#FF0000" style="background-color: #FF0000;">Đỏ</option>
+                <option value="#00FF00" style="background-color: #00FF00;">Xanh lá</option>
+                <option value="#0000FF" style="background-color: #0000FF;">Xanh dương</option>
+                <option value="#FFFF00" style="background-color: #FFFF00;">Vàng</option>
+                <option value="#FF00FF" style="background-color: #FF00FF;">Tím</option>
+            </select>
+            <div id="color-preview" class="color-preview" style="background-color: #ffffff;"></div>
             <input type="checkbox" id="useGPS"> Sử dụng GPS để bổ sung dữ liệu vị trí (nếu browser hỗ trợ và bạn cho phép)<br>
             <button onclick="castHexagram()">Lấy Quẻ</button>
             <div id="ten_que"></div>
@@ -280,6 +279,12 @@
 
         let longPressTimeout;
 
+        function updateColorPreview() {
+            const mauSac = document.getElementById('mau_sac').value;
+            const colorPreview = document.getElementById('color-preview');
+            colorPreview.style.backgroundColor = mauSac || '#ffffff';
+        }
+
         async function castHexagram() {
             const suViec = document.getElementById('su_viec').value;
             if (!suViec) {
@@ -295,13 +300,15 @@
             const tinhTrangGiaDinh = document.getElementById('tinh_trang_gia_dinh').value || '';
             const tonGiao = document.getElementById('ton_giao').value || '';
             const mucDich = document.getElementById('muc_dich').value || '';
-            const currentTime = '03:10 PM +07, 29/9/2025'; // Cập nhật theo ngày giờ hiện tại
+            const daySo = document.getElementById('day_so').value || '';
+            const mauSac = document.getElementById('mau_sac').value || '';
+            const currentTime = '03:27 PM +07, 29/9/2025';
             let entropyInput = suViec + ' | HoTen: ' + hoTen + ' | TuoiCha: ' + tuoiCha + ' | TuoiMe: ' + tuoiMe + 
                                ' | NgaySinh: ' + ngaySinh + ' | GioSinh: ' + gioSinh + ' | GioiTinh: ' + gioiTinh + 
                                ' | TinhTrangGiaDinh: ' + tinhTrangGiaDinh + ' | TonGiao: ' + tonGiao + 
-                               ' | MucDich: ' + mucDich + ' | Time: ' + currentTime;
+                               ' | MucDich: ' + mucDich + ' | DaySo: ' + daySo + ' | MauSac: ' + mauSac + 
+                               ' | Time: ' + currentTime;
             
-            // Kiểm tra và cảnh báo các form bị bỏ qua
             let skippedFields = [];
             if (!hoTen) skippedFields.push('Họ tên');
             if (!tuoiCha) skippedFields.push('Tuổi cha');
@@ -326,38 +333,33 @@
                 }
             }
             
-            // Hash input using SHA-256
             const hashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(entropyInput));
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             
-            // Generate hexagram: 6 lines, each from 3 "coins" (simulate with bits)
             let lines = [];
             let dongHao = [];
-            for (let i = 0; i < 6; i++) { // i=0 top (hào 6), i=5 bottom (hào 1)
+            for (let i = 0; i < 6; i++) {
                 let coinSum = 0;
                 for (let j = 0; j < 3; j++) {
                     const byte = hashArray[(i * 3 + j) % hashArray.length];
-                    coinSum += (byte % 2 === 0 ? 2 : 3); // 2=tails (even), 3=heads (odd)
+                    coinSum += (byte % 2 === 0 ? 2 : 3);
                 }
-                // 6=old yin (moving), 7=young yang, 8=young yin, 9=old yang (moving)
                 const haoType = (coinSum % 2 === 1) ? 'duong' : 'am';
                 const isDong = (coinSum === 6 || coinSum === 9);
                 lines.push({ type: haoType, isDong: isDong });
-                if (isDong) dongHao.push(6 - i); // Line number from bottom (1-6)
+                if (isDong) dongHao.push(6 - i);
             }
             
             const ketQuaDiv = document.getElementById('ket_qua');
             const tenQueDiv = document.getElementById('ten_que');
             const changedHexagramDiv = document.getElementById('changed-hexagram');
 
-            // Reset giao diện
             ketQuaDiv.innerHTML = `<p>Sự việc: ${suViec || 'Không nhập'}</p>`;
             tenQueDiv.innerHTML = '';
             changedHexagramDiv.style.display = 'none';
 
-            // Hiển thị quẻ chính
             for (let haoNum = 6; haoNum >= 1; haoNum--) {
-                const index = 6 - haoNum; // index 0=top (hào6), 5=bottom (hào1)
+                const index = 6 - haoNum;
                 const line = lines[index];
                 let haoDisplay;
                 if (line.type === 'duong') {
@@ -373,8 +375,7 @@
                 ketQuaDiv.appendChild(haoDiv);
             }
 
-            // Tính tên quẻ chính
-            const binaryLines = lines.map(line => line.type === 'duong' ? '1' : '0'); // Đã từ top to bottom
+            const binaryLines = lines.map(line => line.type === 'duong' ? '1' : '0');
             const thuongQuai = binaryLines.slice(0, 3).join('');
             const haQuai = binaryLines.slice(3, 6).join('');
             const queKepCode = thuongQuai + haQuai;
@@ -390,11 +391,10 @@
             }
             tenQueDiv.innerHTML = displayText;
 
-            // Tính và hiển thị quẻ biến nếu có hào động
             if (dongHao.length > 0) {
                 const changedBinaryLines = binaryLines.slice();
                 dongHao.forEach(haoNum => {
-                    const index = 6 - haoNum; // index in array (0=top)
+                    const index = 6 - haoNum;
                     changedBinaryLines[index] = changedBinaryLines[index] === '1' ? '0' : '1';
                 });
                 const changedThuongQuai = changedBinaryLines.slice(0, 3).join('');
@@ -427,11 +427,10 @@
                 changedHexagramDiv.style.display = 'block';
             }
 
-            // Thêm sự kiện long press để tải ảnh
             const ketQuaElement = document.getElementById('ket_qua');
             ketQuaElement.onmousedown = ketQuaElement.ontouchstart = function(e) {
                 clearTimeout(longPressTimeout);
-                longPressTimeout = setTimeout(() => downloadHexagram(), 1000); // 1 giây giữ để trigger
+                longPressTimeout = setTimeout(() => downloadHexagram(), 1000);
             };
             ketQuaElement.onmouseup = ketQuaElement.ontouchend = function() {
                 clearTimeout(longPressTimeout);
@@ -452,9 +451,8 @@
             const ketQua = document.getElementById('ket_qua');
             const tenQue = document.getElementById('ten_que').textContent;
             const changedHexagram = document.getElementById('changed-hexagram');
-            const currentTime = '03:10 PM +07, 29/9/2025';
+            const currentTime = '03:27 PM +07, 29/9/2025';
 
-            // Vùng tạm (off-screen)
             const tmp = document.createElement("div");
             tmp.style.position = "fixed";
             tmp.style.left = "-9999px";
@@ -464,28 +462,23 @@
             tmp.style.boxSizing = "border-box";
             tmp.style.fontFamily = "'Noto Serif Vietnamese', serif";
 
-            // Thêm dòng thời gian
             const timeDiv = document.createElement("div");
             timeDiv.textContent = `Giờ ; Ngày - Tháng - Năm lấy quẻ: ${currentTime}`;
             timeDiv.className = 'download-time';
             tmp.appendChild(timeDiv);
 
-            // Thêm nội dung muốn xem
             const suViecDiv = document.createElement("div");
             suViecDiv.textContent = `Nội dung muốn xem: ${document.getElementById('su_viec').value || 'Không nhập'}`;
             suViecDiv.style.marginBottom = "10px";
             tmp.appendChild(suViecDiv);
 
-            // Thêm tên quẻ và số hào động
             const tenQueDiv = document.createElement("div");
             tenQueDiv.textContent = tenQue;
             tenQueDiv.style.marginBottom = "10px";
             tmp.appendChild(tenQueDiv);
 
-            // Thêm quẻ chính
             tmp.appendChild(ketQua.cloneNode(true));
 
-            // Thêm quẻ biến nếu có
             if (changedHexagram.style.display !== 'none') {
                 tmp.appendChild(changedHexagram.cloneNode(true));
             }
