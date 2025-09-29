@@ -27,6 +27,20 @@
             justify-content: space-between;
         }
 
+        .form-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .main-form {
+            width: 70%;
+        }
+
+        .side-menu {
+            width: 28%;
+            padding-left: 10px;
+        }
+
         h2 {
             color: #8b0000;
             font-size: 2rem;
@@ -176,6 +190,19 @@
             margin-left: 10px;
             vertical-align: middle;
         }
+
+        @media (max-width: 400px) {
+            .form-container {
+                flex-direction: column;
+            }
+            .main-form, .side-menu {
+                width: 100%;
+            }
+            .side-menu {
+                padding-left: 0;
+                margin-top: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -183,68 +210,75 @@
         <div>
             <h2>Grok's AI-Entropy Casting</h2>
             <p>Nhập thông tin để tính entropy và lấy quẻ. Các trường không bắt buộc có thể bỏ trống.</p>
-            <span class="form-label">Họ tên đầy đủ</span>
-            <input type="text" id="ho_ten" placeholder="Họ tên đầy đủ">
-            <span class="form-label">Tuổi cha (dương/âm lịch)</span>
-            <input type="text" id="tuoi_cha" placeholder="Tuổi cha (dương/âm lịch)">
-            <span class="form-label">Tuổi mẹ (dương/âm lịch)</span>
-            <input type="text" id="tuoi_me" placeholder="Tuổi mẹ (dương/âm lịch)">
-            <span class="form-label">Ngày - tháng - năm sinh của người xin quẻ</span>
-            <input type="date" id="ngay_sinh" placeholder="Ngày - tháng - năm sinh của người xin quẻ">
-            <span class="form-label">Giờ sinh của người xin quẻ (tùy chọn)</span>
-            <input type="time" id="gio_sinh" placeholder="Giờ sinh của người xin quẻ (tùy chọn)">
-            <span class="form-label">Giới tính</span>
-            <select id="gioi_tinh">
-                <option value="">Giới tính</option>
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-            </select>
-            <span class="form-label">Tình trạng gia đình</span>
-            <select id="tinh_trang_gia_dinh">
-                <option value="">Tình trạng gia đình</option>
-                <option value="Độc thân">Độc thân</option>
-                <option value="Đã kết hôn">Đã kết hôn</option>
-                <option value="Ly thân">Ly thân</option>
-                <option value="Ly dị">Ly dị</option>
-                <option value="Đang hẹn hò">Đang hẹn hò</option>
-            </select>
-            <span class="form-label">Tôn giáo</span>
-            <select id="ton_giao">
-                <option value="">Tôn giáo</option>
-                <option value="Không">Không</option>
-                <option value="Phật">Phật</option>
-                <option value="Cao Đài">Cao Đài</option>
-                <option value="Hoà Hảo">Hoà Hảo</option>
-                <option value="Thiên Chúa">Thiên Chúa</option>
-                <option value="Tin Lành">Tin Lành</option>
-                <option value="Hồi Giáo">Hồi Giáo</option>
-                <option value="Khác">Khác</option>
-            </select>
-            <span class="form-label">Mục đích</span>
-            <select id="muc_dich">
-                <option value="">Mục đích</option>
-                <option value="Giải trí">Giải trí</option>
-                <option value="Tò mò">Tò mò</option>
-                <option value="Thành tâm xem">Thành tâm xem</option>
-            </select>
-            <span class="form-label">Nội dung muốn xem</span>
-            <input type="text" id="su_viec" placeholder="Nhập sự việc cần xem">
-            <span class="form-label">Dãy số ngẫu nhiên bạn nghĩ đến / yêu thích</span>
-            <input type="text" id="day_so" placeholder="Ví dụ: 3 7 12">
-            <span class="form-label">Màu sắc bạn nghĩ đến / yêu thích</span>
-            <select id="mau_sac" onchange="updateColorPreview()">
-                <option value="">Chọn màu</option>
-                <option value="#FF0000" style="background-color: #FF0000;">Đỏ</option>
-                <option value="#00FF00" style="background-color: #00FF00;">Xanh lá</option>
-                <option value="#0000FF" style="background-color: #0000FF;">Xanh dương</option>
-                <option value="#FFFF00" style="background-color: #FFFF00;">Vàng</option>
-                <option value="#FF00FF" style="background-color: #FF00FF;">Tím</option>
-                <option value="#000000" style="background-color: #000000; color: white;">Đen</option>
-                <option value="#FFFFFF" style="background-color: #FFFFFF;">Trắng</option>
-            </select>
-            <div id="color-preview" class="color-preview" style="background-color: #ffffff;"></div>
-            <input type="checkbox" id="useGPS"> Sử dụng GPS để bổ sung dữ liệu vị trí (nếu browser hỗ trợ và bạn cho phép)<br>
-            <button onclick="castHexagram()">Lấy Quẻ</button>
+            <div class="form-container">
+                <div class="main-form">
+                    <span class="form-label">Họ tên đầy đủ</span>
+                    <input type="text" id="ho_ten" placeholder="Họ tên đầy đủ">
+                    <span class="form-label">Tuổi cha (dương/âm lịch)</span>
+                    <input type="text" id="tuoi_cha" placeholder="Tuổi cha (dương/âm lịch)">
+                    <span class="form-label">Tuổi mẹ (dương/âm lịch)</span>
+                    <input type="text" id="tuoi_me" placeholder="Tuổi mẹ (dương/âm lịch)">
+                    <span class="form-label">Ngày - tháng - năm sinh của người xin quẻ</span>
+                    <input type="date" id="ngay_sinh" placeholder="Ngày - tháng - năm sinh của người xin quẻ">
+                    <span class="form-label">Giờ sinh của người xin quẻ (tùy chọn)</span>
+                    <input type="time" id="gio_sinh" placeholder="Giờ sinh của người xin quẻ (tùy chọn)">
+                    <span class="form-label">Giới tính</span>
+                    <select id="gioi_tinh">
+                        <option value="">Giới tính</option>
+                        <option value="Nam">Nam</option>
+                        <option value="Nữ">Nữ</option>
+                    </select>
+                    <span class="form-label">Tình trạng gia đình</span>
+                    <select id="tinh_trang_gia_dinh">
+                        <option value="">Tình trạng gia đình</option>
+                        <option value="Độc thân">Độc thân</option>
+                        <option value="Đã kết hôn">Đã kết hôn</option>
+                        <option value="Ly thân">Ly thân</option>
+                        <option value="Ly dị">Ly dị</option>
+                        <option value="Đang hẹn hò">Đang hẹn hò</option>
+                    </select>
+                    <span class="form-label">Tôn giáo</span>
+                    <select id="ton_giao">
+                        <option value="">Tôn giáo</option>
+                        <option value="Không">Không</option>
+                        <option value="Phật">Phật</option>
+                        <option value="Cao Đài">Cao Đài</option>
+                        <option value="Hoà Hảo">Hoà Hảo</option>
+                        <option value="Thiên Chúa">Thiên Chúa</option>
+                        <option value="Tin Lành">Tin Lành</option>
+                        <option value="Hồi Giáo">Hồi Giáo</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                    <span class="form-label">Mục đích</span>
+                    <select id="muc_dich">
+                        <option value="">Mục đích</option>
+                        <option value="Giải trí">Giải trí</option>
+                        <option value="Tò mò">Tò mò</option>
+                        <option value="Thành tâm xem">Thành tâm xem</option>
+                    </select>
+                    <span class="form-label">Nội dung muốn xem</span>
+                    <input type="text" id="su_viec" placeholder="Nhập sự việc cần xem">
+                    <span class="form-label">Dãy số ngẫu nhiên bạn nghĩ đến / yêu thích</span>
+                    <input type="text" id="day_so" placeholder="Ví dụ: 3 7 12">
+                    <span class="form-label">Màu sắc bạn nghĩ đến / yêu thích</span>
+                    <select id="mau_sac" onchange="updateColorPreview()">
+                        <option value="">Chọn màu</option>
+                        <option value="#FF0000" style="background-color: #FF0000;">Đỏ</option>
+                        <option value="#00FF00" style="background-color: #00FF00;">Xanh lá</option>
+                        <option value="#0000FF" style="background-color: #0000FF;">Xanh dương</option>
+                        <option value="#FFFF00" style="background-color: #FFFF00;">Vàng</option>
+                        <option value="#FF00FF" style="background-color: #FF00FF;">Tím</option>
+                        <option value="#000000" style="background-color: #000000; color: white;">Đen</option>
+                        <option value="#FFFFFF" style="background-color: #FFFFFF;">Trắng</option>
+                    </select>
+                    <div id="color-preview" class="color-preview" style="background-color: #ffffff;"></div>
+                    <input type="checkbox" id="useGPS"> Sử dụng GPS để bổ sung dữ liệu vị trí (nếu browser hỗ trợ và bạn cho phép)<br>
+                    <button onclick="castHexagram()">Lấy Quẻ</button>
+                </div>
+                <div class="side-menu">
+                    <button onclick="resetForm()">Reset</button>
+                </div>
+            </div>
             <div id="ten_que"></div>
         </div>
         <div id="ket_qua"></div>
@@ -287,6 +321,13 @@
             colorPreview.style.backgroundColor = mauSac || '#ffffff';
         }
 
+        function resetForm() {
+            document.getElementById('ket_qua').innerHTML = '';
+            document.getElementById('ten_que').innerHTML = '';
+            document.getElementById('changed-hexagram').style.display = 'none';
+            castHexagram(); // Tự động lấy quẻ mới sau khi reset
+        }
+
         async function castHexagram() {
             const suViec = document.getElementById('su_viec').value;
             if (!suViec) {
@@ -304,7 +345,7 @@
             const mucDich = document.getElementById('muc_dich').value || '';
             const daySo = document.getElementById('day_so').value || '';
             const mauSac = document.getElementById('mau_sac').value || '';
-            const currentTime = '03:34 PM +07, 29/9/2025'; // Cập nhật theo thời gian hiện tại
+            const currentTime = '03:51 PM +07, 29/9/2025'; // Cập nhật theo thời gian hiện tại
             let entropyInput = suViec + ' | HoTen: ' + hoTen + ' | TuoiCha: ' + tuoiCha + ' | TuoiMe: ' + tuoiMe + 
                                ' | NgaySinh: ' + ngaySinh + ' | GioSinh: ' + gioSinh + ' | GioiTinh: ' + gioiTinh + 
                                ' | TinhTrangGiaDinh: ' + tinhTrangGiaDinh + ' | TonGiao: ' + tonGiao + 
@@ -317,7 +358,7 @@
             if (!tuoiMe) skippedFields.push('Tuổi mẹ');
             if (!ngaySinh) skippedFields.push('Ngày - tháng - năm sinh');
             if (!gioSinh) skippedFields.push('Giờ sinh');
-            if (!gioi_tinh) skippedFields.push('Giới tính');
+            if (!gioiTinh) skippedFields.push('Giới tính');
             if (!tinhTrangGiaDinh) skippedFields.push('Tình trạng gia đình');
             if (!tonGiao) skippedFields.push('Tôn giáo');
             if (!mucDich) skippedFields.push('Mục đích');
@@ -453,7 +494,7 @@
             const ketQua = document.getElementById('ket_qua');
             const tenQue = document.getElementById('ten_que').textContent;
             const changedHexagram = document.getElementById('changed-hexagram');
-            const currentTime = '03:34 PM +07, 29/9/2025';
+            const currentTime = '03:51 PM +07, 29/9/2025';
 
             const tmp = document.createElement("div");
             tmp.style.position = "fixed";
