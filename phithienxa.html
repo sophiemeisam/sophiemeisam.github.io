@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phi Thiên Xá</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
     <style>
         .grid {
             display: grid;
@@ -16,11 +17,19 @@
         .cell {
             border: 2px solid red;
             display: flex;
+            flex-direction: column; /* Stack number and label vertically */
             align-items: center;
             justify-content: center;
             font-size: 48px;
             color: red;
-            font-family: cursive; /* To mimic handwritten style */
+            font-family: cursive; /* Number retains cursive style */
+        }
+        .cell-label {
+            font-size: 16px; /* Medium size */
+            font-weight: bold;
+            color: teal; /* Greenish-blue color */
+            font-family: 'Roboto', sans-serif; /* Roboto font, bold */
+            margin-top: 5px;
         }
         #cell4 { grid-area: 1 / 1; }
         #cell9 { grid-area: 1 / 2; }
@@ -48,20 +57,27 @@
             font-size: 20px;
             margin-top: 20px;
         }
+        #notification {
+            text-align: center;
+            font-size: 16px; /* Medium size */
+            font-weight: bold;
+            color: #ff0000; /* Prominent red color */
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <h1 style="text-align: center;">Địa Bàn Lạc Thư - Phi Thiên Xá</h1>
     <div class="grid">
-        <div class="cell" id="cell4">4</div>
-        <div class="cell" id="cell9">9</div>
-        <div class="cell" id="cell2">2</div>
-        <div class="cell" id="cell3">3</div>
-        <div class="cell" id="cell5">5</div>
-        <div class="cell" id="cell7">7</div>
-        <div class="cell" id="cell8">8</div>
-        <div class="cell" id="cell1">1</div>
-        <div class="cell" id="cell6">6</div>
+        <div class="cell" id="cell4">4<div class="cell-label">Đông Nam</div></div>
+        <div class="cell" id="cell9">9<div class="cell-label">Nam</div></div>
+        <div class="cell" id="cell2">2<div class="cell-label">Tây Nam</div></div>
+        <div class="cell" id="cell3">3<div class="cell-label">Đông</div></div>
+        <div class="cell" id="cell5">5<div class="cell-label">Trung Cung</div></div>
+        <div class="cell" id="cell7">7<div class="cell-label">Tây</div></div>
+        <div class="cell" id="cell8">8<div class="cell-label">Đông Bắc</div></div>
+        <div class="cell" id="cell1">1<div class="cell-label">Bắc</div></div>
+        <div class="cell" id="cell6">6<div class="cell-label">Tây Bắc</div></div>
     </div>
     <div class="controls">
         <label for="selectA">Button A: Tháng (Hoa Giáp)</label><br>
@@ -137,6 +153,7 @@
         </select>
         <br>
         <button onclick="calculate()">Tính Phi Thiên Xá</button>
+        <div id="notification"></div>
     </div>
     <div id="result"></div>
 
@@ -164,6 +181,18 @@
             9: "Ly"
         };
 
+        const directions = {
+            1: "Bắc",
+            2: "Tây Nam",
+            3: "Đông",
+            4: "Đông Nam",
+            5: "Trung Cung",
+            6: "Tây Bắc",
+            7: "Tây",
+            8: "Đông Bắc",
+            9: "Nam"
+        };
+
         function resetHighlights() {
             for (let i = 1; i <= 9; i++) {
                 document.getElementById("cell" + i).style.backgroundColor = "";
@@ -181,7 +210,9 @@
             const cellNum = cycle[posIndex];
             document.getElementById("cell" + cellNum).style.backgroundColor = "rgba(255, 0, 0, 0.3)"; // Light red highlight
             const resultDiv = document.getElementById("result");
-            resultDiv.innerHTML = `Ngày Thiên Xá (${B}) ở cung: ${cungNames[cellNum]} (ô số ${cellNum})`;
+            resultDiv.innerHTML = `Ngày Thiên Xá (${B}) ở cung: ${cungNames[cellNum]} (hướng ${directions[cellNum]})`;
+            const notificationDiv = document.getElementById("notification");
+            notificationDiv.innerHTML = `Ngày Thiên Xá đã chọn: ${B} - Tháng: ${A} - Phương vị: ${directions[cellNum]}`;
         }
     </script>
 </body>
