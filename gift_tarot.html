@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quà trải nghiệm cho bạn 🎁</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#f59e0b;--muted:#94a3b8;color-scheme:dark}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+    body{background:linear-gradient(180deg,#071129 0%, #08142a 60%);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:24px}
+    .app{width:100%;max-width:980px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));border-radius:14px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    header{display:flex;gap:12px;align-items:center}
+    h1{margin:0;font-size:20px}
+    p.lead{margin:6px 0 16px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr 380px;gap:12px}
+    .card{background:var(--card);padding:14px;border-radius:12px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.02)}
+    .center{text-align:center}
+    button{background:linear-gradient(90deg,var(--accent),#ef4444);border:0;padding:10px 14px;border-radius:10px;color:#071129;font-weight:600;cursor:pointer}
+    input,select,textarea{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    .tarot-row{display:flex;gap:8px;justify-content:center;margin:12px 0}
+    .tarot-card{width:86px;height:140px;border-radius:8px;background:linear-gradient(180deg,#071a2e,#07243a);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(2,6,23,0.6);cursor:pointer;user-select:none}
+    .small{font-size:13px;color:var(--muted)}
+    .hint{font-size:13px;color:var(--muted);margin-top:8px}
+    .projects{display:flex;flex-direction:column;gap:8px}
+    .project{padding:8px;border-radius:8px;background:linear-gradient(180deg,rgba(255,255,255,0.01),rgba(255,255,255,0.01));border:1px dashed rgba(255,255,255,0.02)}
+    .result{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,monospace;background:linear-gradient(180deg,rgba(0,0,0,0.12),transparent);padding:8px;border-radius:8px}
+    footer{margin-top:12px;color:var(--muted);font-size:13px}
+    .glow{filter:drop-shadow(0 8px 28px rgba(245,158,11,0.18));}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div style="flex:1">
+        <h1>Quà trải nghiệm — dành cho bạn 🎁</h1>
+        <p class="lead">Một trang nhỏ tổng hợp: rút bài Tarot nhẹ, phân tích số học (numerology), ý tưởng dự án và gợi ý hành động — dựa trên sở thích & mối quan tâm bạn đã chia sẻ.</p>
+      </div>
+      <div class="small center">
+        <div style="font-weight:700;color:var(--accent)">Tương tác nhanh</div>
+        <div class="hint">Nhấn vào các vùng bên trái để trải nghiệm — kết quả xuất hiện bên phải</div>
+      </div>
+    </header>
+
+    <section class="grid" style="margin-top:14px">
+      <div>
+        <div class="card">
+          <h3>1) Rút bài Tarot (3 lá)</h3>
+          <p class="small">Nhấn "Xáo" rồi "Rút 3 lá". Mỗi lần rút là một thông điệp khác nhau.</p>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+            <button id="shuffleBtn">Xáo bài</button>
+            <button id="drawBtn">Rút 3 lá</button>
+            <button id="revealBtn">Giải thích</button>
+          </div>
+
+          <div class="tarot-row" id="tarotRow" style="margin-top:12px">
+            <div class="tarot-card" data-index="0">❓</div>
+            <div class="tarot-card" data-index="1">❓</div>
+            <div class="tarot-card" data-index="2">❓</div>
+          </div>
+          <div class="small hint">Mỗi lá có thể lật ngược — lật ngược thay đổi ý nghĩa.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>2) Phân tích số học (Numerology)</h3>
+          <p class="small">Bạn có thể nhập số thẻ căn cước hoặc số khác. Mình đã đặt sẵn ví dụ.</p>
+          <label class="small">Số dùng để phân tích (dấu cách được bỏ qua):</label>
+          <input id="idInput" value="083084001472" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="analyzeBtn">Phân tích</button>
+            <button id="resetIdBtn">Reset ví dụ</button>
+          </div>
+          <div class="hint">Phân tích đơn giản: tổng chữ số, chữ số chủ đạo, năng lượng ẩn.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>3) Bộ sinh ý tưởng dự án</h3>
+          <p class="small">Chọn các mối quan tâm của bạn — nhấn "Gợi ý" để nhận 4 ý tưởng khởi nghiệp / bước tiếp theo.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+            <label><input type="checkbox" class="tag" value="blockchain" /> Blockchain / Pi Network</label>
+            <label><input type="checkbox" class="tag" value="immigrate" /> Định cư / Visa Hàn</label>
+            <label><input type="checkbox" class="tag" value="fengshui" /> Phong thủy / Lục Hào</label>
+            <label><input type="checkbox" class="tag" value="herbs" /> Rau dại & Đông y</label>
+            <label><input type="checkbox" class="tag" value="tarot" /> Tarot / Năng lượng</label>
+            <label><input type="checkbox" class="tag" value="content" /> Blog / Media</label>
+          </div>
+          <div style="margin-top:10px"><button id="ideaBtn">Gợi ý</button></div>
+        </div>
+
+      </div>
+
+      <aside>
+        <div class="card">
+          <h3>Kết quả</h3>
+          <div id="resultArea" class="result">Chưa có kết quả — hãy tương tác với các công cụ bên trái.</div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3>Gợi ý nhanh</h3>
+          <div class="small">Mẹo sử dụng:</div>
+          <ul class="small" style="margin:8px 0 0 16px">
+            <li>Rút bài để nhận thông điệp tóm tắt cho tình huống (hiện tại - chướng ngại - hướng đi).</li>
+            <li>Phân tích số học cho thấy năng lượng chủ đạo — dùng làm gợi ý chọn mốc hành động.</li>
+            <li>Bộ ý tưởng kết hợp sở thích của bạn thành dự án có thể triển khai nhanh (MVP).</li>
+          </ul>
+        </div>
+
+      </aside>
+    </section>
+
+    <footer>
+      Nếu bạn muốn mở rộng (ví dụ: lưu lịch sử rút bài, thay hình ảnh, thêm tiếng Việt hoa văn), nói mình biết — mình sẽ cập nhật ngay.
+    </footer>
+  </main>
+
+  <script>
+    // --- Data ---
+    const TAROT_NAMES = [
+      'The Fool','The Magician','The High Priestess','The Empress','The Emperor','The Hierophant','The Lovers','The Chariot','Strength','Hermit','Wheel of Fortune','Justice','Hanged Man','Death','Temperance','Devil','Tower','Star','Moon','Sun','Judgement','World'
+    ];
+
+    // helper
+    const el = id => document.getElementById(id);
+
+    // Tarot logic
+    let deck = [];
+    function newDeck(){
+      deck = TAROT_NAMES.map((name,i)=>({name,idx:i+1}));
+      shuffle(deck);
+    }
+    function shuffle(a){
+      for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+    }
+
+    function renderTarotPlaceholders(){
+      document.querySelectorAll('.tarot-card').forEach((d,i)=>{d.textContent='❓';d.dataset.card='';d.dataset.revealed='false';d.dataset.rev='false'});
+    }
+
+    el('shuffleBtn').addEventListener('click',()=>{newDeck(); renderTarotPlaceholders(); showResult('Đã xáo bài — bấm "Rút 3 lá" để kéo thông điệp.');});
+
+    el('drawBtn').addEventListener('click',()=>{
+      if(!deck.length) newDeck();
+      shuffle(deck);
+      const picks = deck.slice(0,3).map(c=>({...c, reversed: Math.random()<0.35}));
+      document.querySelectorAll('.tarot-card').forEach((d,i)=>{
+        const p = picks[i];
+        d.dataset.card = p.name;
+        d.dataset.revealed = 'false';
+        d.dataset.rev = p.reversed? 'true':'false';
+        d.textContent = '🂠';
+      });
+      showResult('Đã rút 3 lá. Bấm vào từng lá (hoặc "Giải thích") để xem ý nghĩa.');
+    });
+
+    document.querySelectorAll('.tarot-card').forEach(c=>c.addEventListener('click',ev=>{
+      const target = ev.currentTarget;
+      const name = target.dataset.card;
+      if(!name){
+        target.textContent = '🂠';
+        return;
+      }
+      const revealed = target.dataset.revealed === 'true';
+      if(!revealed){
+        target.textContent = (target.dataset.rev === 'true') ? name + ' ⤵️':' ' + name + ' ⤴️';
+        target.dataset.revealed = 'true';
+        // show short meaning
+        showResult(shortTarotMeaning(name, target.dataset.rev === 'true'));
+      } else {
+        target.dataset.revealed = 'false';
+        target.textContent = '🂠';
+        showResult('Đã ẩn lá bài.');
+      }
+    }));
+
+    el('revealBtn').addEventListener('click',()=>{
+      const cards = Array.from(document.querySelectorAll('.tarot-card')).map(d=>({name:d.dataset.card,rev:d.dataset.rev==='true'}));
+      if(!cards[0].name){ showResult('Chưa rút bài.'); return; }
+      const text = `Bộ 3 lá — Thông điệp rút nhanh:\n\nHiện tại: ${shortTarotMeaning(cards[0].name,cards[0].rev)}\nChướng ngại: ${shortTarotMeaning(cards[1].name,cards[1].rev)}\nHướng đi: ${shortTarotMeaning(cards[2].name,cards[2].rev)}`;
+      document.querySelectorAll('.tarot-card').forEach((d,i)=>d.textContent = (cards[i].rev ? cards[i].name + ' ⤵️':' ' + cards[i].name + ' ⤴️'));
+      showResult(text);
+    });
+
+    function shortTarotMeaning(name,rev){
+      // simplified meanings tuned to user's interests
+      const base = {
+        'The Fool':'Bắt đầu mới, bước nhảy tin tưởng.',
+        'The Magician':'Khai thác năng lực, dùng tài nguyên sẵn có để tạo ra giá trị.',
+        'The High Priestess':'Trực giác, thông điệp từ vô thức — lắng nghe cảm nhận.',
+        'The Empress':'Sự phong phú, nuôi dưỡng: nông nghiệp, rau dại, sáng tạo nội dung.',
+        'The Emperor':'Cấu trúc, quyết định lãnh đạo, pháp lý, kế hoạch đầu tư.',
+        'The Hierophant':'Truyền thống, tôn giáo, tinh thần, giáo dục.',
+        'The Lovers':'Hợp tác, đối tác chiến lược.',
+        'The Chariot':'Hành động mạnh mẽ, di chuyển, có thể là di trú.',
+        'Strength':'Sức chịu đựng, vững tâm trước năng lượng tiêu cực.',
+        'Hermit':'Tĩnh lặng, nghiên cứu sâu.',
+        'Wheel of Fortune':'Biến động, cơ hội chu kỳ (Pi Network / mainnet).',
+        'Justice':'Công lý, hợp đồng, visa & pháp lý.',
+        'Hanged Man':'Tạm dừng, cần đổi góc nhìn.',
+        'Death':'Kết thúc, chuyển hóa mạnh mẽ.',
+        'Temperance':'Cân bằng năng lượng, điều chỉnh lộ trình.',
+        'Devil':'Ràng buộc, cạm bẫy (cảnh giác: dự án/đầu tư không minh bạch).',
+        'Tower':'Đột biến, thay đổi bất ngờ.',
+        'Star':'Hy vọng, tầm nhìn dài.',
+        'Moon':'Bối rối, ẩn tình; trực giác quan trọng.',
+        'Sun':'Thành công, sáng sủa.',
+        'Judgement':'Nhận thức mới, đánh giá lại.',
+        'World':'Hoàn thành, chu kỳ trọn vẹn.'
+      };
+      let m = base[name] || 'Thông điệp chung.';
+      if(rev) m = '(Lật ngược) ' + m + ' (năng lượng bị trì trệ hoặc cần xem lại)';
+      return m;
+    }
+
+    // Numerology
+    el('analyzeBtn').addEventListener('click',()=>{
+      const raw = el('idInput').value.replace(/\s+/g,'');
+      if(!/^[0-9]+$/.test(raw)) return showResult('Hãy nhập chuỗi chỉ gồm chữ số (0-9).');
+      const digits = raw.split('').map(d=>parseInt(d));
+      const sum = digits.reduce((a,b)=>a+b,0);
+      const master = reduceToOne(sum);
+      const counts = digits.reduce((acc,d)=>{acc[d]=(acc[d]||0)+1;return acc},{})
+      const energy = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([k,v])=>`${k}: ${v} lần`).join(', ');
+      const vib = `Tổng các chữ số = ${sum}\nChữ số chủ đạo (giảm về 1 chữ số) = ${master}\nNăng lượng nổi bật: ${energy}`;
+      showResult('Phân tích số học:\n\n' + vib + '\n\nGợi ý: \n- Nếu chữ số chủ đạo là 1/3/5: hành động & sáng tạo.\n- Nếu là 2/4/8: xây dựng, ổn định, tài chính.\n- Nếu là 6/7/9: tâm linh, học thuật, kết thúc/chuyển hóa.');
+    });
+    el('resetIdBtn').addEventListener('click',()=>{el('idInput').value='083084001472'; showResult('Đã reset ví dụ.');});
+
+    function reduceToOne(n){
+      while(n>9){n = String(n).split('').map(x=>parseInt(x)).reduce((a,b)=>a+b,0)}
+      return n;
+    }
+
+    // Idea builder
+    el('ideaBtn').addEventListener('click',()=>{
+      const tags = Array.from(document.querySelectorAll('.tag')).filter(i=>i.checked).map(i=>i.value);
+      if(tags.length===0) return showResult('Chọn ít nhất 1 mối quan tâm để nhận ý tưởng.');
+      const ideas = buildIdeas(tags);
+      showResult('Gợi ý dự án (dựa trên lựa chọn của bạn):\n\n' + ideas.join('\n\n'));
+    });
+
+    function buildIdeas(tags){
+      const res = [];
+      // combine patterns
+      if(tags.includes('blockchain') && tags.includes('content')){
+        res.push('Marketplace Pi + Rau Dại: Tạo nền tảng nơi nông dân/quần chúng có thể niêm yết rau dại, gia vị truyền thống — thanh toán nội bộ bằng token/điểm trong hệ sinh thái. MVP: 1 chợ nhỏ, 10 sản phẩm, QR code thanh toán.');
+      }
+      if(tags.includes('immigrate') && tags.includes('blockchain')){
+        res.push('Dự án thông tin đầu tư Hàn Quốc: cẩm nang tương tác cho nhà đầu tư quan tâm visa đầu tư. Bao gồm checklist, ước tính chi phí, timeline — có thể kiếm tiền qua affiliate + tư vấn.');
+      }
+      if(tags.includes('fengshui') && tags.includes('tarot')){
+        res.push('Dịch vụ tư vấn phong thủy năng lượng & Tarot: kết hợp rút bài online + báo cáo phong thủy ngắn (Lục Hào), bán dạng gói tư vấn. Có thể làm blog/YouTube.');
+      }
+      if(tags.includes('herbs') && tags.includes('content')){
+        res.push('Kênh nội dung "Rau Hương Quê": hướng dẫn nhận diện, công dụng Đông y, công thức dùng, video ngắn; kết hợp bán ebook/khóa nhỏ.');
+      }
+      if(res.length<4){
+        // fallback generic ideas
+        res.push('Sản phẩm tối giản: 1-pager giới thiệu dự án + trang đặt lịch tư vấn. Giải pháp nhanh để test thị trường.');
+        res.push('Gói tư vấn trực tuyến 1 giờ: phân tích số học + 1 lá tarot + hướng hành động.');
+      }
+      return res;
+    }
+
+    // Utility to show result
+    function showResult(txt){ el('resultArea').textContent = txt; }
+
+    // init
+    newDeck(); renderTarotPlaceholders(); showResult('Chào! Bắt đầu bằng cách xáo bài, rút bài hoặc phân tích số nhé.');
+  </script>
+
+</body>
+</html>
