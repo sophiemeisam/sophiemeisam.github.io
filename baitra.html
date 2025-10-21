@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ứng Dụng Bài Trà Tiên Tri (200 Lá)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #38761d;
+            text-align: center;
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: #6aa84f;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #38761d;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            min-height: 100px;
+        }
+        .card-list {
+            list-style: none;
+            padding: 0;
+        }
+        .card-list li {
+            background-color: #e0f2f1;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-left: 5px solid #009688;
+            border-radius: 4px;
+        }
+        .card-title {
+            font-weight: bold;
+            color: #009688;
+        }
+        .spread-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #38761d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ứng Dụng Bài Trà Tiên Tri (200 Lá)</h1>
+
+        <div class="controls">
+            <button onclick="performSpread(3, 'Tình Hình Chung')">Trải Bài: Tình Hình Chung (3 Lá)</button>
+
+            <button onclick="performSpread(5, 'Phân Tích Sâu Sắc')">Trải Bài: Phân Tích Sâu Sắc (5 Lá)</button>
+
+            <button onclick="performWeeklySpread()">Trải Bài Theo Tuần (7 Lá)</button>
+
+            <button onclick="performMonthlySpread()">Trải Bài Theo Tháng (4 Lá)</button>
+
+            <button onclick="performYearlySpread()">Trải Bài Theo Năm (12 Lá)</button>
+        </div>
+
+        <div id="result">
+            <p>Chọn một kiểu trải bài để bắt đầu.</p>
+        </div>
+    </div>
+
+    <script>
+        // Danh sách 200 lá bài (Bạn có thể dán danh sách chi tiết từ 1-200 vào đây)
+        const ALL_CARDS = [
+            "Angel", "Ant", "Apple", "Archway", "Arrow", "Ax", "Bag", "Barrel", "Basket", "Bat",
+            "Bear", "Beetle", "Bell", "Bird-Flying", "Bird-Perched", "Boat", "Boot", "Bouquet", "Bow", "Bowl",
+            "Box", "Bread", "Bridge", "Broken Bridge", "Broken Ring", "Broken Wishbone", "Broom", "Bull", "Butterfly", "Camel", // 30
+            "Candle", "Cane", "Carriage", "Carrot", "Casket", "Cat", "Caterpillar", "Chain", "Chair-Empty", "Chair-Filled",
+            "Claw", "Clouds", "Club", "Cobweb", "Coins", "Cracked Cup", "Crib", "Crown", "Cup", "Dagger",
+            "Dark Man", "Dark Woman", "Desk", "Diamond", "Dog", "Dogs", "Dog-Barking", "Dog-Close Up", "Dog-Far Away", "Dolphin",
+            "Door", "Dragon", "Eagle", "Ear", "Egg", "Elephant", "Eye", "Fair Man", "Fair Woman", "Fan",
+            "Feather", "Finger", "Fire", "Firecracker", "Flag", "Flowers", "Flute", "Fly", "Forest", "Four-Leaf Clover",
+            "Fox", "Frying Pan", "Funnel", "Gavel", "Gong", "Goldfish", "Grapes", "Grasshopper", "Hammock", "Hand",
+            "Handshake", "Harp", "Hat", "Haystack", "Heart", "Hills", "Horse", "Horseshoe", "Inkpot", "Jug",
+            "Kangaroo", "Key", "Kite", "Knot", "Ladder", "Leg", "Lightning", "Lily", "Lion", "Lobster",
+            "Man", "Mice", "Money Path", "Moon", "Mountain", "Mountain Road", "Mule", "Needle & Thread", "Nest", "Older Man",
+            "Older Woman", "Owl", "Pail", "Parrot", "Peacock", "Pig", "Pin", "Pineapple", "Purse", "Quill",
+            "Rabbit", "Rainbow", "Ram", "Rat", "Ring", "Rooster", "Rose", "Scales", "Scissors", "Sea Horse",
+            "Shark", "Shield", "Skull", "Spear", "Staff", "Star", "Stork", "Sun", "Sunrise", "Table",
+            "Tankard", "Target", "Teapot", "Teardrops", "Tent", "Throne", "Tiger", "Torch", "Tortoise", "Tower",
+            "Tree", "Tulip", "Turkey", "Unicorn", "\"V\"", "Valley", "Vase", "Vine", "Vulture", "Wall",
+            "Wedge", "Weeping Willow", "Well", "Whale", "Wheel", "Windchimes", "Wishbone", "Woman", "Wreath", "Yoke",
+            "Younger Man", "Younger Woman", // Lá 182
+
+            "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", // Lá 183-194 (Tháng)
+
+            "Career", "Marriage", "Happiness", "Love", "Success", "Wealth" // Lá 195-200 (Nhà)
+        ];
+
+        /**
+         * Thuật toán lấy ngẫu nhiên một lá bài
+         * Sử dụng Math.random() kết hợp với Date.now() để mô phỏng entropy thời gian thực.
+         * @param {number} max - Giới hạn trên của chỉ mục (không bao gồm)
+         * @returns {number} Chỉ mục ngẫu nhiên
+         */
+        function seededRandom(max) {
+            // Đặt seed dựa trên thời gian thực (micro giây)
+            const seed = Date.now();
+            // Sử dụng một thuật toán đơn giản kết hợp seed và Math.random() để tăng tính "khác biệt"
+            let randomValue = Math.sin(seed * 1000) * 10000;
+            randomValue = randomValue - Math.floor(randomValue);
+
+            // Trả về chỉ mục ngẫu nhiên
+            return Math.floor(randomValue * max);
+        }
+
+        /**
+         * Rút ngẫu nhiên một số lá bài duy nhất từ bộ bài
+         * @param {number} count - Số lượng lá bài cần rút
+         * @param {Array<string>} deck - Bộ bài để rút
+         * @returns {Array<string>} Mảng chứa các lá bài đã rút
+         */
+        function drawUniqueCards(count, deck) {
+            const drawn = [];
+            const availableIndices = [...Array(deck.length).keys()]; // Tạo mảng chỉ mục [0, 1, 2, ..., 199]
+
+            for (let i = 0; i < count; i++) {
+                if (availableIndices.length === 0) break;
+
+                // Lấy chỉ mục ngẫu nhiên từ các chỉ mục còn lại
+                const randomIndex = seededRandom(availableIndices.length);
+                const cardIndex = availableIndices[randomIndex];
+                
+                drawn.push(deck[cardIndex]);
+
+                // Xóa chỉ mục đã chọn để đảm bảo lá bài là duy nhất
+                availableIndices.splice(randomIndex, 1);
+            }
+            return drawn;
+        }
+
+        /**
+         * Hàm chính để thực hiện các trải bài đơn giản
+         * @param {number} count - Số lá bài
+         * @param {string} title - Tên trải bài
+         */
+        function performSpread(count, title) {
+            const drawnCards = drawUniqueCards(count, ALL_CARDS);
+            displayResults(title, drawnCards);
+        }
+
+        /**
+         * TÍNH NĂNG 3: Trải bài theo tuần (7 lá)
+         */
+        function performWeeklySpread() {
+            const days = ["Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật"];
+            const drawnCards = drawUniqueCards(7, ALL_CARDS);
+            
+            let html = '<div class="spread-title">Trải Bài Theo Tuần (7 Lá)</div>';
+            html += '<ul class="card-list">';
+            drawnCards.forEach((card, index) => {
+                html += `<li><span class="card-title">${days[index]}:</span> ${card}</li>`;
+            });
+            html += '</ul>';
+
+            document.getElementById('result').innerHTML = html;
+        }
+
+        /**
+         * TÍNH NĂNG 4: Trải bài theo tháng (4 lá - đại diện 4 tuần)
+         */
+        function performMonthlySpread() {
+            const weeks = ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"];
+            const drawnCards = drawUniqueCards(4, ALL_CARDS); // Rút 4 lá (tương ứng 4 tuần)
+            
+            let html = '<div class="spread-title">Trải Bài Theo Tháng (4 Lá - 4 Tuần)</div>';
+            html += '<ul class="card-list">';
+            drawnCards.forEach((card, index) => {
+                html += `<li><span class="card-title">${weeks[index]}:</span> ${card}</li>`;
+            });
+            html += '</ul>';
+
+            document.getElementById('result').innerHTML = html;
+        }
+
+        /**
+         * TÍNH NĂNG 5: Trải bài theo năm (12 lá - đại diện 12 tháng)
+         * Lưu ý: Trong bộ bài trà gốc, trải bài năm phức tạp hơn, nhưng ở đây chỉ rút 12 lá biểu tượng.
+         */
+        function performYearlySpread() {
+            const months = [
+                "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6",
+                "Tháng 7", "Tháng 8", "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+            ];
+            const drawnCards = drawUniqueCards(12, ALL_CARDS); 
+
+            let html = '<div class="spread-title">Trải Bài Theo Năm (12 Lá - 12 Tháng)</div>';
+            html += '<ul class="card-list">';
+            drawnCards.forEach((card, index) => {
+                html += `<li><span class="card-title">${months[index]}:</span> ${card}</li>`;
+            });
+            html += '</ul>';
+
+            document.getElementById('result').innerHTML = html;
+        }
+
+        /**
+         * Hiển thị kết quả chung cho các trải bài đơn giản
+         */
+        function displayResults(title, cards) {
+            let html = `<div class="spread-title">${title} - Kết Quả</div>`;
+            html += '<ul class="card-list">';
+            
+            // Đặt tên vị trí cho trải 3 lá và 5 lá
+            const positions = {
+                3: ["Quá khứ / Nguyên nhân", "Hiện tại / Tình hình", "Tương lai / Kết quả"],
+                5: ["Hiện tại", "Thách thức", "Lời khuyên", "Ảnh hưởng bên ngoài", "Kết quả tiềm năng"]
+            };
+
+            cards.forEach((card, index) => {
+                const position = positions[cards.length] ? positions[cards.length][index] : `Lá ${index + 1}`;
+                html += `<li><span class="card-title">${position}:</span> ${card}</li>`;
+            });
+            html += '</ul>';
+            document.getElementById('result').innerHTML = html;
+        }
+    </script>
+</body>
+</html>
