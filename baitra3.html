@@ -8,28 +8,31 @@
     body{font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",sans-serif;margin:0;background:#f0f0f5;color:#111;padding-bottom:60px}
     .container{max-width:900px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 12px rgba(0,0,0,0.06)}
     .header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #e9e9ef;position:sticky;top:0;background:#fff;z-index:10}
-    /* Thêm style cho nút "Về trang trước" */
     .back-link{font-size:1rem;font-weight:700;color:#007aff;text-decoration:none;display:flex;align-items:center;gap:4px}
-    /* Chỉnh title để nó không chiếm quá nhiều không gian */
     .title{font-weight:700;flex-grow:1;text-align:center;font-size:1.25rem}
     .content{padding:18px}
     .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
-    button{padding:12px;border:none;border-radius:10px;background:#007aff;color:#fff;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,122,255,0.2)}
+    button{padding:12px;border:none;border-radius:10px;background:#007aff;color:#fff;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,122,255,0.2);transition:background .2s}
+    button:hover{background:#005bb5}
     button:disabled{background:#9aa3ad;cursor:not-allowed}
+    /* Style mới cho nút Copy */
+    .btn-copy{background:#2e7d32;margin-left:auto;}
+    .btn-copy:hover{background:#1b5e20}
     #result{margin-top:12px;padding:14px;background:#f7f7f9;border-radius:10px;min-height:160px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.04);transition:opacity .35s;opacity:1}
     .spread-title{font-size:1.15rem;font-weight:700;color:#2e7d32;text-align:center;margin-bottom:8px}
     .card-list{list-style:none;padding:0;margin:0}
     .card-list li{background:#fff;margin:8px 0;padding:10px;border-radius:8px;border-left:4px solid #38761d;display:flex;gap:10px;align-items:center}
-    .card-title{min-width:150px;font-weight:700;color:#007aff}
+    .card-title{min-width:150px;font-weight:700;color:#007aff;flex-shrink:0}
     .deck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
     .deck-item{background:#fff;padding:8px;border-radius:6px;border-left:3px solid #ccc}
-    .actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center} /* Căn giữa các nút hành động */
+    .actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
     .small{font-size:.92rem;color:#666}
     .error{color:#a33;background:#ffecec;padding:8px;border-radius:6px;margin-top:10px}
-    /* Thêm style cho Countdown */
     .countdown-display{text-align:center;padding:40px 0}
     .countdown-instruction{color:#555;margin:0;font-size:1.1rem}
     .countdown-timer{font-size:3.5rem;font-weight:900;color:#007aff;margin:8px 0}
+    .toast-message{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 15px;border-radius:5px;opacity:0;transition:opacity 0.3s;z-index:1000}
+    .toast-message.show{opacity:1}
 </style>
 </head>
 <body>
@@ -57,13 +60,13 @@
         </div>
     </div>
 </div>
+<div id="toast" class="toast-message">Đã sao chép! Bạn có thể dán vào chatbot.</div>
 
 <script>
 /*
-  Phiên bản sửa lỗi & bổ sung:
-  - Giữ nguyên cấu trúc
-  - Đã thêm link "Về trang trước" (placeholder link)
-  - Đã sửa lỗi logic: thêm nút thao tác (Rút lại/Xem bộ bài) cho trải bài 7, 4, 12.
+  Phiên bản bổ sung:
+  - Thêm tính năng "Lưu & Copy" sau khi trải bài
+  - Đã sửa lỗi logic cho trải bài 7, 4, 12.
 */
 
 /* ---------- DỮ LIỆU: đầy đủ 200+ tên (theo danh sách bạn đã cung cấp) ---------- */
@@ -138,6 +141,52 @@ function drawUnique(count, deck){
     return drawn;
 }
 
+/* -------------------- CHỨC NĂNG COPY MỚI -------------------- */
+function copyToClipboard(text, buttonEl){
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast("Đã sao chép! Bạn có thể dán vào chatbot.");
+        }).catch(err => {
+            console.error('Không thể sao chép:', err);
+            // Fallback (cho các trình duyệt cũ hơn hoặc môi trường không an toàn)
+            fallbackCopy(text);
+        });
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+function fallbackCopy(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";  // Để không ảnh hưởng đến scroll
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        const successful = document.execCommand('copy');
+        if(successful) {
+             showToast("Đã sao chép (fallback)! Bạn có thể dán vào chatbot.");
+        } else {
+             showToast("Sao chép không thành công. Hãy tự copy nội dung.");
+        }
+    } catch (err) {
+        showToast("Sao chép không thành công. Hãy tự copy nội dung.");
+    }
+    document.body.removeChild(textArea);
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+/* ----------------------------------------------------------- */
+
+
 /* helpers hiển thị */
 const resultEl = document.getElementById('result');
 
@@ -156,15 +205,18 @@ function displaySpread(title, cards){
             3: ["Lá 1: Quá khứ / Gốc rễ","Lá 2: Hiện tại / Tình hình","Lá 3: Tương lai / Tiềm năng"],
             5: ["Lá 1: Tình huống cốt lõi","Lá 2: Thách thức","Lá 3: Lời khuyên","Lá 4: Ảnh hưởng từ bên ngoài","Lá 5: Kết quả cuối cùng"]
         };
+        let copyText = `--- ${title} ---\n`;
         let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
         cards.forEach((c,i)=>{
             const label = positions[cards.length] ? positions[cards.length][i] : `Lá ${i+1}`;
             html += `<li><div class="card-title">${label}:</div><div>${c}</div></li>`;
+            copyText += `${label}: ${c}\n`; // Thêm vào nội dung copy
         });
-        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button></div>`;
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button><button id="btn-copy" class="btn-copy">💾 Lưu & Copy</button></div>`;
         showHtml(html);
         document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
         document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+        document.getElementById('btn-copy').addEventListener('click', () => copyToClipboard(copyText));
     } catch (err){
         showError(err.message || err);
         console.error(err);
@@ -186,7 +238,7 @@ function showFullDeck(){
     try {
         let html = `<div class="spread-title">Toàn bộ bộ bài (${ALL_CARDS.length} lá)</div><div class="deck-grid">`;
         ALL_CARDS.forEach((c,i)=> html += `<div class="deck-item"><strong>${i+1}.</strong> ${c}</div>`);
-        html += `</div><div class="actions"><button id="btn-close-deck">Đóng</button></div>`; // Dùng id để gán event
+        html += `</div><div class="actions"><button id="btn-close-deck">Đóng</button></div>`;
         showHtml(html);
         document.getElementById('btn-close-deck').addEventListener('click', ()=>{ location.reload(); });
     } catch(err){
@@ -225,52 +277,75 @@ function startCountdown(count,title,fn){
 document.getElementById('btn-3').addEventListener('click', ()=> startCountdown(3,'Trải Bài 3 Lá', ()=> spreadN(3,'Trải Bài 3 Lá')));
 document.getElementById('btn-5').addEventListener('click', ()=> startCountdown(5,'Trải Bài 5 Lá', ()=> spreadN(5,'Trải Bài 5 Lá')));
 
-// Đã sửa: Thêm logic cho các nút hành động (Rút lại / Xem bộ bài) vào các trải bài tuỳ chỉnh
+// Cập nhật Trải 7 Ngày
 document.getElementById('btn-7').addEventListener('click', ()=> startCountdown(7,'Trải Bài 7 Ngày', ()=> {
     try {
         const cards = drawUnique(7,ALL_CARDS);
-        let html = `<div class="spread-title">Trải Bài Theo Tuần (7 ngày)</div><ul class="card-list">`;
+        const title = "Trải Bài Theo Tuần (7 ngày)";
+        let copyText = `--- ${title} ---\n`;
+        let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
         const days=["Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy","Chủ Nhật"];
-        cards.forEach((c,i)=> html += `<li><div class="card-title">${days[i]}:</div><div>${c}</div></li>`);
-        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button></div>`;
+        cards.forEach((c,i)=> {
+            html += `<li><div class="card-title">${days[i]}:</div><div>${c}</div></li>`;
+            copyText += `${days[i]}: ${c}\n`;
+        });
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button><button id="btn-copy" class="btn-copy">💾 Lưu & Copy</button></div>`;
         showHtml(html);
         document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
         document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+        document.getElementById('btn-copy').addEventListener('click', () => copyToClipboard(copyText));
     } catch(err){
         showError(err.message || err);
         console.error(err);
     }
 }));
+
+// Cập nhật Trải Theo Tháng
 document.getElementById('btn-4').addEventListener('click', ()=> startCountdown(4,'Trải Bài Theo Tháng', ()=> {
     try {
         const cards = drawUnique(4,ALL_CARDS);
-        let html = `<div class="spread-title">Trải Bài Theo Tháng (4 tuần)</div><ul class="card-list">`;
+        const title = "Trải Bài Theo Tháng (4 tuần)";
+        let copyText = `--- ${title} ---\n`;
+        let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
         const weeks=["Tuần 1","Tuần 2","Tuần 3","Tuần 4"];
-        cards.forEach((c,i)=> html += `<li><div class="card-title">${weeks[i]}:</div><div>${c}</div></li>`);
-        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button></div>`;
+        cards.forEach((c,i)=> {
+            html += `<li><div class="card-title">${weeks[i]}:</div><div>${c}</div></li>`;
+            copyText += `${weeks[i]}: ${c}\n`;
+        });
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button><button id="btn-copy" class="btn-copy">💾 Lưu & Copy</button></div>`;
         showHtml(html);
         document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
         document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+        document.getElementById('btn-copy').addEventListener('click', () => copyToClipboard(copyText));
     } catch(err){
         showError(err.message || err);
         console.error(err);
     }
 }));
+
+// Cập nhật Trải Theo Năm
 document.getElementById('btn-12').addEventListener('click', ()=> startCountdown(12,'Trải Bài Theo Năm', ()=> {
     try {
         const cards = drawUnique(12,ALL_CARDS);
-        let html = `<div class="spread-title">Trải Bài Theo Năm (12 tháng)</div><ul class="card-list">`;
+        const title = "Trải Bài Theo Năm (12 tháng)";
+        let copyText = `--- ${title} ---\n`;
+        let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
         const months=["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
-        cards.forEach((c,i)=> html += `<li><div class="card-title">${months[i]}:</div><div>${c}</div></li>`);
-        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button></div>`;
+        cards.forEach((c,i)=> {
+            html += `<li><div class="card-title">${months[i]}:</div><div>${c}</div></li>`;
+            copyText += `${months[i]}: ${c}\n`;
+        });
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button><button id="btn-copy" class="btn-copy">💾 Lưu & Copy</button></div>`;
         showHtml(html);
         document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
         document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+        document.getElementById('btn-copy').addEventListener('click', () => copyToClipboard(copyText));
     } catch(err){
         showError(err.message || err);
         console.error(err);
     }
 }));
+
 document.getElementById('btn-deck').addEventListener('click', showFullDeck);
 
 /* bảo vệ: nếu có lỗi JS lúc load, hiển thị lỗi */
