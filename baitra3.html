@@ -1,168 +1,120 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bài Trà Tiên Tri</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bài Trà Tiên Tri - Hoàn chỉnh</title>
 <style>
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-        margin: 0;
-        background-color: #f0f0f5;
-        color: #1c1c1e;
-        padding-bottom: 60px;
-    }
-    .container {
-        max-width: 600px;
-        margin: 0 auto;
-        background-color: #fff;
-        min-height: 100vh;
-        box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-    .header-bar {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr;
-        align-items: center;
-        padding: 15px 20px 10px;
-        border-bottom: 1px solid #e5e5ea;
-        position: sticky;
-        top: 0;
-        background-color: #fff;
-        z-index: 10;
-    }
-    .back-link {
-        text-decoration: none;
-        color: #007aff;
-        font-size: 18px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-self: start;
-    }
-    .back-link:before {
-        content: '‹';
-        font-size: 32px;
-        margin-right: 4px;
-        line-height: 1;
-        font-weight: 500;
-    }
-    h1 {
-        color: #1c1c1e;
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0;
-        text-align: center;
-    }
-    .content {
-        padding: 20px;
-    }
-    .controls {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 15px;
-        margin-bottom: 25px;
-    }
-    button {
-        padding: 15px;
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        font-size: 17px;
-        font-weight: 500;
-        background-color: #007aff;
-        color: white;
-        box-shadow: 0 2px 4px rgba(0,122,255,0.4);
-        transition: background-color 0.2s, transform 0.1s;
-    }
-    button:active { transform: scale(0.97); background-color: #0056b3; }
-    button:disabled { background-color: #a0a0a0; cursor: not-allowed; }
-    #result {
-        margin-top: 20px;
-        padding: 15px;
-        background-color: #f7f7f9;
-        border-radius: 12px;
-        box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
-        min-height: 120px;
-        opacity: 0;
-        transition: opacity 0.6s ease;
-    }
-    .spread-title {
-        font-size: 1.4em;
-        font-weight: 600;
-        margin-bottom: 15px;
-        color: #38761d;
-        text-align: center;
-    }
-    .countdown-display {
-        text-align: center;
-        padding: 30px 0;
-        color: #007aff;
-    }
-    .countdown-timer {
-        font-size: 4em;
-        font-weight: 700;
-        margin: 10px 0;
-    }
-    .countdown-instruction {
-        font-size: 1.1em;
-        color: #8e8e93;
-        font-weight: 500;
-    }
-    .card-list { list-style: none; padding: 0; }
-    .card-list li {
-        background-color: #fff;
-        margin-bottom: 10px;
-        padding: 12px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        border-left: 3px solid #38761d;
-    }
-    .card-title {
-        font-weight: 600;
-        color: #007aff;
-        margin-right: 5px;
-    }
-    .fade-in { opacity: 1 !important; }
+    body{font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",sans-serif;margin:0;background:#f0f0f5;color:#1c1c1e;padding-bottom:60px}
+    .container{max-width:800px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 10px rgba(0,0,0,0.05)}
+    .header-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:15px 20px;border-bottom:1px solid #e5e5ea;position:sticky;top:0;background:#fff;z-index:10}
+    .back-link{text-decoration:none;color:#007aff;font-size:18px;font-weight:600;display:flex;align-items:center;justify-self:start}
+    .back-link:before{content:'‹';font-size:28px;margin-right:6px}
+    h1{margin:0;font-size:18px;font-weight:600;text-align:center}
+    .content{padding:20px}
+    .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+    button{padding:12px;border:none;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;background:#007aff;color:#fff;box-shadow:0 2px 4px rgba(0,122,255,0.3);transition:transform .08s}
+    button:active{transform:scale(.98)} button:disabled{background:#a0a0a0;cursor:not-allowed}
+    #result{margin-top:14px;padding:14px;background:#f7f7f9;border-radius:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.06);min-height:140px;opacity:0;transition:opacity .45s}
+    .fade-in{opacity:1}
+    .spread-title{font-size:1.2rem;font-weight:700;color:#2e7d32;text-align:center;margin-bottom:10px}
+    .countdown-display{text-align:center;padding:18px 0;color:#007aff}
+    .countdown-timer{font-size:3.2rem;font-weight:800;margin:4px 0}
+    .countdown-instruction{font-size:1rem;color:#8e8e93;font-weight:500}
+    .card-list{list-style:none;padding:0;margin:0}
+    .card-list li{background:#fff;margin-bottom:8px;padding:10px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);border-left:4px solid #38761d;display:flex;gap:8px;align-items:center}
+    .card-title{font-weight:700;color:#007aff;min-width:160px}
+    .deck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+    .deck-item{background:#fff;padding:8px;border-radius:6px;border-left:3px solid #ccc}
+    .small{font-size:.9rem;color:#666}
+    .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
 </style>
 </head>
 <body>
 <div class="container">
     <div class="header-bar">
         <a href="#" class="back-link">Về</a>
-        <h1>Bài Trà Tiên Tri</h1>
+        <h1>Bài Trà Tiên Tri — Phiên bản hoàn chỉnh</h1>
         <div></div>
     </div>
 
     <div class="content">
         <div class="controls">
-            <button onclick="startCountdown(3,'Tình Hình Chung','performSpread')">Trải Bài: Tình Hình Chung (3 Lá)</button>
-            <button onclick="startCountdown(5,'Phân Tích Sâu Sắc','performSpread')">Trải Bài: Phân Tích Sâu Sắc (5 Lá)</button>
-            <button onclick="startCountdown(7,'Trải Bài Theo Tuần','performWeeklySpread')">Trải Bài Theo Tuần (7 Lá)</button>
-            <button onclick="startCountdown(4,'Trải Bài Theo Tháng','performMonthlySpread')">Trải Bài Theo Tháng (4 Lá)</button>
-            <button onclick="startCountdown(12,'Trải Bài Theo Năm','performYearlySpread')">Trải Bài Theo Năm (12 Lá)</button>
+            <button onclick="startCountdown(3,'Tình Hình Chung','performSpread')">Trải Bài 3 Lá</button>
+            <button onclick="startCountdown(5,'Phân Tích Sâu Sắc','performSpread')">Trải Bài 5 Lá</button>
+            <button onclick="startCountdown(7,'Trải Bài Theo Tuần','performWeeklySpread')">Trải 7 Ngày</button>
+            <button onclick="startCountdown(4,'Trải Bài Theo Tháng','performMonthlySpread')">Trải 4 Tuần</button>
+            <button onclick="startCountdown(12,'Trải Bài Theo Năm','performYearlySpread')">Trải 12 Tháng</button>
+            <button onclick="showFullDeck()">Xem toàn bộ bộ bài (200 lá)</button>
         </div>
+
         <div id="result">
-            <p style="text-align:center;color:#8e8e93;">Chọn kiểu trải bài và tập trung trong 10 giây để nhận thông điệp.</p>
+            <p style="text-align:center;color:#8e8e93;">Chọn kiểu trải bài, tập trung trong 10 giây rồi nhận thông điệp.</p>
         </div>
     </div>
 </div>
 
 <script>
-const ALL_CARDS = [/* --- Danh sách 200 lá như bạn đã có ở bản trước --- */];
+/* ---------- DỮ LIỆU: đầy đủ 200+ tên (theo danh sách bạn đã cung cấp) ---------- */
+const ALL_CARDS = [
+"Angel - Tiên nữ","Ant - Con kiến","Apple - Quả táo","Archway - Cổng vòm","Arrow - Mũi tên",
+"Axe - Cây rìu","Bag - Túi","Barrel - Thùng Rỗng","Basket - Giỏ rơm","Bat - Con dơi",
+"Bear - Con gấu","Beetle - Bọ cánh cứng","Bell - Cái chuông","Bird Flying - Chim bay","Bird Perched - Chim đậu",
+"Boat - Con thuyền","Boot - Chiếc ủng","Bouquet - Bó hoa","Bow - Cái nơ","Bowl - Cái chậu",
+"Box - Cái hộp","Bread - Bánh mì","Bridge - Cây cầu","Broken Bridge - Cầu gãy","Broken Ring - Chia ly, chấm dứt",
+"Broken Wishbone - Xương đòn bị gãy","Broom - Cây chổi","Bull - Bò đực","Butterfly - Con bướm","Camel - Con lạc đà",
+"Candle - Ngọn nến","Cane - Gậy chống, batoong","Carriage - Cỗ xe thùng","Carrot - Củ cà rốt","Casket - Quan tài",
+"Cat - Con mèo","Caterpillar - Con sâu","Chain - Sợi dây xích","Chair Empty - Chiếc ghế trống","Chair Filled - Người ngồi ghế",
+"Claw - Móng vuốt","Clouds - Đám mây","Club - Cây chùy","Cobweb - Mạng nhện","Coins - Tiền xu",
+"Cracked Cup - Cốc vỡ","Crib - Cái nôi","Crown - Vương miện","Cup - Cái tách","Dagger - Dao găm",
+"Dark Man - Người đàn ông màu đen","Dark Woman - Người phụ nữ màu đen","Desk - Cái bàn","Diamond - Kim cương","Dog - 1 chú chó",
+"Dogs - 2 chú chó","Dog Barking - Chó sủa","Dog Close Up - Chó vui vẻ","Dog Far Away - Chú chó buồn bã","Dolphin - Cá heo",
+"Door - Cánh cửa","Dragon - Con rồng","Eagle - Con chim ưng","Ear - Cái tai","Egg - Quả trứng",
+"Elephant - Con voi","Eye - Con mắt","Fair Man - Người đàn ông sáng màu","Fair Woman - Người phụ nữ sáng màu","Fan - Quạt",
+"Feather - Lông vũ","Finger - Ngón tay","Fire - Ngọn lửa","Firecracker - Pháo hoa nổ","Flag - Lá cờ",
+"Flowers - Hoa nở","Flute - Ông sáo","Fly - Con ruồi","Forest - Khu rừng","Four Leaf Clover - Cỏ 4 lá",
+"Fox - Con cáo","Frying Pan - Cái chảo","Funnel - Cái phễu","Gavel - Cái búa","Gong - Cái chiêng",
+"Goldfish - Cá vàng","Grapes - Chùm nho","Grasshopper - Con cào cào","Hammock - Cái võng","Hand - Bàn tay",
+"Handshake - Bắt tay","Harp - Đàn hạc","Hat - Cái mũ","Haystack - Rơm cỏ khô","Heart - Trái tim",
+"Hills - Ngọn đồi","Horse - Con ngựa","Horseshoe - Móng ngựa","Inkpot - Bình mực","Jug - Cái bình",
+"Kangaroo - Chuột túi","Key - Chìa khóa","Kite - Con diều","Knot - Nút thắt","Ladder - Bậc thang",
+"Leg - Chân","Lightning - Tia chớp","Lily - Hoa lily","Lion - Sư tử","Lobster - Con tôm",
+"Man - Người đàn ông","Mice - Con chuột","Money Path - Con đường tiền","Moon - Mặt trăng","Mountain - Ngọn núi",
+"Mountain Road - Đường lên núi","Mule - Con lừa","Needle & Thread - Kim chỉ","Nest - Tổ chim","Older Man - Người đàn ông lớn tuổi",
+"Older Woman - Người phụ nữ lớn tuổi","Owl - Con cú","Pail - Thùng nước","Parrot - Con vẹt","Peacock - Con công",
+"Pig - Con lợn","Pin - Đinh ghim","Pineapple - Quả dứa","Purse - Túi tiền","Quill - Bút lông ngỗng",
+"Rabbit - Con thỏ","Rainbow - Cầu vồng","Ram - Cừu đực","Rat - Chuột đồng","Ring - Chiếc nhẫn",
+"Rooster - Gà trống","Rose - Hoa hồng","Scales - Cán cân","Scissors - Cắt đứt mối quan hệ","Sea Horse - Cá ngựa",
+"Shark - Cá mập","Shield - Cái khiên","Skull - Đầu lâu","Spear - Ngọn giáo","Staff - Hỗ trợ, chỉ dẫn",
+"Star - Ngôi sao","Stork - Con cò","Sun - Mặt trời","Sunrise - Bình minh","Table - Cái bàn",
+"Tankard - Cốc vại","Target - Bia bắn","Teapot - Bình trà","Teardrops - Giọt nước mắt","Tent - Cái lều",
+"Throne - Ngai vàng","Tiger - Con hổ","Torch - Ngọn đuốc","Tortoise - Con rùa","Tower - Toà tháp",
+"Tree - Cây","Tulip - Hoa tulip","Turkey - Gà tây","Unicorn - Kỳ lân","V - Chữ V",
+"Valley - Thung lũng","Vase - Lọ hoa","Vine - Cành nho xanh","Vulture - Con kền kền","Wall - Bức tường",
+"Wedge - Cái nêm","Weeping Willow - Cây dương liễu","Well - Cái giếng","Whale - Cá voi","Wheel - Bánh xe",
+"Windchimes - Chuông gió","Wishbone - Xương đòn","Woman - Người phụ nữ","Wreath - Vòng hoa","Yoke - Sự ràng buộc",
+"Younger Man - Người đàn ông trẻ tuổi","Younger Woman - Người phụ nữ trẻ tuổi",
+"January - Tháng 1","February - Tháng 2","March - Tháng 3","April - Tháng 4","May - Tháng 5","June - Tháng 6",
+"July - Tháng 7","August - Tháng 8","September - Tháng 9","October - Tháng 10","November - Tháng 11","December - Tháng 12",
+"Career - Sự nghiệp","Marriage - Hôn nhân","Happiness - Hạnh Phúc","Love - Tình yêu","Success - Thành công","Wealth - Tài chính"
+];
 
-/* Random entropy mạnh */
-function secureRandom(max) {
-    const array = new Uint32Array(1);
-    window.crypto.getRandomValues(array);
-    return array[0] % max;
+/* ---------- HỖ TRỢ NGẪU NHIÊN BẢO MẬT ---------- */
+function secureRandom(max){
+    if (window.crypto && window.crypto.getRandomValues) {
+        const arr = new Uint32Array(1);
+        window.crypto.getRandomValues(arr);
+        return arr[0] % max;
+    }
+    return Math.floor(Math.random()*max);
 }
 
-/* Rút bài */
-function drawUniqueCards(count, deck) {
+/* Rút unique */
+function drawUniqueCards(count, deck){
     const drawn = [];
-    const available = [...Array(deck.length).keys()];
+    const available = Array.from(Array(deck.length).keys());
     for (let i=0;i<count;i++){
-        if (!available.length) break;
+        if (available.length===0) break;
         const idx = secureRandom(available.length);
         drawn.push(deck[available[idx]]);
         available.splice(idx,1);
@@ -170,81 +122,99 @@ function drawUniqueCards(count, deck) {
     return drawn;
 }
 
-/* Đếm ngược */
-function startCountdown(count,title,spreadFunction){
+/* Đếm ngược và gọi trải bài */
+function startCountdown(count,title,fnName){
     let timer=10;
-    const res=document.getElementById('result');
-    const btns=document.querySelectorAll('.controls button');
+    const res = document.getElementById('result');
+    const btns = document.querySelectorAll('.controls button, .controls button');
     btns.forEach(b=>b.disabled=true);
     res.classList.remove('fade-in');
-    res.innerHTML=`
-        <div class="countdown-display">
-            <p class="countdown-instruction">Tập trung và suy nghĩ về vấn đề của bạn...</p>
-            <div class="countdown-timer" id="timer">${timer}</div>
-            <p class="countdown-instruction">Giây</p>
-        </div>`;
-    const interval=setInterval(()=>{
+    res.innerHTML = `<div class="countdown-display">
+        <p class="countdown-instruction">Tập trung và nghĩ về vấn đề của bạn...</p>
+        <div class="countdown-timer" id="countdown-timer">${timer}</div>
+        <p class="countdown-instruction">Giây</p>
+    </div>`;
+    const interval = setInterval(()=>{
         timer--;
-        document.getElementById('timer').textContent=timer;
-        if(timer<=0){
+        const el = document.getElementById('countdown-timer');
+        if (el) el.textContent = timer;
+        if (timer<=0){
             clearInterval(interval);
-            if(spreadFunction==='performSpread') performSpread(count,title);
-            else if(spreadFunction==='performWeeklySpread') performWeeklySpread();
-            else if(spreadFunction==='performMonthlySpread') performMonthlySpread();
-            else if(spreadFunction==='performYearlySpread') performYearlySpread();
+            if (fnName==='performSpread') performSpread(count,title);
+            else if (fnName==='performWeeklySpread') performWeeklySpread();
+            else if (fnName==='performMonthlySpread') performMonthlySpread();
+            else if (fnName==='performYearlySpread') performYearlySpread();
             btns.forEach(b=>b.disabled=false);
         }
     },1000);
 }
 
-/* Các trải bài */
+/* Các kiểu trải bài */
 function performSpread(count,title){
-    const cards=drawUniqueCards(count,ALL_CARDS);
+    const cards = drawUniqueCards(count, ALL_CARDS);
     displayResults(title,cards);
 }
 function performWeeklySpread(){
-    const days=["Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy","Chủ Nhật"];
-    const cards=drawUniqueCards(7,ALL_CARDS);
-    let html=`<div class="spread-title">Trải Bài Theo Tuần (7 Ngày)</div><ul class="card-list">`;
-    cards.forEach((c,i)=>html+=`<li><span class="card-title">${days[i]}:</span> ${c}</li>`);
-    html+='</ul>';
+    const days = ["Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy","Chủ Nhật"];
+    const cards = drawUniqueCards(7,ALL_CARDS);
+    let html = `<div class="spread-title">Trải Bài Theo Tuần</div><ul class="card-list">`;
+    cards.forEach((c,i)=> html += `<li><span class="card-title">${days[i]}:</span> ${c}</li>`);
+    html += `</ul>`;
     showResult(html);
 }
 function performMonthlySpread(){
-    const weeks=["Tuần 1","Tuần 2","Tuần 3","Tuần 4"];
-    const cards=drawUniqueCards(4,ALL_CARDS);
-    let html=`<div class="spread-title">Trải Bài Theo Tháng (4 Tuần)</div><ul class="card-list">`;
-    cards.forEach((c,i)=>html+=`<li><span class="card-title">${weeks[i]}:</span> ${c}</li>`);
-    html+='</ul>';
+    const weeks = ["Tuần 1 (Đầu tháng)","Tuần 2","Tuần 3","Tuần 4 (Cuối tháng)"];
+    const cards = drawUniqueCards(4,ALL_CARDS);
+    let html = `<div class="spread-title">Trải Bài Theo Tháng</div><ul class="card-list">`;
+    cards.forEach((c,i)=> html += `<li><span class="card-title">${weeks[i]}:</span> ${c}</li>`);
+    html += `</ul>`;
     showResult(html);
 }
 function performYearlySpread(){
-    const months=["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
-    const cards=drawUniqueCards(12,ALL_CARDS);
-    let html=`<div class="spread-title">Trải Bài Theo Năm (12 Tháng)</div><ul class="card-list">`;
-    cards.forEach((c,i)=>html+=`<li><span class="card-title">${months[i]}:</span> ${c}</li>`);
-    html+='</ul>';
-    showResult(html);
-}
-function displayResults(title,cards){
-    const pos={
-        3:["Quá khứ","Hiện tại","Tương lai"],
-        5:["Tình huống","Thách thức","Lời khuyên","Ảnh hưởng bên ngoài","Kết quả cuối cùng"]
-    };
-    let html=`<div class="spread-title">${title}</div><ul class="card-list">`;
-    cards.forEach((c,i)=>{
-        const p=pos[cards.length]?pos[cards.length][i]:`Lá ${i+1}`;
-        html+=`<li><span class="card-title">${p}:</span> ${c}</li>`;
-    });
-    html+='</ul>';
+    const months = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+    const cards = drawUniqueCards(12,ALL_CARDS);
+    let html = `<div class="spread-title">Trải Bài Theo Năm</div><ul class="card-list">`;
+    cards.forEach((c,i)=> html += `<li><span class="card-title">${months[i]}:</span> ${c}</li>`);
+    html += `</ul>`;
     showResult(html);
 }
 
-/* Hiển thị kết quả + nút rút lại */
+/* Hiển thị kết quả chung */
+function displayResults(title,cards){
+    const pos = {
+        3: ["Lá 1: Quá khứ / Gốc rễ","Lá 2: Hiện tại / Tình hình","Lá 3: Tương lai / Tiềm năng"],
+        5: ["Lá 1: Tình huống cốt lõi","Lá 2: Thách thức","Lá 3: Lời khuyên","Lá 4: Ảnh hưởng từ bên ngoài","Lá 5: Kết quả cuối cùng"]
+    };
+    let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
+    cards.forEach((c,i)=>{
+        const label = pos[cards.length] ? pos[cards.length][i] : `Lá ${i+1}`;
+        html += `<li><span class="card-title">${label}:</span> ${c}</li>`;
+    });
+    html += `</ul>`;
+    showResult(html);
+}
+
+/* Hiển thị kết quả cuối */
 function showResult(html){
-    const res=document.getElementById('result');
-    res.innerHTML=html+`<div style="text-align:center;margin-top:15px;"><button onclick="location.reload()">Rút lại bài mới</button></div>`;
-    setTimeout(()=>res.classList.add('fade-in'),50);
+    const res = document.getElementById('result');
+    res.innerHTML = html + `<div class="actions-row" style="justify-content:center"><button onclick="redoLast()">🔁 Rút lại (mới) </button><button onclick="showFullDeck()">📚 Xem bộ bài</button></div>`;
+    setTimeout(()=>res.classList.add('fade-in'),40);
+}
+
+/* Rút lại (khởi 1 lượt rút mới, reset trang) */
+function redoLast(){
+    // cách đơn giản: reload trang để reset ngẫu nhiên; hoặc có thể gọi startCountdown với biến lưu lastSpread nếu muốn
+    location.reload();
+}
+
+/* Hiển thị toàn bộ deck theo thứ tự gốc */
+function showFullDeck(){
+    const res = document.getElementById('result');
+    let html = `<div class="spread-title">Toàn bộ bộ bài (theo thứ tự danh sách)</div><div class="deck-grid">`;
+    ALL_CARDS.forEach((c,i)=> html += `<div class="deck-item"><strong>${i+1}.</strong> ${c}</div>`);
+    html += `</div><p class="small" style="margin-top:12px">Số lá: ${ALL_CARDS.length}. Đây là thứ tự nguyên bản trong mảng ALL_CARDS.</p>`;
+    res.innerHTML = html + `<div class="actions-row" style="margin-top:12px"><button onclick="location.reload()">Đóng</button></div>`;
+    setTimeout(()=>res.classList.add('fade-in'),40);
 }
 </script>
 </body>
