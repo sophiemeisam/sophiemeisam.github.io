@@ -111,7 +111,7 @@
 
 <script>
 $(document).ready(function() {
-    // === giữ nguyên mapping + helpers ===
+    // === MAPPING & HELPERS (GIỮ NGUYÊN) ===
     const hanhOfGua = { 1: 'Kim', 2: 'Kim', 3: 'Hoả', 4: 'Mộc', 5: 'Mộc', 6: 'Thủy', 7: 'Thổ', 8: 'Thổ' };
     const guaName = { 1: 'Kiền', 2: 'Đoài', 3: 'Ly', 4: 'Chấn', 5: 'Tốn', 6: 'Khảm', 7: 'Cấn', 8: 'Khôn' };
     const sinhRule = { 'Kim': 'Thủy', 'Hoả': 'Thổ', 'Mộc': 'Hoả', 'Thủy': 'Mộc', 'Thổ': 'Kim' };
@@ -120,33 +120,27 @@ $(document).ready(function() {
     function isKhac(src,tgt){ return khacRule[src]===tgt; }
     function sameElement(g1,g2){ return hanhOfGua[g1] === hanhOfGua[g2]; }
 
-    // === TÍNH CẤP ĐỘ TƯƠNG TÁC CHUNG (Dùng làm trọng số mặc định cho Sinh/Khắc) ===
-    // Theo quy tắc của bạn: 1,2,3,4 tương tác mạnh (1,2) hoặc trung bình (3,4); 5,6 yếu nhất (5)
+    // Dù ta chủ yếu dùng cấp lực trực tiếp, ta vẫn giữ hàm này cho tính KHẮC chung
     function interactionLevel(srcPos, tgtPos) {
-        // Cấp 1: 1-2, 2-1, 3-4, 4-3, 1-3, 3-1, 2-4, 4-2
         const cap1pairs = [[1,2],[2,1],[3,4],[4,3],[1,3],[3,1],[2,4],[4,2]];
         for (let p of cap1pairs) if (p[0]===srcPos && p[1]===tgtPos) return 1;
-        // Cấp 2: 1-4, 4-1, 2-3, 3-2
         const cap2pairs = [[1,4],[4,1],[2,3],[3,2]];
         for (let p of cap2pairs) if (p[0]===srcPos && p[1]===tgtPos) return 2;
-        // Cấp 5: Bất kỳ tương tác nào với quẻ Biến (5, 6)
         if (srcPos>=5 || tgtPos>=5) return 5;
-        // Cấp 3: Các trường hợp còn lại (fallback)
         return 3;
     }
 
-    // weight per cap (higher = more influential)
+    // Trọng số (GIỮ NGUYÊN)
     const capWeight = {1:6, 2:4, 3:3, 4:2, 5:1};
 
-    // multipliers (tuneable).
-    let troMultiplier = 0.25;    // Trợ lực ít quan trọng hơn (theo yêu cầu code gốc)
-    let tieuMultiplier = 1.4;    // Tiêu tán nặng hơn (theo yêu cầu code gốc)
-    let haoMultiplier = 1.0;     // Hao tổn mặc định (theo yêu cầu code gốc)
+    // Hệ số nhân (GIỮ NGUYÊN)
+    let troMultiplier = 0.25;    
+    let tieuMultiplier = 1.4;    
+    let haoMultiplier = 1.0;     
 
-    // Hàm này không cần thiết nếu ta dùng level trực tiếp
     function levelToCap(level) { return level; } 
-
-    // === UI / History helpers giữ nguyên ===
+    
+    // === UI / History helpers (GIỮ NGUYÊN) ===
     function loadHistory() {
         const history = JSON.parse(localStorage.getItem('queHistory') || '[]');
         $('#history-list').empty().append(history.map((item, index) => `<li data-index="${index}">${item.type}: ${item.inputs}</li>`));
@@ -186,7 +180,7 @@ $(document).ready(function() {
         }
     }
 
-    // === queData management (giữ nguyên) ===
+    // === queData management (GIỮ NGUYÊN) ===
     let queData = [], currentNumKhongThoi = 13;
     function updateQueData(phai, trai, dong) {
         phai = parseFloat(phai);
@@ -204,7 +198,7 @@ $(document).ready(function() {
         currentNumKhongThoi = ktArray.length;
     }
 
-    // === Hàm luận đoán (ĐÃ SỬA ĐỔI LOGIC THEO YÊU CẦU CHI TIẾT) ===
+    // === Hàm luận đoán (FIX LỖI LOGIC LẦN 2) ===
     function tinhLuanDoan(selectedGua) {
         if (!queData || queData.length === 0) { $('#ketQua').text('Chưa có bảng quẻ (vui lòng tạo quẻ trước).'); return; }
         if (!selectedGua) { $('#ketQua').text('Vui lòng chọn 1 quẻ đơn để luận đoán.'); return; }
@@ -224,21 +218,22 @@ $(document).ready(function() {
             // map positions 1..6
             const posGua = {1: kd.chuThuong, 2: kd.chuHa, 3: kd.hoThuong, 4: kd.hoHa, 5: kd.bienThuong, 6: kd.bienHa};
 
-            // Find positions where selectedGua appears (could be multiple across Không Thời)
+            // Loop qua tất cả các vị trí (pos 1-6) để tìm tác động
             for (let pos = 1; pos <= 6; pos++) {
-                if (posGua[pos] !== selectedGua) continue; // Chỉ xét quẻ đích là selectedGua
-
+                
                 // compare with each possible source position
                 for (let src = 1; src <= 6; src++) {
                     if (src === pos) continue; // Không xét tương tác với chính nó
 
                     const srcGua = posGua[src];
-                    if (!srcGua) continue; 
+                    const tgtGua = posGua[pos]; // Đích
+
+                    if (!srcGua || !tgtGua) continue; 
                     
                     const srcHanh = hanhOfGua[srcGua];
-                    const tgtHanh = hanhOfGua[posGua[pos]]; // = selectedHanh
-                    
-                    // Cấp độ tương tác chung (1..5) dùng làm trọng số mặc định cho Sinh/Khắc
+                    const tgtHanh = hanhOfGua[tgtGua]; 
+
+                    // Dùng để tính Khắc chung (trọng số)
                     const level = interactionLevel(src, pos); 
                     const cap = levelToCap(level); 
 
@@ -252,27 +247,30 @@ $(document).ready(function() {
                     
                     // --- 1. TƯƠNG SINH (LỢI) ---
                     if (isSinh(srcHanh, tgtHanh)) {
-                        // Quy tắc Cấp độ Sinh Tăng Lực cho ĐÍCH (pos)
+                        // Tính Tăng Lực cho ĐÍCH (nếu Đích là selectedGua)
                         let sinhCap = cap; // Mặc định là cấp độ tương tác chung
-
-                        // Quy tắc chi tiết Tăng Lực cho Đích
-                        if (pos === 1 && src === 3) sinhCap = 1; // 3->1 (Cấp 1)
-                        else if (pos === 1 && src === 4) sinhCap = 2; // 4->1 (Cấp 2)
-                        else if (pos === 2 && src === 4) sinhCap = 1; // 4->2 (Cấp 1)
-                        else if (pos === 2 && src === 3) sinhCap = 2; // 3->2 (Cấp 2)
-                        else if ((pos === 1 && src === 2) || (pos === 2 && src === 1)) sinhCap = 2; // 1<->2 (Cấp 2)
-                        else if ((pos === 3 && src === 4) || (pos === 4 && src === 3)) sinhCap = 2; // 3<->4 (Cấp 2)
-                        else if ((pos === 3 && src === 1) || (pos === 4 && src === 2)) sinhCap = 1; // 1->3, 2->4 (Cấp 1)
-                        else if ((pos === 3 && src === 2) || (pos === 4 && src === 1)) sinhCap = 2; // 2->3, 1->4 (Cấp 2)
-                        else if (posIsBien) sinhCap = 5; // Liên quan đến Biến (Cấp 5)
                         
-                        sinhCounts[sinhCap] = (sinhCounts[sinhCap]||0) + 1;
+                        // QUY TẮC SINH (LỢI) - CHO ĐÍCH (pos)
+                        if (tgtGua === selectedGua) {
+                            if (pos === 1 && src === 3) sinhCap = 1; // 3->1 (Cấp 1)
+                            else if (pos === 1 && src === 4) sinhCap = 2; // 4->1 (Cấp 2)
+                            else if (pos === 2 && src === 4) sinhCap = 1; // 4->2 (Cấp 1)
+                            else if (pos === 2 && src === 3) sinhCap = 2; // 3->2 (Cấp 2)
+                            else if ((pos === 1 && src === 2) || (pos === 2 && src === 1)) sinhCap = 2; // 1<->2 (Cấp 2)
+                            else if ((pos === 3 && src === 4) || (pos === 4 && src === 3)) sinhCap = 2; // 3<->4 (Cấp 2)
+                            else if ((pos === 3 && src === 1) || (pos === 4 && src === 2)) sinhCap = 1; // 1->3, 2->4 (Cấp 1)
+                            else if ((pos === 3 && src === 2) || (pos === 4 && src === 1)) sinhCap = 2; // 2->3, 1->4 (Cấp 2)
+                            else if (posIsBien) sinhCap = 5; // Liên quan đến Biến (Cấp 5)
+                            
+                            // Nếu không rơi vào các trường hợp trên, dùng cấp tương tác chung
+                            sinhCounts[sinhCap] = (sinhCounts[sinhCap]||0) + 1;
+                        }
 
                         // --- Tiêu Tán Lực (HẠI) ---
-                        // Luôn áp dụng cho NGUỒN (src) khi sinh
+                        // Áp dụng cho NGUỒN (src) khi sinh
                         let tieuTanCap = null;
                         
-                        // Cấp 1: Sinh thuận/ngược trong 1 cặp
+                        // Cấp 1: Sinh thuận/ngược trong 1 cặp (1->2, 2->1, 3->4, 4->3, 5->6, 6->5)
                         if ((src===1 && pos===2) || (src===2 && pos===1) || 
                             (src===3 && pos===4) || (src===4 && pos===3) ||
                             (src===5 && pos===6) || (src===6 && pos===5)) {
@@ -284,22 +282,22 @@ $(document).ready(function() {
                             tieuTanCap = 2;
                         }
 
-                        if (tieuTanCap) {
-                             // Tiêu tán chỉ tính cho bên nguồn (src)
-                             if (srcGua === selectedGua) {
-                                 tieuTanCounts[tieuTanCap] = (tieuTanCounts[tieuTanCap]||0) + 1;
-                             }
+                        if (tieuTanCap && srcGua === selectedGua) {
+                            // Tiêu tán chỉ tính cho bên nguồn (src)
+                             tieuTanCounts[tieuTanCap] = (tieuTanCounts[tieuTanCap]||0) + 1;
                         }
-                    }
+                    } // end isSinh
 
                     // --- 2. TƯƠNG KHẮC (HẠI) ---
                     if (isKhac(srcHanh, tgtHanh)) {
-                        // Khắc => hại cho target (pos) at interaction cap
-                        khacCounts[cap] = (khacCounts[cap]||0) + 1;
+                        // Khắc => hại cho target (pos)
+                        if (tgtGua === selectedGua) {
+                            khacCounts[cap] = (khacCounts[cap]||0) + 1;
+                        }
 
                         // --- Hao Tổn Lực (HẠI) ---
-                        let srcHaoCap = null;
-                        let posHaoCap = null;
+                        let srcHaoCap = null; // Nguồn (bên khắc)
+                        let posHaoCap = null; // Đích (bên bị khắc)
 
                         // Khắc trong Quẻ Chính (1<->2)
                         if (srcIsChinh && posIsChinh) {
@@ -343,38 +341,40 @@ $(document).ready(function() {
                         }
 
                         // Cập nhật Hao Tổn cho ĐÍCH (nếu Đích là selectedGua)
-                        if (posGua[pos] === selectedGua && posHaoCap !== null) {
+                        if (tgtGua === selectedGua && posHaoCap !== null) {
                             haoTonCounts[posHaoCap] = (haoTonCounts[posHaoCap]||0) + 1;
                         }
-                    } // end khac
+                    } // end isKhac
 
                     // --- 3. TRỢ LỰC (LỢI) ---
-                    // Trợ lực áp dụng khi src và target là đồng ngũ hành
+                    // Trợ lực áp dụng khi src và target là đồng ngũ hành (pos nhận trợ lực)
                     if (srcHanh === tgtHanh) {
-                        let supportCap = null;
-                        
-                        // Cấp 3
-                        if ((srcIsChinh && posIsChinh) || (srcIsHo && posIsHo)) supportCap = 3;
-                        else if ((src===1 && pos===3) || (src===3 && pos===1) || (src===2 && pos===4) || (src===4 && pos===2)) supportCap = 3;
-                        
-                        // Cấp 4
-                        else if ((src===1 && pos===4) || (src===4 && pos===1) || (src===2 && pos===3) || (src===3 && pos===2)) supportCap = 4;
-                        
-                        // Cấp 5 (liên quan đến biến)
-                        else if (srcIsBien || posIsBien) supportCap = 5;
-                        
-                        if (supportCap) {
-                            troCounts[supportCap] = (troCounts[supportCap]||0) + 1;
-                        } else {
-                            // Fallback: Nếu đồng hành nhưng vị trí xa (ví dụ: 1-5), dùng cấp độ tương tác chung
-                            troCounts[cap] = (troCounts[cap]||0) + 1;
+                        if (tgtGua === selectedGua) {
+                            let supportCap = null;
+                            
+                            // Cấp 3
+                            if ((srcIsChinh && posIsChinh) || (srcIsHo && posIsHo)) supportCap = 3; // 1<->2, 3<->4
+                            else if ((src===1 && pos===3) || (src===3 && pos===1) || (src===2 && pos===4) || (src===4 && pos===2)) supportCap = 3;
+                            
+                            // Cấp 4
+                            else if ((src===1 && pos===4) || (src===4 && pos===1) || (src===2 && pos===3) || (src===3 && pos===2)) supportCap = 4;
+                            
+                            // Cấp 5 (liên quan đến biến)
+                            else if (srcIsBien || posIsBien) supportCap = 5;
+                            
+                            if (supportCap) {
+                                troCounts[supportCap] = (troCounts[supportCap]||0) + 1;
+                            } else {
+                                // Fallback: Nếu đồng hành nhưng vị trí xa (ví dụ: 1-5), dùng cấp độ tương tác chung
+                                troCounts[cap] = (troCounts[cap]||0) + 1;
+                            }
                         }
                     } // end trợ lực
                 } // end src loop
             } // end pos loop
         } // end kt loop
 
-        // === compute score: benefit vs harm ===
+        // === COMPUTE SCORE (GIỮ NGUYÊN) ===
         function sumObj(o) { return Object.values(o).reduce((s,v)=>s+(v||0),0); }
         
         let benefitScore = 0, harmScore = 0;
@@ -412,7 +412,7 @@ $(document).ready(function() {
         for (let c=1;c<=5;c++) text += `  Cấp ${c}: ${troCounts[c]||0}\n`;
         
         text += `\n— Tiêu tán (Mất khí, Hại): Tổng ${totalTieu} (Được tính nặng hơn x${tieuMultiplier})\n`;
-        text += `— Hao tổn (Giảm sức sau Khắc, Hại): Tổng ${totalHao} (Được tính x${haoMultiplier})\n\n`;
+        text += `— Hao tổn (Giảm sức sau Khắc/Sinh, Hại): Tổng ${totalHao} (Được tính x${haoMultiplier})\n\n`;
 
         text += `Tổng điểm lợi: ${benefitScore.toFixed(2)}\nTổng điểm hại: ${harmScore.toFixed(2)}\n\n`;
         text += `Tỷ lệ (theo trọng số): Có lợi ${pctBenefit}% — Có hại ${pctHarm}%\n\n`;
@@ -425,7 +425,7 @@ $(document).ready(function() {
         $('#ketQua').text(text);
     }
 
-    // === event bindings giữ nguyên ===
+    // === event bindings (GIỮ NGUYÊN) ===
     $('#dontable input[type="button"]').click(function() {
         const [$phai, $trai] = [$('#dontable input[name="phai"]'), $('#dontable input[name="trai"]')];
         if (!validateInputs([$phai, $trai])) return;
