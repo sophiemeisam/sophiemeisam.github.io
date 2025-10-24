@@ -120,23 +120,27 @@ $(document).ready(function() {
     function isKhac(src,tgt){ return khacRule[src]===tgt; }
     function sameElement(g1,g2){ return hanhOfGua[g1] === hanhOfGua[g2]; }
 
-    // Dù ta chủ yếu dùng cấp lực trực tiếp, ta vẫn giữ hàm này cho tính KHẮC chung
+    // Dùng để tính Khắc chung (trọng số)
     function interactionLevel(srcPos, tgtPos) {
+        // Cấp 1: Mạnh nhất/Gần nhất (1-2, 2-1, 3-4, 4-3, 1-3, 3-1, 2-4, 4-2)
         const cap1pairs = [[1,2],[2,1],[3,4],[4,3],[1,3],[3,1],[2,4],[4,2]];
         for (let p of cap1pairs) if (p[0]===srcPos && p[1]===tgtPos) return 1;
+        // Cấp 2: Trung bình/Kém gần (1-4, 4-1, 2-3, 3-2)
         const cap2pairs = [[1,4],[4,1],[2,3],[3,2]];
         for (let p of cap2pairs) if (p[0]===srcPos && p[1]===tgtPos) return 2;
+        // Cấp 5: Yếu nhất/Liên quan đến Biến (5, 6)
         if (srcPos>=5 || tgtPos>=5) return 5;
+        // Cấp 3: Các trường hợp còn lại (fallback)
         return 3;
     }
 
-    // Trọng số (GIỮ NGUYÊN)
+    // Trọng số theo cấp độ (Cấp 1 là mạnh nhất, Cấp 5 là yếu nhất)
     const capWeight = {1:6, 2:4, 3:3, 4:2, 5:1};
 
-    // Hệ số nhân ĐIỀU CHỈNH theo phản hồi (Giảm Tiêu tán/Hao tổn về mức cân bằng)
-    let troMultiplier = 0.25;    
-    let tieuMultiplier = 1.0; // Đã giảm từ 1.4 về 1.0    
-    let haoMultiplier = 1.0;  // Đã giảm từ 1.0 (mặc định) về 1.0  
+    // Hệ số nhân ĐIỀU CHỈNH theo yêu cầu: Trợ Lực phải lớn hơn Tiêu Tán/Hao Tổn
+    let troMultiplier = 1.5;    // TĂNG lên 1.5 để Trợ Lực là điểm cộng lớn
+    let tieuMultiplier = 1.0;   // Giữ ở mức cân bằng
+    let haoMultiplier = 1.0;    // Giữ ở mức cân bằng
 
     function levelToCap(level) { return level; } 
     
@@ -198,7 +202,7 @@ $(document).ready(function() {
         currentNumKhongThoi = ktArray.length;
     }
 
-    // === Hàm luận đoán (ĐÃ FIX LỖI LOGIC TRỢ LỰC, KIỂM TRA LẠI TIÊU TÁN/HAO TỔN) ===
+    // === Hàm luận đoán (FIX LỖI LẦN CUỐI THEO YÊU CẦU TRỌNG SỐ LỰC) ===
     function tinhLuanDoan(selectedGua) {
         if (!queData || queData.length === 0) { $('#ketQua').text('Chưa có bảng quẻ (vui lòng tạo quẻ trước).'); return; }
         if (!selectedGua) { $('#ketQua').text('Vui lòng chọn 1 quẻ đơn để luận đoán.'); return; }
@@ -379,18 +383,18 @@ $(document).ready(function() {
             } // end pos loop
         } // end kt loop
 
-        // === COMPUTE SCORE (GIỮ NGUYÊN) ===
+        // === COMPUTE SCORE ===
         function sumObj(o) { return Object.values(o).reduce((s,v)=>s+(v||0),0); }
         
         let benefitScore = 0, harmScore = 0;
         for (let c=1;c<=5;c++) {
             const w = capWeight[c] || 1;
             benefitScore += (sinhCounts[c]||0) * w;
-            benefitScore += (troCounts[c]||0) * w * troMultiplier;
+            benefitScore += (troCounts[c]||0) * w * troMultiplier; // Dùng troMultiplier = 1.5
             
             harmScore += (khacCounts[c]||0) * w;
-            harmScore += (tieuTanCounts[c]||0) * w * tieuMultiplier;
-            harmScore += (haoTonCounts[c]||0) * w * haoMultiplier;
+            harmScore += (tieuTanCounts[c]||0) * w * tieuMultiplier; // Dùng tieuMultiplier = 1.0
+            harmScore += (haoTonCounts[c]||0) * w * haoMultiplier;  // Dùng haoMultiplier = 1.0
         }
 
         const totalScore = benefitScore + harmScore;
@@ -413,7 +417,7 @@ $(document).ready(function() {
         text += `\n— Khắc (Hại) Giảm Lực theo cấp (Đích chịu khắc): Tổng ${totalKhac}\n`;
         for (let c=1;c<=5;c++) text += `  Cấp ${c}: ${khacCounts[c]||0}\n`;
         
-        text += `\n— Trợ lực (Đồng Hành, Lợi): Tổng ${totalTro}\n`;
+        text += `\n— Trợ lực (Đồng Hành, Lợi): Tổng ${totalTro} (Được tính mạnh hơn x${troMultiplier})\n`;
         for (let c=1;c<=5;c++) text += `  Cấp ${c}: ${troCounts[c]||0}\n`;
         
         text += `\n— Tiêu tán (Mất khí, Hại): Tổng ${totalTieu} (Được tính x${tieuMultiplier})\n`;
