@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài Trà Tiên Tri</title>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+        margin: 0;
+        background-color: #f0f0f5;
+        color: #1c1c1e;
+        padding-bottom: 60px;
+    }
+    .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        min-height: 100vh;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .header-bar {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        padding: 15px 20px 10px;
+        border-bottom: 1px solid #e5e5ea;
+        position: sticky;
+        top: 0;
+        background-color: #fff;
+        z-index: 10;
+    }
+    .back-link {
+        text-decoration: none;
+        color: #007aff;
+        font-size: 18px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-self: start;
+    }
+    .back-link:before {
+        content: '‹';
+        font-size: 32px;
+        margin-right: 4px;
+        line-height: 1;
+        font-weight: 500;
+    }
+    h1 {
+        color: #1c1c1e;
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        text-align: center;
+    }
+    .content {
+        padding: 20px;
+    }
+    .controls {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+    button {
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 17px;
+        font-weight: 500;
+        background-color: #007aff;
+        color: white;
+        box-shadow: 0 2px 4px rgba(0,122,255,0.4);
+        transition: background-color 0.2s, transform 0.1s;
+    }
+    button:active { transform: scale(0.97); background-color: #0056b3; }
+    button:disabled { background-color: #a0a0a0; cursor: not-allowed; }
+    #result {
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #f7f7f9;
+        border-radius: 12px;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+        min-height: 120px;
+        opacity: 0;
+        transition: opacity 0.6s ease;
+    }
+    .spread-title {
+        font-size: 1.4em;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #38761d;
+        text-align: center;
+    }
+    .countdown-display {
+        text-align: center;
+        padding: 30px 0;
+        color: #007aff;
+    }
+    .countdown-timer {
+        font-size: 4em;
+        font-weight: 700;
+        margin: 10px 0;
+    }
+    .countdown-instruction {
+        font-size: 1.1em;
+        color: #8e8e93;
+        font-weight: 500;
+    }
+    .card-list { list-style: none; padding: 0; }
+    .card-list li {
+        background-color: #fff;
+        margin-bottom: 10px;
+        padding: 12px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border-left: 3px solid #38761d;
+    }
+    .card-title {
+        font-weight: 600;
+        color: #007aff;
+        margin-right: 5px;
+    }
+    .fade-in { opacity: 1 !important; }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header-bar">
+        <a href="#" class="back-link">Về</a>
+        <h1>Bài Trà Tiên Tri</h1>
+        <div></div>
+    </div>
+
+    <div class="content">
+        <div class="controls">
+            <button onclick="startCountdown(3,'Tình Hình Chung','performSpread')">Trải Bài: Tình Hình Chung (3 Lá)</button>
+            <button onclick="startCountdown(5,'Phân Tích Sâu Sắc','performSpread')">Trải Bài: Phân Tích Sâu Sắc (5 Lá)</button>
+            <button onclick="startCountdown(7,'Trải Bài Theo Tuần','performWeeklySpread')">Trải Bài Theo Tuần (7 Lá)</button>
+            <button onclick="startCountdown(4,'Trải Bài Theo Tháng','performMonthlySpread')">Trải Bài Theo Tháng (4 Lá)</button>
+            <button onclick="startCountdown(12,'Trải Bài Theo Năm','performYearlySpread')">Trải Bài Theo Năm (12 Lá)</button>
+        </div>
+        <div id="result">
+            <p style="text-align:center;color:#8e8e93;">Chọn kiểu trải bài và tập trung trong 10 giây để nhận thông điệp.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+const ALL_CARDS = [/* --- Danh sách 200 lá như bạn đã có ở bản trước --- */];
+
+/* Random entropy mạnh */
+function secureRandom(max) {
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    return array[0] % max;
+}
+
+/* Rút bài */
+function drawUniqueCards(count, deck) {
+    const drawn = [];
+    const available = [...Array(deck.length).keys()];
+    for (let i=0;i<count;i++){
+        if (!available.length) break;
+        const idx = secureRandom(available.length);
+        drawn.push(deck[available[idx]]);
+        available.splice(idx,1);
+    }
+    return drawn;
+}
+
+/* Đếm ngược */
+function startCountdown(count,title,spreadFunction){
+    let timer=10;
+    const res=document.getElementById('result');
+    const btns=document.querySelectorAll('.controls button');
+    btns.forEach(b=>b.disabled=true);
+    res.classList.remove('fade-in');
+    res.innerHTML=`
+        <div class="countdown-display">
+            <p class="countdown-instruction">Tập trung và suy nghĩ về vấn đề của bạn...</p>
+            <div class="countdown-timer" id="timer">${timer}</div>
+            <p class="countdown-instruction">Giây</p>
+        </div>`;
+    const interval=setInterval(()=>{
+        timer--;
+        document.getElementById('timer').textContent=timer;
+        if(timer<=0){
+            clearInterval(interval);
+            if(spreadFunction==='performSpread') performSpread(count,title);
+            else if(spreadFunction==='performWeeklySpread') performWeeklySpread();
+            else if(spreadFunction==='performMonthlySpread') performMonthlySpread();
+            else if(spreadFunction==='performYearlySpread') performYearlySpread();
+            btns.forEach(b=>b.disabled=false);
+        }
+    },1000);
+}
+
+/* Các trải bài */
+function performSpread(count,title){
+    const cards=drawUniqueCards(count,ALL_CARDS);
+    displayResults(title,cards);
+}
+function performWeeklySpread(){
+    const days=["Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy","Chủ Nhật"];
+    const cards=drawUniqueCards(7,ALL_CARDS);
+    let html=`<div class="spread-title">Trải Bài Theo Tuần (7 Ngày)</div><ul class="card-list">`;
+    cards.forEach((c,i)=>html+=`<li><span class="card-title">${days[i]}:</span> ${c}</li>`);
+    html+='</ul>';
+    showResult(html);
+}
+function performMonthlySpread(){
+    const weeks=["Tuần 1","Tuần 2","Tuần 3","Tuần 4"];
+    const cards=drawUniqueCards(4,ALL_CARDS);
+    let html=`<div class="spread-title">Trải Bài Theo Tháng (4 Tuần)</div><ul class="card-list">`;
+    cards.forEach((c,i)=>html+=`<li><span class="card-title">${weeks[i]}:</span> ${c}</li>`);
+    html+='</ul>';
+    showResult(html);
+}
+function performYearlySpread(){
+    const months=["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+    const cards=drawUniqueCards(12,ALL_CARDS);
+    let html=`<div class="spread-title">Trải Bài Theo Năm (12 Tháng)</div><ul class="card-list">`;
+    cards.forEach((c,i)=>html+=`<li><span class="card-title">${months[i]}:</span> ${c}</li>`);
+    html+='</ul>';
+    showResult(html);
+}
+function displayResults(title,cards){
+    const pos={
+        3:["Quá khứ","Hiện tại","Tương lai"],
+        5:["Tình huống","Thách thức","Lời khuyên","Ảnh hưởng bên ngoài","Kết quả cuối cùng"]
+    };
+    let html=`<div class="spread-title">${title}</div><ul class="card-list">`;
+    cards.forEach((c,i)=>{
+        const p=pos[cards.length]?pos[cards.length][i]:`Lá ${i+1}`;
+        html+=`<li><span class="card-title">${p}:</span> ${c}</li>`;
+    });
+    html+='</ul>';
+    showResult(html);
+}
+
+/* Hiển thị kết quả + nút rút lại */
+function showResult(html){
+    const res=document.getElementById('result');
+    res.innerHTML=html+`<div style="text-align:center;margin-top:15px;"><button onclick="location.reload()">Rút lại bài mới</button></div>`;
+    setTimeout(()=>res.classList.add('fade-in'),50);
+}
+</script>
+</body>
+</html>
