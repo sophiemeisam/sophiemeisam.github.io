@@ -8,7 +8,10 @@
     body{font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",sans-serif;margin:0;background:#f0f0f5;color:#111;padding-bottom:60px}
     .container{max-width:900px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 12px rgba(0,0,0,0.06)}
     .header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #e9e9ef;position:sticky;top:0;background:#fff;z-index:10}
-    .title{font-weight:700}
+    /* Thêm style cho nút "Về trang trước" */
+    .back-link{font-size:1rem;font-weight:700;color:#007aff;text-decoration:none;display:flex;align-items:center;gap:4px}
+    /* Chỉnh title để nó không chiếm quá nhiều không gian */
+    .title{font-weight:700;flex-grow:1;text-align:center;font-size:1.25rem}
     .content{padding:18px}
     .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
     button{padding:12px;border:none;border-radius:10px;background:#007aff;color:#fff;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,122,255,0.2)}
@@ -20,14 +23,21 @@
     .card-title{min-width:150px;font-weight:700;color:#007aff}
     .deck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
     .deck-item{background:#fff;padding:8px;border-radius:6px;border-left:3px solid #ccc}
-    .actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+    .actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center} /* Căn giữa các nút hành động */
     .small{font-size:.92rem;color:#666}
     .error{color:#a33;background:#ffecec;padding:8px;border-radius:6px;margin-top:10px}
+    /* Thêm style cho Countdown */
+    .countdown-display{text-align:center;padding:40px 0}
+    .countdown-instruction{color:#555;margin:0;font-size:1.1rem}
+    .countdown-timer{font-size:3.5rem;font-weight:900;color:#007aff;margin:8px 0}
 </style>
 </head>
 <body>
 <div class="container">
     <div class="header">
+        <a href="link-trang-truoc-cua-ban" class="back-link">
+            &larr; Về trang trước
+        </a>
         <div class="title">Bài Trà Tiên Tri</div>
         <div><small class="small"></small></div>
     </div>
@@ -50,11 +60,10 @@
 
 <script>
 /*
-  Phiên bản sửa lỗi:
-  - Thêm ALL_CARDS đầy đủ
-  - Dùng secureRandom với fallback
-  - Bắt lỗi (try/catch) và hiển thị lỗi lên #result
-  - Đăng ký sự kiện buttons bằng JS (không rely trên inline onclick)
+  Phiên bản sửa lỗi & bổ sung:
+  - Giữ nguyên cấu trúc
+  - Đã thêm link "Về trang trước" (placeholder link)
+  - Đã sửa lỗi logic: thêm nút thao tác (Rút lại/Xem bộ bài) cho trải bài 7, 4, 12.
 */
 
 /* ---------- DỮ LIỆU: đầy đủ 200+ tên (theo danh sách bạn đã cung cấp) ---------- */
@@ -177,8 +186,9 @@ function showFullDeck(){
     try {
         let html = `<div class="spread-title">Toàn bộ bộ bài (${ALL_CARDS.length} lá)</div><div class="deck-grid">`;
         ALL_CARDS.forEach((c,i)=> html += `<div class="deck-item"><strong>${i+1}.</strong> ${c}</div>`);
-        html += `</div><div class="actions"><button onclick="location.reload()">Đóng</button></div>`;
+        html += `</div><div class="actions"><button id="btn-close-deck">Đóng</button></div>`; // Dùng id để gán event
         showHtml(html);
+        document.getElementById('btn-close-deck').addEventListener('click', ()=>{ location.reload(); });
     } catch(err){
         showError(err.message || err);
         console.error(err);
@@ -214,29 +224,52 @@ function startCountdown(count,title,fn){
 /* gắn event cho nút */
 document.getElementById('btn-3').addEventListener('click', ()=> startCountdown(3,'Trải Bài 3 Lá', ()=> spreadN(3,'Trải Bài 3 Lá')));
 document.getElementById('btn-5').addEventListener('click', ()=> startCountdown(5,'Trải Bài 5 Lá', ()=> spreadN(5,'Trải Bài 5 Lá')));
+
+// Đã sửa: Thêm logic cho các nút hành động (Rút lại / Xem bộ bài) vào các trải bài tuỳ chỉnh
 document.getElementById('btn-7').addEventListener('click', ()=> startCountdown(7,'Trải Bài 7 Ngày', ()=> {
-    const cards = drawUnique(7,ALL_CARDS);
-    let html = `<div class="spread-title">Trải Bài Theo Tuần (7 ngày)</div><ul class="card-list">`;
-    const days=["Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy","Chủ Nhật"];
-    cards.forEach((c,i)=> html += `<li><div class="card-title">${days[i]}:</div><div>${c}</div></li>`);
-    html += `</ul><div class="actions"><button onclick="location.reload()">Đóng</button></div>`;
-    showHtml(html);
+    try {
+        const cards = drawUnique(7,ALL_CARDS);
+        let html = `<div class="spread-title">Trải Bài Theo Tuần (7 ngày)</div><ul class="card-list">`;
+        const days=["Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy","Chủ Nhật"];
+        cards.forEach((c,i)=> html += `<li><div class="card-title">${days[i]}:</div><div>${c}</div></li>`);
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button></div>`;
+        showHtml(html);
+        document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
+        document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
 }));
 document.getElementById('btn-4').addEventListener('click', ()=> startCountdown(4,'Trải Bài Theo Tháng', ()=> {
-    const cards = drawUnique(4,ALL_CARDS);
-    let html = `<div class="spread-title">Trải Bài Theo Tháng (4 tuần)</div><ul class="card-list">`;
-    const weeks=["Tuần 1","Tuần 2","Tuần 3","Tuần 4"];
-    cards.forEach((c,i)=> html += `<li><div class="card-title">${weeks[i]}:</div><div>${c}</div></li>`);
-    html += `</ul><div class="actions"><button onclick="location.reload()">Đóng</button></div>`;
-    showHtml(html);
+    try {
+        const cards = drawUnique(4,ALL_CARDS);
+        let html = `<div class="spread-title">Trải Bài Theo Tháng (4 tuần)</div><ul class="card-list">`;
+        const weeks=["Tuần 1","Tuần 2","Tuần 3","Tuần 4"];
+        cards.forEach((c,i)=> html += `<li><div class="card-title">${weeks[i]}:</div><div>${c}</div></li>`);
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button></div>`;
+        showHtml(html);
+        document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
+        document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
 }));
 document.getElementById('btn-12').addEventListener('click', ()=> startCountdown(12,'Trải Bài Theo Năm', ()=> {
-    const cards = drawUnique(12,ALL_CARDS);
-    let html = `<div class="spread-title">Trải Bài Theo Năm (12 tháng)</div><ul class="card-list">`;
-    const months=["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
-    cards.forEach((c,i)=> html += `<li><div class="card-title">${months[i]}:</div><div>${c}</div></li>`);
-    html += `</ul><div class="actions"><button onclick="location.reload()">Đóng</button></div>`;
-    showHtml(html);
+    try {
+        const cards = drawUnique(12,ALL_CARDS);
+        let html = `<div class="spread-title">Trải Bài Theo Năm (12 tháng)</div><ul class="card-list">`;
+        const months=["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+        cards.forEach((c,i)=> html += `<li><div class="card-title">${months[i]}:</div><div>${c}</div></li>`);
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button></div>`;
+        showHtml(html);
+        document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
+        document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
 }));
 document.getElementById('btn-deck').addEventListener('click', showFullDeck);
 
