@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Bài Trà Tiên Tri</title>
+<style>
+    body{font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",sans-serif;margin:0;background:#f0f0f5;color:#111;padding-bottom:60px}
+    .container{max-width:900px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 12px rgba(0,0,0,0.06)}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #e9e9ef;position:sticky;top:0;background:#fff;z-index:10}
+    .back-link{font-size:1rem;font-weight:700;color:#007aff;text-decoration:none;display:flex;align-items:center;gap:4px}
+    .title{font-weight:700;flex-grow:1;text-align:center;font-size:1.25rem}
+    .content{padding:18px}
+    .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
+    button{padding:12px;border:none;border-radius:10px;background:#007aff;color:#fff;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,122,255,0.2);transition:background .2s}
+    button:hover{background:#005bb5}
+    button:disabled{background:#9aa3ad;cursor:not-allowed}
+    /* Style cho các nút hành động */
+    .btn-copy{background:#2e7d32;}
+    .btn-copy:hover{background:#1b5e20}
+    .btn-ai{background:#f4b400;color:#111;font-weight:900;} /* Màu Vàng/Cam (Màu Google) */
+    .btn-ai:hover{background:#e69a00}
+
+    #result{margin-top:12px;padding:14px;background:#f7f7f9;border-radius:10px;min-height:160px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.04);transition:opacity .35s;opacity:1}
+    .spread-title{font-size:1.15rem;font-weight:700;color:#2e7d32;text-align:center;margin-bottom:8px}
+    .card-list{list-style:none;padding:0;margin:0}
+    .card-list li{background:#fff;margin:8px 0;padding:10px;border-radius:8px;border-left:4px solid #38761d;display:flex;gap:10px;align-items:center}
+    .card-title{min-width:150px;font-weight:700;color:#007aff;flex-shrink:0}
+    .deck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
+    .deck-item{background:#fff;padding:8px;border-radius:6px;border-left:3px solid #ccc}
+    .actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+    .small{font-size:.92rem;color:#666}
+    .error{color:#a33;background:#ffecec;padding:8px;border-radius:6px;margin-top:10px}
+    .countdown-display{text-align:center;padding:40px 0}
+    .countdown-instruction{color:#555;margin:0;font-size:1.1rem}
+    .countdown-timer{font-size:3.5rem;font-weight:900;color:#007aff;margin:8px 0}
+    .toast-message{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 15px;border-radius:5px;opacity:0;transition:opacity 0.3s;z-index:1000;text-wrap:nowrap;}
+    .toast-message.show{opacity:1}
+    .ai-guide{margin-top:10px;padding:12px;border-radius:8px;background:#fffde7;border:1px solid #f9e16c;color:#555;}
+    .ai-guide p{margin:0;}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <a href="link-trang-truoc-cua-ban" class="back-link">
+            &larr; Về trang trước
+        </a>
+        <div class="title">Bài Trà Tiên Tri</div>
+        <div><small class="small"></small></div>
+    </div>
+
+    <div class="content">
+        <div class="controls">
+            <button id="btn-3">Trải Bài 3 Lá</button>
+            <button id="btn-5">Trải Bài 5 Lá</button>
+            <button id="btn-7">Trải 7 Ngày</button>
+            <button id="btn-4">Trải Theo Tháng (4)</button>
+            <button id="btn-12">Trải Theo Năm (12)</button>
+            <button id="btn-deck">Xem toàn bộ bộ bài (200 lá)</button>
+        </div>
+
+        <div id="result">
+            <p style="text-align:center;color:#666">Chọn kiểu trải bài, tập trung trong 10 giây rồi nhận thông điệp.</p>
+        </div>
+    </div>
+</div>
+<div id="toast" class="toast-message"></div>
+
+<script>
+/*
+  Phiên bản bổ sung:
+  - Thêm tính năng "AI Giải Bài" (sao chép + mở Gemini).
+*/
+
+/* ---------- DỮ LIỆU: đầy đủ 200+ tên (theo danh sách bạn đã cung cấp) ---------- */
+const ALL_CARDS = [
+"Angel - Tiên nữ","Ant - Con kiến","Apple - Quả táo","Archway - Cổng vòm","Arrow - Mũi tên",
+"Axe - Cây rìu","Bag - Túi","Barrel - Thùng Rỗng","Basket - Giỏ rơm","Bat - Con dơi",
+"Bear - Con gấu","Beetle - Bọ cánh cứng","Bell - Cái chuông","Bird Flying - Chim bay","Bird Perched - Chim đậu",
+"Boat - Con thuyền","Boot - Chiếc ủng","Bouquet - Bó hoa","Bow - Cái nơ","Bowl - Cái chậu",
+"Box - Cái hộp","Bread - Bánh mì","Bridge - Cây cầu","Broken Bridge - Cầu gãy","Broken Ring - Chia ly, chấm dứt",
+"Broken Wishbone - Xương đòn bị gãy","Broom - Cây chổi","Bull - Bò đực","Butterfly - Con bướm","Camel - Con lạc đà",
+"Candle - Ngọn nến","Cane - Gậy chống, batoong","Carriage - Cỗ xe thùng","Carrot - Củ cà rốt","Casket - Quan tài",
+"Cat - Con mèo","Caterpillar - Con sâu","Chain - Sợi dây xích","Chair Empty - Chiếc ghế trống","Chair Filled - Người ngồi ghế",
+"Claw - Móng vuốt","Clouds - Đám mây","Club - Cây chùy","Cobweb - Mạng nhện","Coins - Tiền xu",
+"Cracked Cup - Cốc vỡ","Crib - Cái nôi","Crown - Vương miện","Cup - Cái tách","Dagger - Dao găm",
+"Dark Man - Người đàn ông màu đen","Dark Woman - Người phụ nữ màu đen","Desk - Cái bàn","Diamond - Kim cương","Dog - 1 chú chó",
+"Dogs - 2 chú chó","Dog Barking - Chó sủa","Dog Close Up - Chó vui vẻ","Dog Far Away - Chú chó buồn bã","Dolphin - Cá heo",
+"Door - Cánh cửa","Dragon - Con rồng","Eagle - Con chim ưng","Ear - Cái tai","Egg - Quả trứng",
+"Elephant - Con voi","Eye - Con mắt","Fair Man - Người đàn ông sáng màu","Fair Woman - Người phụ nữ sáng màu","Fan - Quạt",
+"Feather - Lông vũ","Finger - Ngón tay","Fire - Ngọn lửa","Firecracker - Pháo hoa nổ","Flag - Lá cờ",
+"Flowers - Hoa nở","Flute - Ông sáo","Fly - Con ruồi","Forest - Khu rừng","Four Leaf Clover - Cỏ 4 lá",
+"Fox - Con cáo","Frying Pan - Cái chảo","Funnel - Cái phễu","Gavel - Cái búa","Gong - Cái chiêng",
+"Goldfish - Cá vàng","Grapes - Chùm nho","Grasshopper - Con cào cào","Hammock - Cái võng","Hand - Bàn tay",
+"Handshake - Bắt tay","Harp - Đàn hạc","Hat - Cái mũ","Haystack - Rơm cỏ khô","Heart - Trái tim",
+"Hills - Ngọn đồi","Horse - Con ngựa","Horseshoe - Móng ngựa","Inkpot - Bình mực","Jug - Cái bình",
+"Kangaroo - Chuột túi","Key - Chìa khóa","Kite - Con diều","Knot - Nút thắt","Ladder - Bậc thang",
+"Leg - Chân","Lightning - Tia chớp","Lily - Hoa lily","Lion - Sư tử","Lobster - Con tôm",
+"Man - Người đàn ông","Mice - Con chuột","Money Path - Con đường tiền","Moon - Mặt trăng","Mountain - Ngọn núi",
+"Mountain Road - Đường lên núi","Mule - Con lừa","Needle & Thread - Kim chỉ","Nest - Tổ chim","Older Man - Người đàn ông lớn tuổi",
+"Older Woman - Người phụ nữ lớn tuổi","Owl - Con cú","Pail - Thùng nước","Parrot - Con vẹt","Peacock - Con công",
+"Pig - Con lợn","Pin - Đinh ghim","Pineapple - Quả dứa","Purse - Túi tiền","Quill - Bút lông ngỗng",
+"Rabbit - Con thỏ","Rainbow - Cầu vồng","Ram - Cừu đực","Rat - Chuột đồng","Ring - Chiếc nhẫn",
+"Rooster - Gà trống","Rose - Hoa hồng","Scales - Cán cân","Scissors - Cắt đứt mối quan hệ","Sea Horse - Cá ngựa",
+"Shark - Cá mập","Shield - Cái khiên","Skull - Đầu lâu","Spear - Ngọn giáo","Staff - Hỗ trợ, chỉ dẫn",
+"Star - Ngôi sao","Stork - Con cò","Sun - Mặt trời","Sunrise - Bình minh","Table - Cái bàn",
+"Tankard - Cốc vại","Target - Bia bắn","Teapot - Bình trà","Teardrops - Giọt nước mắt","Tent - Cái lều",
+"Throne - Ngai vàng","Tiger - Con hổ","Torch - Ngọn đuốc","Tortoise - Con rùa","Tower - Toà tháp",
+"Tree - Cây","Tulip - Hoa tulip","Turkey - Gà tây","Unicorn - Kỳ lân","V - Chữ V",
+"Valley - Thung lũng","Vase - Lọ hoa","Vine - Cành nho xanh","Vulture - Con kền kền","Wall - Bức tường",
+"Wedge - Cái nêm","Weeping Willow - Cây dương liễu","Well - Cái giếng","Whale - Cá voi","Wheel - Bánh xe",
+"Windchimes - Chuông gió","Wishbone - Xương đòn","Woman - Người phụ nữ","Wreath - Vòng hoa","Yoke - Sự ràng buộc",
+"Younger Man - Người đàn ông trẻ tuổi","Younger Woman - Người phụ nữ trẻ tuổi",
+"January - Tháng 1","February - Tháng 2","March - Tháng 3","April - Tháng 4","May - Tháng 5","June - Tháng 6",
+"July - Tháng 7","August - Tháng 8","September - Tháng 9","October - Tháng 10","November - Tháng 11","December - Tháng 12",
+"Career - Sự nghiệp","Marriage - Hôn nhân","Happiness - Hạnh Phúc","Love - Tình yêu","Success - Thành công","Wealth - Tài chính"
+];
+
+/* fallback random */
+function secureRandom(max){
+    try {
+        if (window.crypto && window.crypto.getRandomValues) {
+            const arr = new Uint32Array(1);
+            window.crypto.getRandomValues(arr);
+            return arr[0] % max;
+        }
+    } catch(e){
+        // ignore and fallback to Math.random
+        console.warn('crypto not available, fallback to Math.random', e);
+    }
+    return Math.floor(Math.random()*max);
+}
+
+/* rút unique */
+function drawUnique(count, deck){
+    const drawn = [];
+    const idxs = Array.from(deck.keys());
+    for (let i=0;i<count;i++){
+        if (idxs.length===0) break;
+        const r = secureRandom(idxs.length);
+        const ix = idxs.splice(r,1)[0];
+        drawn.push(deck[ix]);
+    }
+    return drawn;
+}
+
+/* -------------------- CHỨC NĂNG COPY & AI -------------------- */
+function copyToClipboard(text){
+    return new Promise((resolve, reject) => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                resolve();
+            }).catch(err => {
+                // Fallback (cho các trình duyệt cũ hơn hoặc môi trường không an toàn)
+                fallbackCopy(text);
+                resolve(); // Vẫn resolve để tiếp tục quá trình
+            });
+        } else {
+            fallbackCopy(text);
+            resolve(); // Vẫn resolve để tiếp tục quá trình
+        }
+    });
+}
+
+function fallbackCopy(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.opacity = "0";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        document.execCommand('copy');
+    } catch (err) {
+        console.error('Fallback copy failed', err);
+    }
+    document.body.removeChild(textArea);
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+function openGeminiChat(copyText) {
+    // 1. Sao chép nội dung
+    copyToClipboard(copyText).then(() => {
+        showToast("Đã sao chép! Đang mở Gemini...");
+
+        // 2. Định nghĩa URL (Sử dụng liên kết web thông thường vì app link khá phức tạp và không ổn định)
+        const geminiUrl = "https://gemini.google.com/app"; 
+        
+        // Tạo hướng dẫn chi tiết cho người dùng
+        const guideHTML = `
+            <div class="ai-guide">
+                <p><strong>🚨 HƯỚNG DẪN QUAN TRỌNG:</strong></p>
+                <p>1. Nếu app/web Gemini không tự động mở, hãy bấm vào <a href="${geminiUrl}" target="_blank">ĐÂY</a>.</p>
+                <p>2. Nội dung trải bài đã được tự động sao chép (copy). Sau khi Gemini mở, vui lòng <strong>DÁN (paste)</strong> nội dung trải bài vào khung chat.</p>
+                <p>3. Yêu cầu Gemini giải nghĩa: "Hãy giải bài tiên tri này cho tôi và đưa ra lời khuyên."</p>
+                <p>4. Nếu chưa có app Gemini trên điện thoại, bạn có thể tìm kiếm và tải về trên <a href="https://play.google.com/store/search?q=gemini&c=apps" target="_blank">CH Play</a> hoặc <a href="https://apps.apple.com/us/app/gemini/id6472497673" target="_blank">App Store</a>.</p>
+            </div>
+        `;
+        // Hiển thị hướng dẫn
+        document.getElementById('result').insertAdjacentHTML('beforeend', guideHTML);
+
+
+        // 3. Mở cửa sổ mới/chuyển hướng đến Gemini
+        setTimeout(() => {
+            window.open(geminiUrl, '_blank');
+        }, 500); // Chờ 0.5s để người dùng đọc thông báo copy
+    }).catch(err => {
+        showError("Không thể sao chép để mở Gemini. Vui lòng thử lại.");
+    });
+}
+/* ----------------------------------------------------------- */
+
+
+/* helpers hiển thị */
+const resultEl = document.getElementById('result');
+
+function showError(msg){
+    resultEl.innerHTML = `<div class="error"><strong>Lỗi:</strong> ${msg}</div>`;
+}
+
+function showHtml(html){
+    // Xóa hướng dẫn AI nếu có trước khi hiển thị kết quả mới
+    const guide = document.querySelector('.ai-guide');
+    if (guide) guide.remove();
+    resultEl.innerHTML = html;
+}
+
+/* trình bày kết quả */
+function displaySpread(title, cards){
+    try {
+        const positions = {
+            3: ["Lá 1: Quá khứ / Gốc rễ","Lá 2: Hiện tại / Tình hình","Lá 3: Tương lai / Tiềm năng"],
+            5: ["Lá 1: Tình huống cốt lõi","Lá 2: Thách thức","Lá 3: Lời khuyên","Lá 4: Ảnh hưởng từ bên ngoài","Lá 5: Kết quả cuối cùng"]
+        };
+        let copyText = `YÊU CẦU: Hãy giải nghĩa chi tiết và đưa ra lời khuyên dựa trên trải bài tiên tri này:\n--- ${title} ---\n`;
+        let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
+        cards.forEach((c,i)=>{
+            const label = positions[cards.length] ? positions[cards.length][i] : `Lá ${i+1}`;
+            html += `<li><div class="card-title">${label}:</div><div>${c}</div></li>`;
+            copyText += `${label}: ${c}\n`; // Thêm vào nội dung copy
+        });
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button><button id="btn-copy" class="btn-copy">💾 Chỉ Copy Text</button><button id="btn-ai" class="btn-ai">🤖 AI Giải Bài</button></div>`;
+        showHtml(html);
+        document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
+        document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+        document.getElementById('btn-copy').addEventListener('click', () => copyToClipboard(copyText).then(() => showToast("Đã sao chép!")));
+        document.getElementById('btn-ai').addEventListener('click', () => openGeminiChat(copyText));
+    } catch (err){
+        showError(err.message || err);
+        console.error(err);
+    }
+}
+
+/* các chế độ trải bài */
+function spreadN(count,title){
+    try {
+        const cards = drawUnique(count, ALL_CARDS);
+        displaySpread(title, cards);
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
+}
+
+function showFullDeck(){
+    try {
+        let html = `<div class="spread-title">Toàn bộ bộ bài (${ALL_CARDS.length} lá)</div><div class="deck-grid">`;
+        ALL_CARDS.forEach((c,i)=> html += `<div class="deck-item"><strong>${i+1}.</strong> ${c}</div>`);
+        html += `</div><div class="actions"><button id="btn-close-deck">Đóng</button></div>`;
+        showHtml(html);
+        document.getElementById('btn-close-deck').addEventListener('click', ()=>{ location.reload(); });
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
+}
+
+/* Countdown helper (10s) */
+function startCountdown(count,title,fn){
+    try {
+        let t=10;
+        const btns = document.querySelectorAll('.controls button');
+        btns.forEach(b=>b.disabled=true);
+        showHtml(`<div class="countdown-display"><p class="countdown-instruction">Tập trung và nghĩ về vấn đề của bạn...</p><div class="countdown-timer" id="cd-t">${t}</div><p class="countdown-instruction">Giây</p></div>`);
+        const interval = setInterval(()=>{
+            t--;
+            const el=document.getElementById('cd-t');
+            if (el) el.textContent = t;
+            if (t<=0){
+                clearInterval(interval);
+                try {
+                    fn();
+                } finally {
+                    btns.forEach(b=>b.disabled=false);
+                }
+            }
+        },1000);
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
+}
+
+/* gắn event cho nút */
+document.getElementById('btn-3').addEventListener('click', ()=> startCountdown(3,'Trải Bài 3 Lá', ()=> spreadN(3,'Trải Bài 3 Lá')));
+document.getElementById('btn-5').addEventListener('click', ()=> startCountdown(5,'Trải Bài 5 Lá', ()=> spreadN(5,'Trải Bài 5 Lá')));
+
+// Cập nhật Trải 7 Ngày
+document.getElementById('btn-7').addEventListener('click', ()=> startCountdown(7,'Trải Bài 7 Ngày', ()=> {
+    try {
+        const cards = drawUnique(7,ALL_CARDS);
+        const title = "Trải Bài Theo Tuần (7 ngày)";
+        let copyText = `YÊU CẦU: Hãy giải nghĩa chi tiết và đưa ra lời khuyên dựa trên trải bài tiên tri này:\n--- ${title} ---\n`;
+        let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
+        const days=["Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy","Chủ Nhật"];
+        cards.forEach((c,i)=> {
+            html += `<li><div class="card-title">${days[i]}:</div><div>${c}</div></li>`;
+            copyText += `${days[i]}: ${c}\n`;
+        });
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button><button id="btn-copy" class="btn-copy">💾 Chỉ Copy Text</button><button id="btn-ai" class="btn-ai">🤖 AI Giải Bài</button></div>`;
+        showHtml(html);
+        document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
+        document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+        document.getElementById('btn-copy').addEventListener('click', () => copyToClipboard(copyText).then(() => showToast("Đã sao chép!")));
+        document.getElementById('btn-ai').addEventListener('click', () => openGeminiChat(copyText));
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
+}));
+
+// Cập nhật Trải Theo Tháng
+document.getElementById('btn-4').addEventListener('click', ()=> startCountdown(4,'Trải Bài Theo Tháng', ()=> {
+    try {
+        const cards = drawUnique(4,ALL_CARDS);
+        const title = "Trải Bài Theo Tháng (4 tuần)";
+        let copyText = `YÊU CẦU: Hãy giải nghĩa chi tiết và đưa ra lời khuyên dựa trên trải bài tiên tri này:\n--- ${title} ---\n`;
+        let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
+        const weeks=["Tuần 1","Tuần 2","Tuần 3","Tuần 4"];
+        cards.forEach((c,i)=> {
+            html += `<li><div class="card-title">${weeks[i]}:</div><div>${c}</div></li>`;
+            copyText += `${weeks[i]}: ${c}\n`;
+        });
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button><button id="btn-copy" class="btn-copy">💾 Chỉ Copy Text</button><button id="btn-ai" class="btn-ai">🤖 AI Giải Bài</button></div>`;
+        showHtml(html);
+        document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
+        document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+        document.getElementById('btn-copy').addEventListener('click', () => copyToClipboard(copyText).then(() => showToast("Đã sao chép!")));
+        document.getElementById('btn-ai').addEventListener('click', () => openGeminiChat(copyText));
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
+}));
+
+// Cập nhật Trải Theo Năm
+document.getElementById('btn-12').addEventListener('click', ()=> startCountdown(12,'Trải Bài Theo Năm', ()=> {
+    try {
+        const cards = drawUnique(12,ALL_CARDS);
+        const title = "Trải Bài Theo Năm (12 tháng)";
+        let copyText = `YÊU CẦU: Hãy giải nghĩa chi tiết và đưa ra lời khuyên dựa trên trải bài tiên tri này:\n--- ${title} ---\n`;
+        let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
+        const months=["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+        cards.forEach((c,i)=> {
+            html += `<li><div class="card-title">${months[i]}:</div><div>${c}</div></li>`;
+            copyText += `${months[i]}: ${c}\n`;
+        });
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button><button id="btn-copy" class="btn-copy">💾 Chỉ Copy Text</button><button id="btn-ai" class="btn-ai">🤖 AI Giải Bài</button></div>`;
+        showHtml(html);
+        document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
+        document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+        document.getElementById('btn-copy').addEventListener('click', () => copyToClipboard(copyText).then(() => showToast("Đã sao chép!")));
+        document.getElementById('btn-ai').addEventListener('click', () => openGeminiChat(copyText));
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
+}));
+
+document.getElementById('btn-deck').addEventListener('click', showFullDeck);
+
+/* bảo vệ: nếu có lỗi JS lúc load, hiển thị lỗi */
+window.addEventListener('error', function(evt){
+    try {
+        showError('Có lỗi trên trang: ' + (evt && evt.message ? evt.message : 'unknown'));
+        console.error(evt);
+    } catch(e){}
+});
+</script>
+</body>
+</html>
