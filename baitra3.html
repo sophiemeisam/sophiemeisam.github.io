@@ -3,58 +3,60 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Bài Trà Tiên Tri - Hoàn chỉnh</title>
+<title>Bài Trà Tiên Tri</title>
 <style>
-    body{font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",sans-serif;margin:0;background:#f0f0f5;color:#1c1c1e;padding-bottom:60px}
-    .container{max-width:800px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 10px rgba(0,0,0,0.05)}
-    .header-bar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:15px 20px;border-bottom:1px solid #e5e5ea;position:sticky;top:0;background:#fff;z-index:10}
-    .back-link{text-decoration:none;color:#007aff;font-size:18px;font-weight:600;display:flex;align-items:center;justify-self:start}
-    .back-link:before{content:'‹';font-size:28px;margin-right:6px}
-    h1{margin:0;font-size:18px;font-weight:600;text-align:center}
-    .content{padding:20px}
-    .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
-    button{padding:12px;border:none;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;background:#007aff;color:#fff;box-shadow:0 2px 4px rgba(0,122,255,0.3);transition:transform .08s}
-    button:active{transform:scale(.98)} button:disabled{background:#a0a0a0;cursor:not-allowed}
-    #result{margin-top:14px;padding:14px;background:#f7f7f9;border-radius:12px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.06);min-height:140px;opacity:0;transition:opacity .45s}
-    .fade-in{opacity:1}
-    .spread-title{font-size:1.2rem;font-weight:700;color:#2e7d32;text-align:center;margin-bottom:10px}
-    .countdown-display{text-align:center;padding:18px 0;color:#007aff}
-    .countdown-timer{font-size:3.2rem;font-weight:800;margin:4px 0}
-    .countdown-instruction{font-size:1rem;color:#8e8e93;font-weight:500}
+    body{font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",sans-serif;margin:0;background:#f0f0f5;color:#111;padding-bottom:60px}
+    .container{max-width:900px;margin:0 auto;background:#fff;min-height:100vh;box-shadow:0 0 12px rgba(0,0,0,0.06)}
+    .header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid #e9e9ef;position:sticky;top:0;background:#fff;z-index:10}
+    .title{font-weight:700}
+    .content{padding:18px}
+    .controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px}
+    button{padding:12px;border:none;border-radius:10px;background:#007aff;color:#fff;font-weight:700;cursor:pointer;box-shadow:0 2px 6px rgba(0,122,255,0.2)}
+    button:disabled{background:#9aa3ad;cursor:not-allowed}
+    #result{margin-top:12px;padding:14px;background:#f7f7f9;border-radius:10px;min-height:160px;box-shadow:inset 0 1px 3px rgba(0,0,0,0.04);transition:opacity .35s;opacity:1}
+    .spread-title{font-size:1.15rem;font-weight:700;color:#2e7d32;text-align:center;margin-bottom:8px}
     .card-list{list-style:none;padding:0;margin:0}
-    .card-list li{background:#fff;margin-bottom:8px;padding:10px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);border-left:4px solid #38761d;display:flex;gap:8px;align-items:center}
-    .card-title{font-weight:700;color:#007aff;min-width:160px}
+    .card-list li{background:#fff;margin:8px 0;padding:10px;border-radius:8px;border-left:4px solid #38761d;display:flex;gap:10px;align-items:center}
+    .card-title{min-width:150px;font-weight:700;color:#007aff}
     .deck-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
     .deck-item{background:#fff;padding:8px;border-radius:6px;border-left:3px solid #ccc}
-    .small{font-size:.9rem;color:#666}
-    .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .actions{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap}
+    .small{font-size:.92rem;color:#666}
+    .error{color:#a33;background:#ffecec;padding:8px;border-radius:6px;margin-top:10px}
 </style>
 </head>
 <body>
 <div class="container">
-    <div class="header-bar">
-        <a href="#" class="back-link">Về</a>
-        <h1>Bài Trà Tiên Tri — Phiên bản hoàn chỉnh</h1>
-        <div></div>
+    <div class="header">
+        <div class="title">Bài Trà Tiên Tri — (200 lá) — Phiên bản sửa lỗi</div>
+        <div><small class="small">Mở bằng Chrome/Edge/Firefox để đảm bảo hoạt động tốt</small></div>
     </div>
 
     <div class="content">
         <div class="controls">
-            <button onclick="startCountdown(3,'Tình Hình Chung','performSpread')">Trải Bài 3 Lá</button>
-            <button onclick="startCountdown(5,'Phân Tích Sâu Sắc','performSpread')">Trải Bài 5 Lá</button>
-            <button onclick="startCountdown(7,'Trải Bài Theo Tuần','performWeeklySpread')">Trải 7 Ngày</button>
-            <button onclick="startCountdown(4,'Trải Bài Theo Tháng','performMonthlySpread')">Trải 4 Tuần</button>
-            <button onclick="startCountdown(12,'Trải Bài Theo Năm','performYearlySpread')">Trải 12 Tháng</button>
-            <button onclick="showFullDeck()">Xem toàn bộ bộ bài (200 lá)</button>
+            <button id="btn-3">Trải Bài 3 Lá</button>
+            <button id="btn-5">Trải Bài 5 Lá</button>
+            <button id="btn-7">Trải 7 Ngày</button>
+            <button id="btn-4">Trải Theo Tháng (4)</button>
+            <button id="btn-12">Trải Theo Năm (12)</button>
+            <button id="btn-deck">Xem toàn bộ bộ bài (200 lá)</button>
         </div>
 
         <div id="result">
-            <p style="text-align:center;color:#8e8e93;">Chọn kiểu trải bài, tập trung trong 10 giây rồi nhận thông điệp.</p>
+            <p style="text-align:center;color:#666">Chọn kiểu trải bài, tập trung trong 10 giây rồi nhận thông điệp. Nếu có lỗi, mình sẽ show ở đây.</p>
         </div>
     </div>
 </div>
 
 <script>
+/*
+  Phiên bản sửa lỗi:
+  - Thêm ALL_CARDS đầy đủ
+  - Dùng secureRandom với fallback
+  - Bắt lỗi (try/catch) và hiển thị lỗi lên #result
+  - Đăng ký sự kiện buttons bằng JS (không rely trên inline onclick)
+*/
+
 /* ---------- DỮ LIỆU: đầy đủ 200+ tên (theo danh sách bạn đã cung cấp) ---------- */
 const ALL_CARDS = [
 "Angel - Tiên nữ","Ant - Con kiến","Apple - Quả táo","Archway - Cổng vòm","Arrow - Mũi tên",
@@ -99,123 +101,152 @@ const ALL_CARDS = [
 "Career - Sự nghiệp","Marriage - Hôn nhân","Happiness - Hạnh Phúc","Love - Tình yêu","Success - Thành công","Wealth - Tài chính"
 ];
 
-/* ---------- HỖ TRỢ NGẪU NHIÊN BẢO MẬT ---------- */
+/* fallback random */
 function secureRandom(max){
-    if (window.crypto && window.crypto.getRandomValues) {
-        const arr = new Uint32Array(1);
-        window.crypto.getRandomValues(arr);
-        return arr[0] % max;
+    try {
+        if (window.crypto && window.crypto.getRandomValues) {
+            const arr = new Uint32Array(1);
+            window.crypto.getRandomValues(arr);
+            return arr[0] % max;
+        }
+    } catch(e){
+        // ignore and fallback to Math.random
+        console.warn('crypto not available, fallback to Math.random', e);
     }
     return Math.floor(Math.random()*max);
 }
 
-/* Rút unique */
-function drawUniqueCards(count, deck){
+/* rút unique */
+function drawUnique(count, deck){
     const drawn = [];
-    const available = Array.from(Array(deck.length).keys());
+    const idxs = Array.from(deck.keys());
     for (let i=0;i<count;i++){
-        if (available.length===0) break;
-        const idx = secureRandom(available.length);
-        drawn.push(deck[available[idx]]);
-        available.splice(idx,1);
+        if (idxs.length===0) break;
+        const r = secureRandom(idxs.length);
+        const ix = idxs.splice(r,1)[0];
+        drawn.push(deck[ix]);
     }
     return drawn;
 }
 
-/* Đếm ngược và gọi trải bài */
-function startCountdown(count,title,fnName){
-    let timer=10;
-    const res = document.getElementById('result');
-    const btns = document.querySelectorAll('.controls button, .controls button');
-    btns.forEach(b=>b.disabled=true);
-    res.classList.remove('fade-in');
-    res.innerHTML = `<div class="countdown-display">
-        <p class="countdown-instruction">Tập trung và nghĩ về vấn đề của bạn...</p>
-        <div class="countdown-timer" id="countdown-timer">${timer}</div>
-        <p class="countdown-instruction">Giây</p>
-    </div>`;
-    const interval = setInterval(()=>{
-        timer--;
-        const el = document.getElementById('countdown-timer');
-        if (el) el.textContent = timer;
-        if (timer<=0){
-            clearInterval(interval);
-            if (fnName==='performSpread') performSpread(count,title);
-            else if (fnName==='performWeeklySpread') performWeeklySpread();
-            else if (fnName==='performMonthlySpread') performMonthlySpread();
-            else if (fnName==='performYearlySpread') performYearlySpread();
-            btns.forEach(b=>b.disabled=false);
-        }
-    },1000);
+/* helpers hiển thị */
+const resultEl = document.getElementById('result');
+
+function showError(msg){
+    resultEl.innerHTML = `<div class="error"><strong>Lỗi:</strong> ${msg}</div>`;
 }
 
-/* Các kiểu trải bài */
-function performSpread(count,title){
-    const cards = drawUniqueCards(count, ALL_CARDS);
-    displayResults(title,cards);
-}
-function performWeeklySpread(){
-    const days = ["Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy","Chủ Nhật"];
-    const cards = drawUniqueCards(7,ALL_CARDS);
-    let html = `<div class="spread-title">Trải Bài Theo Tuần</div><ul class="card-list">`;
-    cards.forEach((c,i)=> html += `<li><span class="card-title">${days[i]}:</span> ${c}</li>`);
-    html += `</ul>`;
-    showResult(html);
-}
-function performMonthlySpread(){
-    const weeks = ["Tuần 1 (Đầu tháng)","Tuần 2","Tuần 3","Tuần 4 (Cuối tháng)"];
-    const cards = drawUniqueCards(4,ALL_CARDS);
-    let html = `<div class="spread-title">Trải Bài Theo Tháng</div><ul class="card-list">`;
-    cards.forEach((c,i)=> html += `<li><span class="card-title">${weeks[i]}:</span> ${c}</li>`);
-    html += `</ul>`;
-    showResult(html);
-}
-function performYearlySpread(){
-    const months = ["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
-    const cards = drawUniqueCards(12,ALL_CARDS);
-    let html = `<div class="spread-title">Trải Bài Theo Năm</div><ul class="card-list">`;
-    cards.forEach((c,i)=> html += `<li><span class="card-title">${months[i]}:</span> ${c}</li>`);
-    html += `</ul>`;
-    showResult(html);
+function showHtml(html){
+    resultEl.innerHTML = html;
 }
 
-/* Hiển thị kết quả chung */
-function displayResults(title,cards){
-    const pos = {
-        3: ["Lá 1: Quá khứ / Gốc rễ","Lá 2: Hiện tại / Tình hình","Lá 3: Tương lai / Tiềm năng"],
-        5: ["Lá 1: Tình huống cốt lõi","Lá 2: Thách thức","Lá 3: Lời khuyên","Lá 4: Ảnh hưởng từ bên ngoài","Lá 5: Kết quả cuối cùng"]
-    };
-    let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
-    cards.forEach((c,i)=>{
-        const label = pos[cards.length] ? pos[cards.length][i] : `Lá ${i+1}`;
-        html += `<li><span class="card-title">${label}:</span> ${c}</li>`;
-    });
-    html += `</ul>`;
-    showResult(html);
+/* trình bày kết quả */
+function displaySpread(title, cards){
+    try {
+        const positions = {
+            3: ["Lá 1: Quá khứ / Gốc rễ","Lá 2: Hiện tại / Tình hình","Lá 3: Tương lai / Tiềm năng"],
+            5: ["Lá 1: Tình huống cốt lõi","Lá 2: Thách thức","Lá 3: Lời khuyên","Lá 4: Ảnh hưởng từ bên ngoài","Lá 5: Kết quả cuối cùng"]
+        };
+        let html = `<div class="spread-title">${title}</div><ul class="card-list">`;
+        cards.forEach((c,i)=>{
+            const label = positions[cards.length] ? positions[cards.length][i] : `Lá ${i+1}`;
+            html += `<li><div class="card-title">${label}:</div><div>${c}</div></li>`;
+        });
+        html += `</ul><div class="actions"><button id="btn-redo">🔁 Rút lại</button><button id="btn-show-deck">📚 Xem bộ bài</button></div>`;
+        showHtml(html);
+        document.getElementById('btn-redo').addEventListener('click', ()=>{ location.reload(); });
+        document.getElementById('btn-show-deck').addEventListener('click', showFullDeck);
+    } catch (err){
+        showError(err.message || err);
+        console.error(err);
+    }
 }
 
-/* Hiển thị kết quả cuối */
-function showResult(html){
-    const res = document.getElementById('result');
-    res.innerHTML = html + `<div class="actions-row" style="justify-content:center"><button onclick="redoLast()">🔁 Rút lại (mới) </button><button onclick="showFullDeck()">📚 Xem bộ bài</button></div>`;
-    setTimeout(()=>res.classList.add('fade-in'),40);
+/* các chế độ trải bài */
+function spreadN(count,title){
+    try {
+        const cards = drawUnique(count, ALL_CARDS);
+        displaySpread(title, cards);
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
 }
 
-/* Rút lại (khởi 1 lượt rút mới, reset trang) */
-function redoLast(){
-    // cách đơn giản: reload trang để reset ngẫu nhiên; hoặc có thể gọi startCountdown với biến lưu lastSpread nếu muốn
-    location.reload();
-}
-
-/* Hiển thị toàn bộ deck theo thứ tự gốc */
 function showFullDeck(){
-    const res = document.getElementById('result');
-    let html = `<div class="spread-title">Toàn bộ bộ bài (theo thứ tự danh sách)</div><div class="deck-grid">`;
-    ALL_CARDS.forEach((c,i)=> html += `<div class="deck-item"><strong>${i+1}.</strong> ${c}</div>`);
-    html += `</div><p class="small" style="margin-top:12px">Số lá: ${ALL_CARDS.length}. Đây là thứ tự nguyên bản trong mảng ALL_CARDS.</p>`;
-    res.innerHTML = html + `<div class="actions-row" style="margin-top:12px"><button onclick="location.reload()">Đóng</button></div>`;
-    setTimeout(()=>res.classList.add('fade-in'),40);
+    try {
+        let html = `<div class="spread-title">Toàn bộ bộ bài (${ALL_CARDS.length} lá)</div><div class="deck-grid">`;
+        ALL_CARDS.forEach((c,i)=> html += `<div class="deck-item"><strong>${i+1}.</strong> ${c}</div>`);
+        html += `</div><div class="actions"><button onclick="location.reload()">Đóng</button></div>`;
+        showHtml(html);
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
 }
+
+/* Countdown helper (10s) */
+function startCountdown(count,title,fn){
+    try {
+        let t=10;
+        const btns = document.querySelectorAll('.controls button');
+        btns.forEach(b=>b.disabled=true);
+        showHtml(`<div class="countdown-display"><p class="countdown-instruction">Tập trung và nghĩ về vấn đề của bạn...</p><div class="countdown-timer" id="cd-t">${t}</div><p class="countdown-instruction">Giây</p></div>`);
+        const interval = setInterval(()=>{
+            t--;
+            const el=document.getElementById('cd-t');
+            if (el) el.textContent = t;
+            if (t<=0){
+                clearInterval(interval);
+                try {
+                    fn();
+                } finally {
+                    btns.forEach(b=>b.disabled=false);
+                }
+            }
+        },1000);
+    } catch(err){
+        showError(err.message || err);
+        console.error(err);
+    }
+}
+
+/* gắn event cho nút */
+document.getElementById('btn-3').addEventListener('click', ()=> startCountdown(3,'Trải Bài 3 Lá', ()=> spreadN(3,'Trải Bài 3 Lá')));
+document.getElementById('btn-5').addEventListener('click', ()=> startCountdown(5,'Trải Bài 5 Lá', ()=> spreadN(5,'Trải Bài 5 Lá')));
+document.getElementById('btn-7').addEventListener('click', ()=> startCountdown(7,'Trải Bài 7 Ngày', ()=> {
+    const cards = drawUnique(7,ALL_CARDS);
+    let html = `<div class="spread-title">Trải Bài Theo Tuần (7 ngày)</div><ul class="card-list">`;
+    const days=["Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy","Chủ Nhật"];
+    cards.forEach((c,i)=> html += `<li><div class="card-title">${days[i]}:</div><div>${c}</div></li>`);
+    html += `</ul><div class="actions"><button onclick="location.reload()">Đóng</button></div>`;
+    showHtml(html);
+}));
+document.getElementById('btn-4').addEventListener('click', ()=> startCountdown(4,'Trải Bài Theo Tháng', ()=> {
+    const cards = drawUnique(4,ALL_CARDS);
+    let html = `<div class="spread-title">Trải Bài Theo Tháng (4 tuần)</div><ul class="card-list">`;
+    const weeks=["Tuần 1","Tuần 2","Tuần 3","Tuần 4"];
+    cards.forEach((c,i)=> html += `<li><div class="card-title">${weeks[i]}:</div><div>${c}</div></li>`);
+    html += `</ul><div class="actions"><button onclick="location.reload()">Đóng</button></div>`;
+    showHtml(html);
+}));
+document.getElementById('btn-12').addEventListener('click', ()=> startCountdown(12,'Trải Bài Theo Năm', ()=> {
+    const cards = drawUnique(12,ALL_CARDS);
+    let html = `<div class="spread-title">Trải Bài Theo Năm (12 tháng)</div><ul class="card-list">`;
+    const months=["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"];
+    cards.forEach((c,i)=> html += `<li><div class="card-title">${months[i]}:</div><div>${c}</div></li>`);
+    html += `</ul><div class="actions"><button onclick="location.reload()">Đóng</button></div>`;
+    showHtml(html);
+}));
+document.getElementById('btn-deck').addEventListener('click', showFullDeck);
+
+/* bảo vệ: nếu có lỗi JS lúc load, hiển thị lỗi */
+window.addEventListener('error', function(evt){
+    try {
+        showError('Có lỗi trên trang: ' + (evt && evt.message ? evt.message : 'unknown'));
+        console.error(evt);
+    } catch(e){}
+});
 </script>
 </body>
 </html>
