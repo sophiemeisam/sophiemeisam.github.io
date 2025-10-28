@@ -1,0 +1,666 @@
+<!DOCTYPE 23d281025 html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trải Bài Tarot - Đông Tây Vibes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #5A189A; /* Tím đậm */
+            --color-accent: #FFC300; /* Vàng */
+            --color-text: #333;
+            --color-background: #f4f7f9;
+            --base-font-size: 1.05rem; 
+            --heading-font-size: 1.8rem;
+            --menu-font-size: 1.1rem; 
+            --font-weight-bold: 700;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            padding: 20px;
+            text-align: center;
+            font-size: var(--base-font-size);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: var(--color-primary);
+            margin-bottom: 25px;
+            font-size: 2.5rem; 
+            font-weight: var(--font-weight-bold);
+            border-bottom: 3px solid var(--color-accent);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        /* --- Menu Chính --- */
+        .main-menu-bar {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .main-menu-bar a {
+            color: var(--color-primary);
+            font-size: var(--menu-font-size);
+            font-weight: var(--font-weight-bold);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+        }
+        
+        .main-menu-bar a:hover {
+            background-color: #eee;
+            color: var(--color-accent);
+        }
+        /* --- End Menu Chính --- */
+
+        .controls {
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .controls h3 {
+            color: var(--color-primary);
+            margin-bottom: 10px;
+            font-size: var(--heading-font-size);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .card-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px; 
+        }
+
+        .card-buttons button {
+            background-color: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 15px 25px; 
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: var(--base-font-size);
+            font-weight: var(--font-weight-bold);
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-buttons button:disabled {
+            background-color: #A083C5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .card-buttons button:hover:not(:disabled) {
+            background-color: #7B3EAB;
+            transform: translateY(-2px);
+        }
+
+        .result-area {
+            margin-top: 30px;
+            border-top: 2px dashed var(--color-primary);
+            padding-top: 20px;
+            text-align: left;
+        }
+
+        #spread-title {
+            color: var(--color-primary);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            font-weight: var(--font-weight-bold);
+            text-align: center;
+        }
+        
+        #drawing-status {
+            color: var(--color-primary);
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        #cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px; 
+            margin-bottom: 20px;
+            min-height: 250px; 
+        }
+        
+        /* --- Cấu trúc Lật Bài 3D --- */
+        .card-item {
+            width: 160px; 
+            height: 220px; 
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            cursor: default;
+            position: relative;
+            perspective: 1000px; 
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s; 
+            transform-style: preserve-3d; 
+        }
+        
+        .card-back, .card-content {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; 
+            border-radius: 12px;
+        }
+
+        /* Mặt Úp (Back) */
+        .card-back {
+            background-color: var(--color-primary); 
+            border: 3px solid #ccc; 
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            z-index: 2;
+        }
+        
+        .card-back i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        /* Mặt Ngửa (Content) */
+        .card-content {
+            background-color: #fff;
+            border: 3px solid var(--color-accent); 
+            padding: 12px;
+            transform: rotateY(180deg); 
+            z-index: 1;
+        }
+        
+        .card-item.revealed .card-inner {
+            transform: rotateY(180deg);
+        }
+        /* --- Kết thúc Cấu trúc Lật Bài 3D --- */
+
+
+        /* Định dạng nội dung bài */
+        .card-content strong {
+            display: block;
+            font-size: 1.2rem; 
+            color: var(--color-primary);
+            margin-bottom: 8px;
+            font-weight: var(--font-weight-bold);
+        }
+
+        .card-content span {
+            display: block;
+            font-size: 1.0rem; 
+            font-weight: 600; 
+            color: var(--color-text);
+        }
+        
+        /* Khu vực nhập Entropy (Form) */
+        #entropy-form-container {
+            display: none; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .entropy-box {
+            background-color: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .entropy-box h4 {
+            color: var(--color-primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
+        .entropy-box p {
+            margin-bottom: 20px;
+            font-size: 1.0rem;
+        }
+
+        #entropy-input {
+            width: 95%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid var(--color-accent);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        #submit-entropy {
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: var(--font-weight-bold);
+            font-size: 1.1rem;
+            transition: background-color 0.2s;
+        }
+
+        #submit-entropy:hover {
+            background-color: #FFD740;
+        }
+
+
+        /* Khu vực AI Selection */
+        .ai-selection {
+            margin-top: 40px;
+            padding: 25px;
+            border: 2px dashed var(--color-primary);
+            border-radius: 12px;
+            background-color: #f8f0ff;
+            text-align: center;
+            display: none; 
+        }
+
+        .ai-selection button {
+            /* Tăng kích thước nút AI theo yêu cầu */
+            background-color: var(--color-accent);
+            color: var(--color-primary);
+            border: none;
+            padding: 15px 30px; /* To hơn */
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 900; /* Đậm hơn */
+            margin: 0 10px;
+            transition: background-color 0.2s;
+            font-size: 1.2rem; /* To hơn */
+        }
+        
+        .ai-selection button:hover {
+            background-color: #FFD740;
+        }
+
+
+        .notes {
+            margin-top: 40px;
+            padding: 25px;
+            background-color: #e6f7ff;
+            border-left: 5px solid var(--color-primary);
+            text-align: left;
+            border-radius: 8px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .card-item {
+                width: 100%;
+                max-width: 140px;
+                height: 180px;
+            }
+            .ai-selection button {
+                padding: 10px 20px;
+                font-size: 1.0rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="main-menu-bar">
+            <a href="https://chudich.github.io/IChing2.html"><i class="fas fa-home"></i> Trang Chủ</a>
+            <a href="#controls"><i class="fas fa-magic"></i> Rút Bài Tarot</a>
+        </div>
+
+        <h1>🔮 Trải Bài Tarot</h1>
+        
+        <div class="controls" id="controls">
+            <h3>Chọn Phương Pháp Trải Bài:</h3>
+            <div class="card-buttons">
+                <button onclick="showEntropyForm(1, 'Trải Bài Năng Lượng Sự Việc Cụ Thể')">1 Lá: Sự Việc</button>
+                <button onclick="showEntropyForm(3, 'Trải Bài Phân Tích Sự Việc')">3 Lá: Phân Tích Sự Việc</button> <button onclick="showEntropyForm(7, 'Trải Bài Tarot 1 Tuần')">7 Lá: 1 Tuần</button>
+                <button onclick="showEntropyForm(4, 'Trải Bài Tarot 1 Tháng')">4 Lá: 1 Tháng</button>
+                <button onclick="showEntropyForm(6, 'Trải Bài Tarot 3 Tháng')">6 Lá: 3 Tháng</button>
+                <button onclick="showEntropyForm(10, 'Trải Bài Tarot 6 Tháng')">10 Lá: 6 Tháng</button>
+                <button onclick="showEntropyForm(12, 'Trải Bài Tarot 1 Năm')">12 Lá: 1 Năm</button>
+            </div>
+        </div>
+
+        <div id="result-area" class="result-area" style="display: none;">
+            <div id="spread-title"></div>
+            <div id="drawing-status" style="display: none;">Đang rút lá bài...</div>
+            <div id="cards-container"></div>
+            
+            <div class="ai-selection" id="ai-selection">
+                <p>Kết quả đã được sao chép vào bộ nhớ tạm. Hãy chọn AI để giải bài:</p>
+                <button onclick="openAI('Gemini')">Giải bằng Gemini</button>
+                <button onclick="openAI('ChatGPT')">Giải bằng ChatGPT</button>
+                <div id="copy-message" style="display: none;">Đã sao chép!</div>
+            </div>
+            
+            <div id="card-info" class="card-info" style="font-style: italic; color: #666; margin-bottom: 20px; text-align: center;"></div>
+        </div>
+        
+        <div class="notes">
+            <strong>Chú thích về Khung thời gian:</strong>
+            <p>Trải bài **1 Tuần** bao gồm từ Thứ Hai đến Chủ Nhật tiếp theo.</p>
+            <p>Trải bài **1 Tháng** bao gồm từ Ngày 1 đến cuối tháng hiện tại.</p>
+            <p>Trải bài **3 Tháng** bao gồm tháng hiện tại và 2 tháng kế tiếp.</p>
+            <p>Trải bài **6 Tháng** bao gồm tháng hiện tại và 5 tháng kế tiếp.</p>
+            <p>Trải bài **1 Năm** bắt đầu từ Tháng 1 đến Tháng 12 cùng năm (bất kể bạn đang ở tháng nào).</p>
+        </div>
+    </div>
+
+    <div id="entropy-form-container">
+        <div class="entropy-box">
+            <h4 id="entropy-title">Năng Lượng Kết Nối</h4>
+            <p>Vui lòng nhập **một từ, một cụm từ, hoặc một con số** bất kỳ liên quan đến vấn đề bạn muốn hỏi để kết nối năng lượng:</p>
+            <input type="text" id="entropy-input" placeholder="Ví dụ: đêm trăng, 11, câu hỏi của tôi..." autofocus>
+            <button id="submit-entropy">Rút Bài</button>
+        </div>
+    </div>
+
+    <script>
+        const MAJOR_ARCANA = [
+            '0 - The Fool', 'I - The Magician', 'II - The High Priestess', 'III - The Empress', 
+            'IV - The Emperor', 'V - The Hierophant', 'VI - The Lovers', 'VII - The Chariot', 
+            'VIII - Strength', 'IX - The Hermit', 'X - Wheel of Fortune', 'XI - Justice', 
+            'XII - The Hanged Man', 'XIII - Death', 'XIV - Temperance', 'XV - The Devil', 
+            'XVI - The Tower', 'XVII - The Star', 'XVIII - The Moon', 'XIX - The Sun', 
+            'XX - Judgement', 'XXI - The World'
+        ];
+
+        const MINOR_ARCANA_SUITS = ['Wands', 'Cups', 'Swords', 'Pentacles'];
+        const CARD_RANKS = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Page', 'Knight', 'Queen', 'King'];
+
+        const allButtons = document.querySelectorAll('.card-buttons button');
+        const cardsContainer = document.getElementById('cards-container');
+        const resultArea = document.getElementById('result-area');
+        const drawingStatus = document.getElementById('drawing-status');
+        const aiSelection = document.getElementById('ai-selection');
+        
+        // Form Entropy Elements
+        const entropyFormContainer = document.getElementById('entropy-form-container');
+        const entropyInput = document.getElementById('entropy-input');
+        const submitEntropyButton = document.getElementById('submit-entropy');
+        
+        let currentNumCards = 0;
+        let currentSpreadName = '';
+        let currentDrawnCards = [];
+        const DRAW_DELAY = 3000; 
+        const MONTH_NAMES = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 
+                             'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+
+        function createDeck() {
+            let deck = [...MAJOR_ARCANA];
+            for (const suit of MINOR_ARCANA_SUITS) {
+                for (const rank of CARD_RANKS) {
+                    deck.push(`${rank} of ${suit}`);
+                }
+            }
+            return deck;
+        }
+
+        const FULL_DECK = createDeck();
+        
+        function getMonthName(offset = 0) {
+            const date = new Date();
+            const currentMonthIndex = date.getMonth();
+            const targetMonthIndex = (currentMonthIndex + offset) % 12; 
+            return MONTH_NAMES[targetMonthIndex];
+        }
+
+        function generateSeed(input) {
+            let hash = 0;
+            if (input.length === 0) {
+                return new Date().getTime(); 
+            }
+            for (let i = 0; i < input.length; i++) {
+                const char = input.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash |= 0; 
+            }
+            return Math.abs(hash); 
+        }
+
+        let seed = 1;
+        function seededRandom() {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+        }
+
+        function showEntropyForm(numCards, spreadName) {
+            currentNumCards = numCards;
+            currentSpreadName = spreadName;
+            
+            allButtons.forEach(button => button.disabled = true);
+            
+            document.getElementById('entropy-title').textContent = `Kết nối năng lượng cho ${spreadName}`;
+            entropyInput.value = '';
+            entropyFormContainer.style.display = 'flex';
+            entropyInput.focus();
+        }
+
+        submitEntropyButton.onclick = function() {
+            const entropyValue = entropyInput.value.trim();
+            entropyFormContainer.style.display = 'none';
+            
+            seed = generateSeed(entropyValue);
+            
+            drawCards(currentNumCards, currentSpreadName);
+        };
+        
+        function drawCards(numCards, spreadName) {
+            
+            resultArea.style.display = 'block';
+            aiSelection.style.display = 'none';
+            cardsContainer.innerHTML = ''; 
+            drawingStatus.style.display = 'block';
+            document.getElementById('spread-title').textContent = spreadName.toUpperCase();
+            
+            const infoElement = document.getElementById('card-info');
+            infoElement.innerHTML = '';
+
+            const deck = [...FULL_DECK];
+            currentDrawnCards = [];
+            currentSpreadName = spreadName;
+
+            for (let i = deck.length - 1; i > 0; i--) {
+                const j = Math.floor(seededRandom() * (i + 1));
+                [deck[i], deck[j]] = [deck[j], deck[i]];
+            }
+
+            for (let i = 0; i < numCards; i++) {
+                const card = deck[i]; 
+                const orientation = seededRandom() < 0.5 ? 'U' : 'R'; 
+                const positionName = getPositionName(spreadName, i);
+                
+                currentDrawnCards.push({
+                    name: card,
+                    orientation: orientation,
+                    position: positionName
+                });
+                
+                const cardItem = document.createElement('div');
+                cardItem.className = 'card-item';
+                cardItem.id = `card-idx-${i}`;
+                cardItem.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-back">
+                            <i class="fas fa-hand-sparkles"></i>
+                            <span>${positionName}</span>
+                        </div>
+                        <div class="card-content">
+                        </div>
+                    </div>
+                `;
+                cardsContainer.appendChild(cardItem);
+            }
+            
+            for (let i = 0; i < numCards; i++) {
+                const delay = (i + 1) * DRAW_DELAY; 
+                
+                setTimeout(() => {
+                    revealCard(i, numCards);
+                }, delay);
+            }
+        }
+
+        function revealCard(index, totalCards) {
+            const cardData = currentDrawnCards[index];
+            const cardItem = document.getElementById(`card-idx-${index}`);
+            
+            if (!cardData || !cardItem) return;
+
+            drawingStatus.textContent = `Đang rút lá bài thứ ${index + 1} / ${totalCards}...`;
+
+            const orientationText = cardData.orientation === 'U' ? 'Xuôi' : 'Ngược';
+            
+            const contentDiv = cardItem.querySelector('.card-content');
+            contentDiv.innerHTML = `
+                <strong>${cardData.position}</strong>
+                <span>${cardData.name}</span>
+                <span>(${orientationText})</span>
+            `;
+
+            cardItem.classList.add('revealed');
+
+            if (index === totalCards - 1) {
+                setTimeout(() => {
+                    drawingStatus.style.display = 'none';
+                    displayFinalResults();
+                    allButtons.forEach(button => button.disabled = false); 
+                    copyToClipboard();
+                }, 1000); 
+            }
+        }
+        
+        function displayFinalResults() {
+             const cardInfos = currentDrawnCards.map(card => card.position);
+             const finalInfoElement = document.getElementById('card-info');
+             if (finalInfoElement) {
+                 finalInfoElement.innerHTML = `**Các vị trí đã rút:** ${cardInfos.join(', ')}`;
+             }
+             aiSelection.style.display = 'block';
+        }
+
+        function getPositionName(spreadName, index) {
+            switch (spreadName) {
+                case 'Trải Bài Năng Lượng Sự Việc Cụ Thể':
+                    return 'Năng Lượng Chính';
+                case 'Trải Bài Phân Tích Sự Việc': // THÊM TRẢI BÀI 3 LÁ MỚI
+                    const positions3 = ['Lá 1: Quá Khứ (Gốc rễ)', 'Lá 2: Hiện Tại (Cốt lõi)', 'Lá 3: Tương Lai (Tiềm năng)'];
+                    return positions3[index];
+                case 'Trải Bài Tarot 1 Tuần':
+                    const days = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
+                    return days[index];
+                case 'Trải Bài Tarot 1 Tháng':
+                    const weeks = ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'];
+                    return weeks[index];
+                case 'Trải Bài Tarot 3 Tháng':
+                    const months3 = [getMonthName(0), getMonthName(1), getMonthName(2)];
+                    const positions3_6 = [
+                        `${months3[0]} (Hiện tại)`, `${months3[1]}`, `${months3[2]}`, 
+                        'Thách thức', 'Cơ hội', 'Kết quả tổng quan'
+                    ];
+                    return positions3_6[index] || `Vị trí ${index + 1}`;
+                case 'Trải Bài Tarot 6 Tháng':
+                    const months6 = Array.from({ length: 6 }, (_, i) => getMonthName(i));
+                    const positions6 = [
+                        `${months6[0]}`, `${months6[1]}`, `${months6[2]}`, `${months6[3]}`, `${months6[4]}`, `${months6[5]}`, 
+                        'Thách thức', 'Cơ hội', 'Kết quả (6 tháng)', 'Bài học'
+                    ];
+                    return positions6[index] || `Vị trí ${index + 1}`;
+                case 'Trải Bài Tarot 1 Năm':
+                    return MONTH_NAMES[index];
+                default:
+                    return `Vị trí ${index + 1}`;
+            }
+        }
+
+        function copyToClipboard() {
+            if (currentDrawnCards.length === 0) return;
+
+            const spreadDetails = currentDrawnCards.map(card => {
+                const orientationText = card.orientation === 'U' ? 'Xuôi' : 'Ngược';
+                return `${card.position}: ${card.name} (${orientationText})`;
+            }).join('\n');
+
+            const copyText = `${currentSpreadName}:\n${spreadDetails}\n\n[Yêu cầu giải bài chi tiết dựa trên các lá bài đã rút này, kết hợp với từ khóa: "${entropyInput.value.trim() || 'Năng lượng ngẫu nhiên'}" ]`;
+
+            navigator.clipboard.writeText(copyText).then(() => {
+                const copyMessage = document.getElementById('copy-message');
+                copyMessage.style.display = 'block';
+                setTimeout(() => {
+                    copyMessage.style.display = 'none';
+                }, 3000);
+            }).catch(err => {
+                console.error('Không thể sao chép văn bản: ', err);
+                alert('Tự động sao chép thất bại. Vui lòng sao chép thủ công:\n' + copyText);
+            });
+        }
+
+        /**
+         * Phương pháp Sửa Lỗi Mở Link (Sử dụng thẻ A tạm thời)
+         */
+        function openAI(aiName) {
+            let url = '';
+            
+            if (aiName === 'Gemini') {
+                url = 'https://gemini.google.com/app';
+            } else if (aiName === 'ChatGPT') {
+                url = 'https://chat.openai.com/';
+            }
+            
+            // 1. Tạo một thẻ <a> tạm thời
+            const link = document.createElement('a');
+            link.href = url;
+            link.target = '_blank';
+            link.style.display = 'none';
+            document.body.appendChild(link);
+
+            // 2. Mô phỏng hành động click. Hành động này thường được trình duyệt coi là hành động của người dùng
+            // và ít bị chặn bởi Popup Blocker hơn window.open()
+            link.click();
+            
+            // 3. Xóa thẻ <a> sau khi sử dụng
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
