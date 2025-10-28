@@ -1,4 +1,4 @@
-<!DOCTYPE 23d281025 html>
+<!DOCTYPE 0030d291025 html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -164,7 +164,7 @@
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: transform 0.6s; 
+            transition: transform 1.5s; /* Tối ưu hóa tốc độ lật */
             transform-style: preserve-3d; 
         }
         
@@ -226,7 +226,7 @@
         }
         
         /* Khu vực nhập Entropy (Form) */
-        #entropy-form-container {
+        #entropy-form-container, #custom-spread-form-container {
             display: none; 
             position: fixed;
             top: 0;
@@ -255,11 +255,18 @@
         }
         
         .entropy-box p {
-            margin-bottom: 20px;
+            margin-bottom: 10px; 
             font-size: 1.0rem;
         }
 
-        #entropy-input {
+        #entropy-note {
+            font-size: 0.9rem;
+            color: #5A189A;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        #entropy-input, #num-cards-input, #deck-select, #orientation-select {
             width: 95%;
             padding: 12px;
             margin-bottom: 20px;
@@ -267,9 +274,10 @@
             border-radius: 8px;
             font-size: 1.1rem;
             text-align: center;
+            box-sizing: border-box;
         }
 
-        #submit-entropy {
+        #submit-entropy, #submit-custom-spread {
             background-color: var(--color-accent);
             color: var(--color-primary);
             border: none;
@@ -281,12 +289,12 @@
             transition: background-color 0.2s;
         }
 
-        #submit-entropy:hover {
+        #submit-entropy:hover, #submit-custom-spread:hover {
             background-color: #FFD740;
         }
 
 
-        /* Khu vực AI Selection */
+        /* Khu vực AI Selection & Lịch sử */
         .ai-selection {
             margin-top: 40px;
             padding: 25px;
@@ -298,21 +306,45 @@
         }
 
         .ai-selection button {
-            /* Tăng kích thước nút AI theo yêu cầu */
             background-color: var(--color-accent);
             color: var(--color-primary);
             border: none;
-            padding: 15px 30px; /* To hơn */
+            padding: 15px 30px; 
             border-radius: 8px;
             cursor: pointer;
-            font-weight: 900; /* Đậm hơn */
+            font-weight: 900; 
             margin: 0 10px;
             transition: background-color 0.2s;
-            font-size: 1.2rem; /* To hơn */
+            font-size: 1.2rem; 
         }
         
         .ai-selection button:hover {
             background-color: #FFD740;
+        }
+
+        /* Lịch sử */
+        #history-area {
+            margin-top: 40px;
+            padding: 25px;
+            border-top: 2px dashed var(--color-primary);
+            text-align: left;
+        }
+        #history-area h3 {
+            color: var(--color-primary);
+            text-align: center;
+        }
+        .history-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        .history-item strong {
+            color: var(--color-primary);
+            display: block;
+            margin-bottom: 5px;
         }
 
 
@@ -345,6 +377,7 @@
         <div class="main-menu-bar">
             <a href="https://chudich.github.io/IChing2.html"><i class="fas fa-home"></i> Trang Chủ</a>
             <a href="#controls"><i class="fas fa-magic"></i> Rút Bài Tarot</a>
+            <a href="#" onclick="showHistory()"><i class="fas fa-history"></i> Lịch Sử</a>
         </div>
 
         <h1>🔮 Trải Bài Tarot</h1>
@@ -353,11 +386,13 @@
             <h3>Chọn Phương Pháp Trải Bài:</h3>
             <div class="card-buttons">
                 <button onclick="showEntropyForm(1, 'Trải Bài Năng Lượng Sự Việc Cụ Thể')">1 Lá: Sự Việc</button>
-                <button onclick="showEntropyForm(3, 'Trải Bài Phân Tích Sự Việc')">3 Lá: Phân Tích Sự Việc</button> <button onclick="showEntropyForm(7, 'Trải Bài Tarot 1 Tuần')">7 Lá: 1 Tuần</button>
+                <button onclick="showEntropyForm(3, 'Trải Bài Phân Tích Sự Việc')">3 Lá: Phân Tích Sự Việc</button>
+                <button onclick="showEntropyForm(7, 'Trải Bài Tarot 1 Tuần')">7 Lá: 1 Tuần</button>
                 <button onclick="showEntropyForm(4, 'Trải Bài Tarot 1 Tháng')">4 Lá: 1 Tháng</button>
                 <button onclick="showEntropyForm(6, 'Trải Bài Tarot 3 Tháng')">6 Lá: 3 Tháng</button>
                 <button onclick="showEntropyForm(10, 'Trải Bài Tarot 6 Tháng')">10 Lá: 6 Tháng</button>
                 <button onclick="showEntropyForm(12, 'Trải Bài Tarot 1 Năm')">12 Lá: 1 Năm</button>
+                <button onclick="showCustomSpreadForm()"><i class="fas fa-cog"></i> Lá Bài Tùy Chỉnh</button>
             </div>
         </div>
 
@@ -376,26 +411,65 @@
             <div id="card-info" class="card-info" style="font-style: italic; color: #666; margin-bottom: 20px; text-align: center;"></div>
         </div>
         
+        <div id="history-area" style="display: none;">
+            <h3><i class="fas fa-book-open"></i> Lịch Sử Rút Bài</h3>
+            <div id="history-list"></div>
+            <button onclick="clearHistory()" style="background-color: #ccc; color: #333; border: none; padding: 10px 20px; border-radius: 5px; margin-top: 15px;">Xóa Lịch Sử</button>
+        </div>
+
+
         <div class="notes">
             <strong>Chú thích về Khung thời gian:</strong>
             <p>Trải bài **1 Tuần** bao gồm từ Thứ Hai đến Chủ Nhật tiếp theo.</p>
             <p>Trải bài **1 Tháng** bao gồm từ Ngày 1 đến cuối tháng hiện tại.</p>
             <p>Trải bài **3 Tháng** bao gồm tháng hiện tại và 2 tháng kế tiếp.</p>
             <p>Trải bài **6 Tháng** bao gồm tháng hiện tại và 5 tháng kế tiếp.</p>
-            <p>Trải bài **1 Năm** bắt đầu từ Tháng 1 đến Tháng 12 cùng năm (bất kể bạn đang ở tháng nào).</p>
-        </div>
+            <p>Trải bài **1 Năm** bắt đầu từ Tháng hiện tại và kéo dài 12 tháng liên tục.</p> </div>
     </div>
 
     <div id="entropy-form-container">
         <div class="entropy-box">
             <h4 id="entropy-title">Năng Lượng Kết Nối</h4>
             <p>Vui lòng nhập **một từ, một cụm từ, hoặc một con số** bất kỳ liên quan đến vấn đề bạn muốn hỏi để kết nối năng lượng:</p>
+            <div id="entropy-note">Từ khóa này giúp cá nhân hóa kết quả giải bài của AI.</div>
             <input type="text" id="entropy-input" placeholder="Ví dụ: đêm trăng, 11, câu hỏi của tôi..." autofocus>
+            <p>Chọn Bộ Bài:</p>
+            <select id="deck-select">
+                <option value="Rider-Waite">Tarot Rider-Waite</option>
+                <option value="Oracle">Oracle Cards (Hệ thống Khác)</option>
+            </select>
+            <p>Tùy chọn Hướng Bài Ngược:</p>
+            <select id="orientation-select">
+                <option value="enabled">Bật (Xuôi & Ngược)</option>
+                <option value="disabled">Tắt (Chỉ Xuôi)</option>
+            </select>
             <button id="submit-entropy">Rút Bài</button>
+        </div>
+    </div>
+    
+    <div id="custom-spread-form-container" style="display: none;">
+        <div class="entropy-box">
+            <h4>Trải Bài Tùy Chỉnh</h4>
+            <p>Nhập số lượng lá bài bạn muốn rút (từ 1 đến 12):</p>
+            <input type="number" id="num-cards-input" min="1" max="12" value="4">
+            <p>Và nhập từ khóa kết nối năng lượng:</p>
+            <input type="text" id="custom-entropy-input" placeholder="Từ khóa..." autofocus>
+             <p>Chọn Bộ Bài:</p>
+            <select id="custom-deck-select">
+                <option value="Rider-Waite">Tarot Rider-Waite</option>
+                <option value="Oracle">Oracle Cards (Hệ thống Khác)</option>
+            </select>
+            <p>Tùy chọn Hướng Bài Ngược:</p>
+            <select id="custom-orientation-select">
+                <option value="enabled">Bật (Xuôi & Ngược)</option>
+                <option value="disabled">Tắt (Chỉ Xuôi)</option>
+            </select>
+            <button id="submit-custom-spread">Rút Bài Tùy Chỉnh</button>
         </div>
     </div>
 
     <script>
+        // --- DỮ LIỆU BỘ BÀI MỞ RỘNG (Mock Data) ---
         const MAJOR_ARCANA = [
             '0 - The Fool', 'I - The Magician', 'II - The High Priestess', 'III - The Empress', 
             'IV - The Emperor', 'V - The Hierophant', 'VI - The Lovers', 'VII - The Chariot', 
@@ -404,29 +478,58 @@
             'XVI - The Tower', 'XVII - The Star', 'XVIII - The Moon', 'XIX - The Sun', 
             'XX - Judgement', 'XXI - The World'
         ];
-
         const MINOR_ARCANA_SUITS = ['Wands', 'Cups', 'Swords', 'Pentacles'];
         const CARD_RANKS = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Page', 'Knight', 'Queen', 'King'];
+        const ORACLE_CARDS = [
+             'The Vision', 'The Journey', 'The Anchor', 'The Light', 'The Shadow', 'The Gift', 'The Storm', 'The Calm', 'The Barrier', 'The Bridge'
+             // Chỉ thêm một số lá để mô phỏng
+        ];
+        // --- Cấu trúc dữ liệu Tối ưu hóa Vị trí Trải bài ---
+        const MONTH_NAMES = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 
+                             'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+        const SPREAD_POSITIONS_MAP = {
+            'Trải Bài Năng Lượng Sự Việc Cụ Thể': ['Năng Lượng Chính'],
+            'Trải Bài Phân Tích Sự Việc': ['Lá 1: Quá Khứ (Gốc rễ)', 'Lá 2: Hiện Tại (Cốt lõi)', 'Lá 3: Tương Lai (Tiềm năng)'],
+            'Trải Bài Tarot 1 Tuần': ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'],
+            'Trải Bài Tarot 1 Tháng': ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
+        };
 
+        // --- Biến Chung ---
+        const DRAW_DELAY = 1800;
         const allButtons = document.querySelectorAll('.card-buttons button');
         const cardsContainer = document.getElementById('cards-container');
         const resultArea = document.getElementById('result-area');
         const drawingStatus = document.getElementById('drawing-status');
         const aiSelection = document.getElementById('ai-selection');
+        const historyList = document.getElementById('history-list');
         
         // Form Entropy Elements
         const entropyFormContainer = document.getElementById('entropy-form-container');
         const entropyInput = document.getElementById('entropy-input');
         const submitEntropyButton = document.getElementById('submit-entropy');
+        const deckSelect = document.getElementById('deck-select');
+        const orientationSelect = document.getElementById('orientation-select');
+
+        // Custom Spread Elements
+        const customSpreadFormContainer = document.getElementById('custom-spread-form-container');
+        const numCardsInput = document.getElementById('num-cards-input');
+        const customEntropyInput = document.getElementById('custom-entropy-input');
+        const submitCustomSpreadButton = document.getElementById('submit-custom-spread');
+        const customDeckSelect = document.getElementById('custom-deck-select');
+        const customOrientationSelect = document.getElementById('custom-orientation-select');
         
         let currentNumCards = 0;
         let currentSpreadName = '';
         let currentDrawnCards = [];
-        const DRAW_DELAY = 3000; 
-        const MONTH_NAMES = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 
-                             'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+        let currentDeckType = 'Rider-Waite';
+        let currentOrientation = 'enabled';
+        let seed = 1;
 
-        function createDeck() {
+        // --- Hàm Khởi tạo Bộ bài ---
+        function createDeck(deckType) {
+            if (deckType === 'Oracle') {
+                return [...ORACLE_CARDS];
+            }
             let deck = [...MAJOR_ARCANA];
             for (const suit of MINOR_ARCANA_SUITS) {
                 for (const rank of CARD_RANKS) {
@@ -436,15 +539,16 @@
             return deck;
         }
 
-        const FULL_DECK = createDeck();
-        
+        // --- Hàm Xử lý Thời gian (Cải tiến cho 12 tháng) ---
         function getMonthName(offset = 0) {
             const date = new Date();
             const currentMonthIndex = date.getMonth();
             const targetMonthIndex = (currentMonthIndex + offset) % 12; 
-            return MONTH_NAMES[targetMonthIndex];
+            const targetYear = date.getFullYear() + Math.floor((currentMonthIndex + offset) / 12); // Xử lý chuyển năm
+            return `${MONTH_NAMES[targetMonthIndex]} ${targetYear}`;
         }
 
+        // --- Hàm Random có Seed ---
         function generateSeed(input) {
             let hash = 0;
             if (input.length === 0) {
@@ -458,12 +562,12 @@
             return Math.abs(hash); 
         }
 
-        let seed = 1;
         function seededRandom() {
             seed = (seed * 9301 + 49297) % 233280;
             return seed / 233280;
         }
 
+        // --- Logic Show Form ---
         function showEntropyForm(numCards, spreadName) {
             currentNumCards = numCards;
             currentSpreadName = spreadName;
@@ -473,42 +577,72 @@
             document.getElementById('entropy-title').textContent = `Kết nối năng lượng cho ${spreadName}`;
             entropyInput.value = '';
             entropyFormContainer.style.display = 'flex';
+            customSpreadFormContainer.style.display = 'none';
             entropyInput.focus();
         }
+        
+        function showCustomSpreadForm() {
+            allButtons.forEach(button => button.disabled = true);
+            entropyFormContainer.style.display = 'none';
+            customSpreadFormContainer.style.display = 'flex';
+            customEntropyInput.focus();
+        }
 
+        // --- Event Listeners Form ---
         submitEntropyButton.onclick = function() {
             const entropyValue = entropyInput.value.trim();
+            currentDeckType = deckSelect.value;
+            currentOrientation = orientationSelect.value;
             entropyFormContainer.style.display = 'none';
-            
             seed = generateSeed(entropyValue);
-            
-            drawCards(currentNumCards, currentSpreadName);
+            drawCards(currentNumCards, currentSpreadName, entropyValue);
         };
         
-        function drawCards(numCards, spreadName) {
+        submitCustomSpreadButton.onclick = function() {
+            const numCards = parseInt(numCardsInput.value, 10);
+            const entropyValue = customEntropyInput.value.trim();
+            currentDeckType = customDeckSelect.value;
+            currentOrientation = customOrientationSelect.value;
+            
+            if (isNaN(numCards) || numCards < 1 || numCards > 12) {
+                alert("Số lượng lá bài phải từ 1 đến 12.");
+                return;
+            }
+
+            customSpreadFormContainer.style.display = 'none';
+            seed = generateSeed(entropyValue);
+            drawCards(numCards, `Trải Bài Tùy Chỉnh (${numCards} Lá)`, entropyValue);
+        };
+
+        // --- Hàm Rút Bài Chính ---
+        function drawCards(numCards, spreadName, entropyValue) {
             
             resultArea.style.display = 'block';
             aiSelection.style.display = 'none';
             cardsContainer.innerHTML = ''; 
             drawingStatus.style.display = 'block';
-            document.getElementById('spread-title').textContent = spreadName.toUpperCase();
+            document.getElementById('spread-title').textContent = `${spreadName.toUpperCase()} - BỘ BÀI: ${currentDeckType.toUpperCase()}`;
             
             const infoElement = document.getElementById('card-info');
             infoElement.innerHTML = '';
 
-            const deck = [...FULL_DECK];
+            // Lấy bộ bài dựa trên lựa chọn
+            const deck = createDeck(currentDeckType);
             currentDrawnCards = [];
             currentSpreadName = spreadName;
 
+            // Xáo trộn bộ bài
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(seededRandom() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]];
             }
 
+            // Rút và tạo thẻ bài
             for (let i = 0; i < numCards; i++) {
                 const card = deck[i]; 
-                const orientation = seededRandom() < 0.5 ? 'U' : 'R'; 
-                const positionName = getPositionName(spreadName, i);
+                // Xử lý Hướng Bài
+                const orientation = (currentOrientation === 'enabled' && seededRandom() < 0.5) ? 'R' : 'U'; 
+                const positionName = getPositionName(spreadName, i, numCards);
                 
                 currentDrawnCards.push({
                     name: card,
@@ -539,9 +673,16 @@
                     revealCard(i, numCards);
                 }, delay);
             }
+
+            // Lưu kết quả vào lịch sử sau khi lật xong
+            setTimeout(() => {
+                saveToHistory(spreadName, currentDrawnCards, currentDeckType, entropyValue);
+            }, (numCards * DRAW_DELAY) + 1000); 
         }
 
+        // --- Hàm Lật Bài và Kết quả ---
         function revealCard(index, totalCards) {
+            // ... (Hàm này giữ nguyên logic lật bài)
             const cardData = currentDrawnCards[index];
             const cardItem = document.getElementById(`card-idx-${index}`);
             
@@ -579,49 +720,59 @@
              aiSelection.style.display = 'block';
         }
 
-        function getPositionName(spreadName, index) {
-            switch (spreadName) {
-                case 'Trải Bài Năng Lượng Sự Việc Cụ Thể':
-                    return 'Năng Lượng Chính';
-                case 'Trải Bài Phân Tích Sự Việc': // THÊM TRẢI BÀI 3 LÁ MỚI
-                    const positions3 = ['Lá 1: Quá Khứ (Gốc rễ)', 'Lá 2: Hiện Tại (Cốt lõi)', 'Lá 3: Tương Lai (Tiềm năng)'];
-                    return positions3[index];
-                case 'Trải Bài Tarot 1 Tuần':
-                    const days = ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'];
-                    return days[index];
-                case 'Trải Bài Tarot 1 Tháng':
-                    const weeks = ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'];
-                    return weeks[index];
-                case 'Trải Bài Tarot 3 Tháng':
-                    const months3 = [getMonthName(0), getMonthName(1), getMonthName(2)];
-                    const positions3_6 = [
-                        `${months3[0]} (Hiện tại)`, `${months3[1]}`, `${months3[2]}`, 
-                        'Thách thức', 'Cơ hội', 'Kết quả tổng quan'
-                    ];
-                    return positions3_6[index] || `Vị trí ${index + 1}`;
-                case 'Trải Bài Tarot 6 Tháng':
-                    const months6 = Array.from({ length: 6 }, (_, i) => getMonthName(i));
-                    const positions6 = [
-                        `${months6[0]}`, `${months6[1]}`, `${months6[2]}`, `${months6[3]}`, `${months6[4]}`, `${months6[5]}`, 
-                        'Thách thức', 'Cơ hội', 'Kết quả (6 tháng)', 'Bài học'
-                    ];
-                    return positions6[index] || `Vị trí ${index + 1}`;
-                case 'Trải Bài Tarot 1 Năm':
-                    return MONTH_NAMES[index];
-                default:
-                    return `Vị trí ${index + 1}`;
+        // --- Hàm Lấy Tên Vị trí Tối ưu ---
+        function getPositionName(spreadName, index, numCards) {
+            // 1. Kiểm tra các trải bài cố định
+            if (SPREAD_POSITIONS_MAP[spreadName]) {
+                return SPREAD_POSITIONS_MAP[spreadName][index] || `Vị trí ${index + 1}`;
             }
+
+            // 2. Xử lý các trải bài động (Thời gian)
+            if (spreadName === 'Trải Bài Tarot 3 Tháng') {
+                const months3 = [getMonthName(0), getMonthName(1), getMonthName(2)];
+                const positions3 = [
+                    `${months3[0]} (Hiện tại)`, `${months3[1]}`, `${months3[2]}`, 
+                    'Thách thức', 'Cơ hội', 'Kết quả tổng quan'
+                ];
+                return positions3[index] || `Vị trí ${index + 1}`;
+            }
+            
+            if (spreadName === 'Trải Bài Tarot 6 Tháng') {
+                const months6 = Array.from({ length: 6 }, (_, i) => getMonthName(i));
+                const positions6 = [
+                    ...months6,
+                    'Thách thức', 'Cơ hội', 'Kết quả (6 tháng)', 'Bài học'
+                ];
+                return positions6[index] || `Vị trí ${index + 1}`;
+            }
+            
+            if (spreadName === 'Trải Bài Tarot 1 Năm') {
+                 // Tính từ tháng hiện tại kéo dài 12 tháng
+                return getMonthName(index) || `Vị trí ${index + 1}`;
+            }
+
+            // 3. Trải Bài Tùy Chỉnh (Custom Spread)
+            if (spreadName.startsWith('Trải Bài Tùy Chỉnh')) {
+                return `Vị trí ${index + 1} / ${numCards}`;
+            }
+
+            return `Vị trí ${index + 1}`;
         }
 
+        // --- Sao chép vào Clipboard ---
         function copyToClipboard() {
+            // ... (Giữ nguyên hàm copy)
             if (currentDrawnCards.length === 0) return;
 
             const spreadDetails = currentDrawnCards.map(card => {
                 const orientationText = card.orientation === 'U' ? 'Xuôi' : 'Ngược';
                 return `${card.position}: ${card.name} (${orientationText})`;
             }).join('\n');
+            
+            const entropyValue = document.getElementById('entropy-form-container').style.display === 'flex' 
+                ? entropyInput.value.trim() : customEntropyInput.value.trim();
 
-            const copyText = `${currentSpreadName}:\n${spreadDetails}\n\n[Yêu cầu giải bài chi tiết dựa trên các lá bài đã rút này, kết hợp với từ khóa: "${entropyInput.value.trim() || 'Năng lượng ngẫu nhiên'}" ]`;
+            const copyText = `${currentSpreadName} (Bộ bài: ${currentDeckType}):\n${spreadDetails}\n\n[Yêu cầu giải bài chi tiết dựa trên các lá bài đã rút này, kết hợp với từ khóa: "${entropyValue || 'Năng lượng ngẫu nhiên'}" ]`;
 
             navigator.clipboard.writeText(copyText).then(() => {
                 const copyMessage = document.getElementById('copy-message');
@@ -635,9 +786,70 @@
             });
         }
 
-        /**
-         * Phương pháp Sửa Lỗi Mở Link (Sử dụng thẻ A tạm thời)
-         */
+        // --- Tính năng LƯU LỊCH SỬ ---
+        function getHistory() {
+            const history = localStorage.getItem('tarot_history');
+            return history ? JSON.parse(history) : [];
+        }
+
+        function saveToHistory(spreadName, cards, deckType, entropyValue) {
+            const history = getHistory();
+            const timestamp = new Date().toLocaleString('vi-VN');
+            
+            history.unshift({
+                timestamp,
+                spreadName,
+                deckType,
+                entropyValue,
+                cards
+            });
+            
+            // Giới hạn lịch sử (ví dụ: 10 lần gần nhất)
+            if (history.length > 10) {
+                history.pop();
+            }
+
+            localStorage.setItem('tarot_history', JSON.stringify(history));
+        }
+
+        function showHistory() {
+            // Ẩn khu vực kết quả hiện tại
+            resultArea.style.display = 'none';
+            document.getElementById('history-area').style.display = 'block';
+            
+            const history = getHistory();
+            historyList.innerHTML = '';
+
+            if (history.length === 0) {
+                historyList.innerHTML = '<p style="text-align: center; color: #999;">Chưa có lượt rút bài nào được lưu.</p>';
+                return;
+            }
+
+            history.forEach(item => {
+                const cardDetails = item.cards.map(card => {
+                    const orientationText = card.orientation === 'U' ? 'Xuôi' : 'Ngược';
+                    return `<li>${card.position}: ${card.name} (${orientationText})</li>`;
+                }).join('');
+
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'history-item';
+                itemDiv.innerHTML = `
+                    <strong>${item.timestamp} - ${item.spreadName}</strong>
+                    <p>Bộ bài: ${item.deckType} | Từ khóa: "${item.entropyValue || 'Không có'}"</p>
+                    <ul style="list-style: none; padding-left: 0; font-size: 0.95rem;">${cardDetails}</ul>
+                `;
+                historyList.appendChild(itemDiv);
+            });
+        }
+
+        function clearHistory() {
+            if (confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử rút bài?")) {
+                localStorage.removeItem('tarot_history');
+                showHistory();
+            }
+        }
+        
+        // --- Mở AI ---
         function openAI(aiName) {
             let url = '';
             
@@ -647,20 +859,19 @@
                 url = 'https://chat.openai.com/';
             }
             
-            // 1. Tạo một thẻ <a> tạm thời
             const link = document.createElement('a');
             link.href = url;
             link.target = '_blank';
             link.style.display = 'none';
             document.body.appendChild(link);
 
-            // 2. Mô phỏng hành động click. Hành động này thường được trình duyệt coi là hành động của người dùng
-            // và ít bị chặn bởi Popup Blocker hơn window.open()
             link.click();
             
-            // 3. Xóa thẻ <a> sau khi sử dụng
             document.body.removeChild(link);
         }
+        
+        // Gán sự kiện click cho nút lịch sử ban đầu (chắc chắn luôn hoạt động)
+        document.querySelector('.main-menu-bar a[href="#"]').onclick = showHistory;
     </script>
 </body>
 </html>
