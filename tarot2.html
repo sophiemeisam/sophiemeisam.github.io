@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trải Bài Tarot - Đông Tây Vibes (Final Optimized)</title>
+    <title>Trải Bài Tarot - Đông Tây Vibes</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
         :root {
@@ -21,7 +21,8 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--color-background);
             color: var(--color-text);
-            padding: 20px;
+            /* ĐIỀU CHỈNH: Thêm padding dưới để tránh nút bị cắt trên mobile */
+            padding: 20px 20px 50px 20px; 
             text-align: center;
             line-height: 1.6;
         }
@@ -241,7 +242,7 @@
             margin-top: 5px;
         }
         
-        /* Khu vực nhập Entropy (Form) */
+        /* Khu vực nhập Entropy (Form) - Đã Tối Ưu Mobile */
         #entropy-form-container, #custom-spread-form-container {
             display: none; 
             position: fixed;
@@ -251,8 +252,12 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 100;
+            display: flex;
             align-items: center;
             justify-content: center;
+            /* QUAN TRỌNG: Thêm padding và box-sizing cho khung ngoài */
+            padding: 20px; 
+            box-sizing: border-box; 
         }
 
         .entropy-box {
@@ -261,8 +266,12 @@
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
             max-width: 450px;
-            width: 90%;
+            width: 100%; 
+            max-height: 90vh; /* Giới hạn chiều cao */
+            overflow-y: auto; /* Cho phép cuộn */
             text-align: left;
+            box-sizing: border-box; 
+            margin-bottom: 10px; 
         }
 
         .entropy-box h4 {
@@ -300,6 +309,7 @@
 
         #submit-entropy, #submit-custom-spread {
             margin-top: 15px;
+            margin-bottom: 0;
         }
         
         #submit-entropy:hover, #submit-custom-spread:hover {
@@ -385,6 +395,11 @@
                 width: 100%;
                 max-width: 140px;
                 height: 180px;
+            }
+            #entropy-form-container, #custom-spread-form-container {
+                 /* Căn chỉnh form hơi lên cao hơn trên màn hình hẹp */
+                align-items: flex-start; 
+                padding-top: 40px;
             }
         }
     </style>
@@ -516,7 +531,7 @@
         // --- Biến Chung & Khai báo Toàn cục quan trọng ---
         const DRAW_DELAY = 3000; 
         
-        // Khai báo các biến DOM (Tất cả sẽ được gán trong init)
+        // Khai báo các biến DOM
         let allButtons;
         let cardsContainer;
         let resultArea;
@@ -747,7 +762,7 @@
             return `Vị trí ${index + 1}`;
         }
 
-        // --- Các Hàm Phụ (Giữ nguyên) ---
+        // --- Các Hàm Phụ ---
         function createDeck(deckType) {
             if (deckType === 'Oracle') {
                 return [...ORACLE_CARDS];
