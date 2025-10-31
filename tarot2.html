@@ -483,7 +483,7 @@
         const ORACLE_CARDS = [
              'The Vision', 'The Journey', 'The Anchor', 'The Light', 'The Shadow', 'The Gift', 'The Storm', 'The Calm', 'The Barrier', 'The Bridge'
         ];
-        // --- Cấu trúc dữ liệu Tối ưu hóa Vị trí Trải bài ---
+        
         const MONTH_NAMES = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 
                              'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
         const SPREAD_POSITIONS_MAP = {
@@ -493,8 +493,8 @@
             'Trải Bài Tarot 1 Tháng': ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
         };
 
-        // --- Biến Chung ---
-        const **DRAW_DELAY = 3000;** // **Thời gian chờ đã cập nhật: 3 giây**
+        // --- Biến Chung & Khai báo Toàn cục quan trọng ---
+        const **DRAW_DELAY = 3000;** // 3 giây
         const allButtons = document.querySelectorAll('.card-buttons button');
         const cardsContainer = document.getElementById('cards-container');
         const resultArea = document.getElementById('result-area');
@@ -502,14 +502,13 @@
         const aiSelection = document.getElementById('ai-selection');
         const historyList = document.getElementById('history-list');
         
-        // Form Entropy Elements
+        // Form & Custom Spread Elements
         const entropyFormContainer = document.getElementById('entropy-form-container');
         const entropyInput = document.getElementById('entropy-input');
         const submitEntropyButton = document.getElementById('submit-entropy');
         const deckSelect = document.getElementById('deck-select');
         const orientationSelect = document.getElementById('orientation-select');
 
-        // Custom Spread Elements
         const customSpreadFormContainer = document.getElementById('custom-spread-form-container');
         const numCardsInput = document.getElementById('num-cards-input');
         const customEntropyInput = document.getElementById('custom-entropy-input');
@@ -517,16 +516,19 @@
         const customDeckSelect = document.getElementById('custom-deck-select');
         const customOrientationSelect = document.getElementById('custom-orientation-select');
         
-        // Khai báo biến toàn cục cho quá trình rút bài
+        // Biến trạng thái
         let currentNumCards = 0;
         let currentSpreadName = '';
         let currentDrawnCards = [];
         let currentDeckType = 'Rider-Waite';
         let currentOrientation = 'enabled';
+        
+        // **Biến Entropy/Seed đã được khởi tạo Toàn cục (Fixed)**
         let **entropyHash** = 0; 
         let **seed** = 1; 
 
-        // --- Hàm Khởi tạo Bộ bài ---
+
+        // --- Hàm Khởi tạo Bộ bài (Giữ nguyên) ---
         function createDeck(deckType) {
             if (deckType === 'Oracle') {
                 return [...ORACLE_CARDS];
@@ -540,7 +542,7 @@
             return deck;
         }
 
-        // --- Hàm Xử lý Thời gian ---
+        // --- Hàm Xử lý Thời gian (Giữ nguyên) ---
         function getMonthName(offset = 0) {
             const date = new Date();
             const currentMonthIndex = date.getMonth();
@@ -549,8 +551,7 @@
             return `${MONTH_NAMES[targetMonthIndex]} ${targetYear}`;
         }
 
-        // --- **THUẬT TOÁN ENTROPY MỚI: Dựa trên Hash và Seed** ---
-        // Hàm băm đơn giản (FNV-1a 32 bit) cho từ khóa
+        // --- **THUẬT TOÁN ENTROPY: Dựa trên Hash và Seed** ---
         function generateHash(input) {
             let hash = 2166136261; 
             for (let i = 0; i < input.length; i++) {
@@ -560,21 +561,21 @@
             return hash >>> 0; 
         }
 
-        // Hàm Ngẫu nhiên sử dụng Hash và Seed (PRNG cải tiến)
-        function **seededRandomWithHash()** {
+        function seededRandomWithHash() {
+            // **Logic sửa: Cập nhật seed dựa trên hash và thời gian**
             seed = (seed * 9301 + 49297 + entropyHash) % 233280;
+            // Cập nhật entropyHash một chút để tạo sự thay đổi cho lần gọi tiếp theo
             entropyHash = (entropyHash + seed) & 0xFFFFFFFF; 
             return seed / 233280;
         }
-        // --- **KẾT THÚC THUẬT TOÁN ENTROPY MỚI** ---
+        // --- KẾT THÚC THUẬT TOÁN ENTROPY ---
 
 
-        // --- Logic Show Form ---
+        // --- Logic Show Form (Giữ nguyên) ---
         function showEntropyForm(numCards, spreadName) {
             currentNumCards = numCards;
             currentSpreadName = spreadName;
             
-            // **Vô hiệu hóa các nút điều khiển**
             allButtons.forEach(button => button.disabled = true);
             
             document.getElementById('entropy-title').textContent = `Kết nối năng lượng cho ${spreadName}`;
@@ -585,21 +586,20 @@
         }
         
         function showCustomSpreadForm() {
-            // **Vô hiệu hóa các nút điều khiển**
             allButtons.forEach(button => button.disabled = true);
             entropyFormContainer.style.display = 'none';
             customSpreadFormContainer.style.display = 'flex';
             customEntropyInput.focus();
         }
 
-        // --- Event Listeners Form ---
+        // --- Event Listeners Form (Fixed) ---
         submitEntropyButton.onclick = function() {
             const entropyValue = entropyInput.value.trim() || 'random_default';
             currentDeckType = deckSelect.value;
             currentOrientation = orientationSelect.value;
             entropyFormContainer.style.display = 'none';
             
-            // Khởi tạo hash và seed
+            // **Khởi tạo hash và seed trước khi rút bài**
             entropyHash = generateHash(entropyValue);
             seed = new Date().getTime() % 233280; 
             
@@ -619,7 +619,7 @@
 
             customSpreadFormContainer.style.display = 'none';
             
-            // Khởi tạo hash và seed
+            // **Khởi tạo hash và seed trước khi rút bài**
             entropyHash = generateHash(entropyValue);
             seed = new Date().getTime() % 233280; 
             
@@ -641,16 +641,23 @@
             const deck = createDeck(currentDeckType);
             currentDrawnCards = [];
             currentSpreadName = spreadName;
-
-            // Xáo trộn bộ bài bằng thuật toán ngẫu nhiên mới
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(seededRandomWithHash() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
-            }
-
-            // Rút và tạo thẻ bài
+            
+            // **Rút bài bằng Seeded Random (Fixed)**
+            const cardsToDraw = [];
+            
+            // Sử dụng một mảng chỉ mục (index) để rút bài không trùng lặp
+            const indices = Array.from({ length: deck.length }, (_, i) => i);
+            
             for (let i = 0; i < numCards; i++) {
-                const card = deck[i]; 
+                // Rút ngẫu nhiên một chỉ mục từ mảng chỉ mục còn lại
+                const randomIndex = Math.floor(seededRandomWithHash() * indices.length);
+                const cardIndexInDeck = indices[randomIndex];
+                
+                // Loại bỏ chỉ mục đã rút
+                indices.splice(randomIndex, 1); 
+
+                const card = deck[cardIndexInDeck]; 
+                
                 // Xử lý Hướng Bài
                 const orientation = (currentOrientation === 'enabled' && seededRandomWithHash() < 0.5) ? 'R' : 'U'; 
                 const positionName = getPositionName(spreadName, i, numCards);
@@ -691,7 +698,7 @@
             }, (numCards * DRAW_DELAY) + 1000); 
         }
 
-        // --- Hàm Lật Bài và Kết quả ---
+        // --- Hàm Lật Bài và Kết quả (Fixed: Kích hoạt nút) ---
         function revealCard(index, totalCards) {
             const cardData = currentDrawnCards[index];
             const cardItem = document.getElementById(`card-idx-${index}`);
@@ -709,13 +716,14 @@
                 <span>(${orientationText})</span>
             `;
 
+            // Lật thẻ bài
             cardItem.classList.add('revealed');
 
             if (index === totalCards - 1) {
                 setTimeout(() => {
                     drawingStatus.style.display = 'none';
                     displayFinalResults();
-                    // **Kích hoạt lại các nút điều khiển**
+                    // Kích hoạt lại các nút điều khiển
                     allButtons.forEach(button => button.disabled = false); 
                     copyToClipboard();
                 }, 1000); 
@@ -731,7 +739,8 @@
              aiSelection.style.display = 'block';
         }
 
-        // --- Hàm Lấy Tên Vị trí Tối ưu (Giữ nguyên) ---
+        // --- Các Hàm Phụ (Giữ nguyên) ---
+        
         function getPositionName(spreadName, index, numCards) {
             if (SPREAD_POSITIONS_MAP[spreadName]) {
                 return SPREAD_POSITIONS_MAP[spreadName][index] || `Vị trí ${index + 1}`;
@@ -765,8 +774,7 @@
 
             return `Vị trí ${index + 1}`;
         }
-
-        // --- Sao chép vào Clipboard (Giữ nguyên) ---
+        
         function copyToClipboard() {
             if (currentDrawnCards.length === 0) return;
 
@@ -775,14 +783,8 @@
                 return `${card.position}: ${card.name} (${orientationText})`;
             }).join('\n');
             
-            // Lấy giá trị entropy từ form đang hiển thị
-            let entropyValue = '';
-            if (entropyFormContainer.style.display === 'flex') {
-                entropyValue = entropyInput.value.trim();
-            } else if (customSpreadFormContainer.style.display === 'flex') {
-                entropyValue = customEntropyInput.value.trim();
-            }
-
+            let entropyValue = (document.getElementById('entropy-form-container').style.display === 'flex' 
+                ? entropyInput.value.trim() : customEntropyInput.value.trim()) || '';
 
             const copyText = `${currentSpreadName} (Bộ bài: ${currentDeckType}):\n${spreadDetails}\n\n[Yêu cầu giải bài chi tiết dựa trên các lá bài đã rút này, kết hợp với từ khóa: "${entropyValue || 'Năng lượng ngẫu nhiên'}" ]`;
 
@@ -797,8 +799,7 @@
                 alert('Tự động sao chép thất bại. Vui lòng sao chép thủ công:\n' + copyText);
             });
         }
-
-        // --- Tính năng LƯU LỊCH SỬ (Giữ nguyên) ---
+        
         function getHistory() {
             const history = localStorage.getItem('tarot_history');
             return history ? JSON.parse(history) : [];
@@ -859,7 +860,6 @@
             }
         }
         
-        // --- Mở AI (Giữ nguyên) ---
         function openAI(aiName) {
             let url = '';
             
@@ -880,7 +880,6 @@
             document.body.removeChild(link);
         }
         
-        // Gán sự kiện click cho nút lịch sử ban đầu (chắc chắn luôn hoạt động)
         document.querySelector('.main-menu-bar a[href="#"]').onclick = showHistory;
     </script>
 </body>
