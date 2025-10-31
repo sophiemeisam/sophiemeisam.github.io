@@ -377,7 +377,7 @@
         <div class="main-menu-bar">
             <a href="https://chudich.github.io/IChing2.html"><i class="fas fa-home"></i> Trang Chủ</a>
             <a href="#controls"><i class="fas fa-magic"></i> Rút Bài Tarot</a>
-            <a href="#" onclick="showHistory()"><i class="fas fa-history"></i> Lịch Sử</a>
+            <a href="#" id="history-link"><i class="fas fa-history"></i> Lịch Sử</a>
         </div>
 
         <h1>🔮 Trải Bài Tarot</h1>
@@ -385,14 +385,14 @@
         <div class="controls" id="controls">
             <h3>Chọn Phương Pháp Trải Bài:</h3>
             <div class="card-buttons">
-                <button onclick="showEntropyForm(1, 'Trải Bài Năng Lượng Sự Việc Cụ Thể')">1 Lá: Sự Việc</button>
-                <button onclick="showEntropyForm(3, 'Trải Bài Phân Tích Sự Việc')">3 Lá: Phân Tích Sự Việc</button>
-                <button onclick="showEntropyForm(7, 'Trải Bài Tarot 1 Tuần')">7 Lá: 1 Tuần</button>
-                <button onclick="showEntropyForm(4, 'Trải Bài Tarot 1 Tháng')">4 Lá: 1 Tháng</button>
-                <button onclick="showEntropyForm(6, 'Trải Bài Tarot 3 Tháng')">6 Lá: 3 Tháng</button>
-                <button onclick="showEntropyForm(10, 'Trải Bài Tarot 6 Tháng')">10 Lá: 6 Tháng</button>
-                <button onclick="showEntropyForm(12, 'Trải Bài Tarot 1 Năm')">12 Lá: 1 Năm</button>
-                <button onclick="showCustomSpreadForm()"><i class="fas fa-cog"></i> Lá Bài Tùy Chỉnh</button>
+                <button id="btn-1-card" data-num="1" data-name="Trải Bài Năng Lượng Sự Việc Cụ Thể">1 Lá: Sự Việc</button>
+                <button id="btn-3-card" data-num="3" data-name="Trải Bài Phân Tích Sự Việc">3 Lá: Phân Tích Sự Việc</button>
+                <button id="btn-7-card" data-num="7" data-name="Trải Bài Tarot 1 Tuần">7 Lá: 1 Tuần</button>
+                <button id="btn-4-card" data-num="4" data-name="Trải Bài Tarot 1 Tháng">4 Lá: 1 Tháng</button>
+                <button id="btn-6-card" data-num="6" data-name="Trải Bài Tarot 3 Tháng">6 Lá: 3 Tháng</button>
+                <button id="btn-10-card" data-num="10" data-name="Trải Bài Tarot 6 Tháng">10 Lá: 6 Tháng</button>
+                <button id="btn-12-card" data-num="12" data-name="Trải Bài Tarot 1 Năm">12 Lá: 1 Năm</button>
+                <button id="btn-custom"><i class="fas fa-cog"></i> Lá Bài Tùy Chỉnh</button>
             </div>
         </div>
 
@@ -494,27 +494,28 @@
         };
 
         // --- Biến Chung & Khai báo Toàn cục quan trọng ---
-        const **DRAW_DELAY = 3000;** // 3 giây
-        const allButtons = document.querySelectorAll('.card-buttons button');
-        const cardsContainer = document.getElementById('cards-container');
-        const resultArea = document.getElementById('result-area');
-        const drawingStatus = document.getElementById('drawing-status');
-        const aiSelection = document.getElementById('ai-selection');
-        const historyList = document.getElementById('history-list');
+        const DRAW_DELAY = 3000; // 3 giây
         
-        // Form & Custom Spread Elements
-        const entropyFormContainer = document.getElementById('entropy-form-container');
-        const entropyInput = document.getElementById('entropy-input');
-        const submitEntropyButton = document.getElementById('submit-entropy');
-        const deckSelect = document.getElementById('deck-select');
-        const orientationSelect = document.getElementById('orientation-select');
+        // Khai báo các biến DOM
+        let allButtons;
+        let cardsContainer;
+        let resultArea;
+        let drawingStatus;
+        let aiSelection;
+        let historyList;
+        
+        let entropyFormContainer;
+        let entropyInput;
+        let submitEntropyButton;
+        let deckSelect;
+        let orientationSelect;
 
-        const customSpreadFormContainer = document.getElementById('custom-spread-form-container');
-        const numCardsInput = document.getElementById('num-cards-input');
-        const customEntropyInput = document.getElementById('custom-entropy-input');
-        const submitCustomSpreadButton = document.getElementById('submit-custom-spread');
-        const customDeckSelect = document.getElementById('custom-deck-select');
-        const customOrientationSelect = document.getElementById('custom-orientation-select');
+        let customSpreadFormContainer;
+        let numCardsInput;
+        let customEntropyInput;
+        let submitCustomSpreadButton;
+        let customDeckSelect;
+        let customOrientationSelect;
         
         // Biến trạng thái
         let currentNumCards = 0;
@@ -523,9 +524,9 @@
         let currentDeckType = 'Rider-Waite';
         let currentOrientation = 'enabled';
         
-        // **Biến Entropy/Seed đã được khởi tạo Toàn cục (Fixed)**
-        let **entropyHash** = 0; 
-        let **seed** = 1; 
+        // Biến Entropy/Seed 
+        let entropyHash = 0; 
+        let seed = 1; 
 
 
         // --- Hàm Khởi tạo Bộ bài (Giữ nguyên) ---
@@ -551,7 +552,7 @@
             return `${MONTH_NAMES[targetMonthIndex]} ${targetYear}`;
         }
 
-        // --- **THUẬT TOÁN ENTROPY: Dựa trên Hash và Seed** ---
+        // --- THUẬT TOÁN ENTROPY: Dựa trên Hash và Seed ---
         function generateHash(input) {
             let hash = 2166136261; 
             for (let i = 0; i < input.length; i++) {
@@ -562,16 +563,14 @@
         }
 
         function seededRandomWithHash() {
-            // **Logic sửa: Cập nhật seed dựa trên hash và thời gian**
             seed = (seed * 9301 + 49297 + entropyHash) % 233280;
-            // Cập nhật entropyHash một chút để tạo sự thay đổi cho lần gọi tiếp theo
             entropyHash = (entropyHash + seed) & 0xFFFFFFFF; 
             return seed / 233280;
         }
         // --- KẾT THÚC THUẬT TOÁN ENTROPY ---
 
 
-        // --- Logic Show Form (Giữ nguyên) ---
+        // --- Logic Show Form ---
         function showEntropyForm(numCards, spreadName) {
             currentNumCards = numCards;
             currentSpreadName = spreadName;
@@ -592,44 +591,12 @@
             customEntropyInput.focus();
         }
 
-        // --- Event Listeners Form (Fixed) ---
-        submitEntropyButton.onclick = function() {
-            const entropyValue = entropyInput.value.trim() || 'random_default';
-            currentDeckType = deckSelect.value;
-            currentOrientation = orientationSelect.value;
-            entropyFormContainer.style.display = 'none';
-            
-            // **Khởi tạo hash và seed trước khi rút bài**
-            entropyHash = generateHash(entropyValue);
-            seed = new Date().getTime() % 233280; 
-            
-            drawCards(currentNumCards, currentSpreadName, entropyValue);
-        };
-        
-        submitCustomSpreadButton.onclick = function() {
-            const numCards = parseInt(numCardsInput.value, 10);
-            const entropyValue = customEntropyInput.value.trim() || 'random_default';
-            currentDeckType = customDeckSelect.value;
-            currentOrientation = customOrientationSelect.value;
-            
-            if (isNaN(numCards) || numCards < 1 || numCards > 12) {
-                alert("Số lượng lá bài phải từ 1 đến 12.");
-                return;
-            }
-
-            customSpreadFormContainer.style.display = 'none';
-            
-            // **Khởi tạo hash và seed trước khi rút bài**
-            entropyHash = generateHash(entropyValue);
-            seed = new Date().getTime() % 233280; 
-            
-            drawCards(numCards, `Trải Bài Tùy Chỉnh (${numCards} Lá)`, entropyValue);
-        };
-
         // --- Hàm Rút Bài Chính ---
         function drawCards(numCards, spreadName, entropyValue) {
             
+            document.getElementById('history-area').style.display = 'none';
             resultArea.style.display = 'block';
+            
             aiSelection.style.display = 'none';
             cardsContainer.innerHTML = ''; 
             drawingStatus.style.display = 'block';
@@ -642,23 +609,19 @@
             currentDrawnCards = [];
             currentSpreadName = spreadName;
             
-            // **Rút bài bằng Seeded Random (Fixed)**
-            const cardsToDraw = [];
-            
-            // Sử dụng một mảng chỉ mục (index) để rút bài không trùng lặp
             const indices = Array.from({ length: deck.length }, (_, i) => i);
             
             for (let i = 0; i < numCards; i++) {
-                // Rút ngẫu nhiên một chỉ mục từ mảng chỉ mục còn lại
+                
+                if (indices.length === 0) break; // Ngăn chặn lỗi nếu numCards > số lượng bài còn lại
+
                 const randomIndex = Math.floor(seededRandomWithHash() * indices.length);
                 const cardIndexInDeck = indices[randomIndex];
                 
-                // Loại bỏ chỉ mục đã rút
                 indices.splice(randomIndex, 1); 
 
                 const card = deck[cardIndexInDeck]; 
                 
-                // Xử lý Hướng Bài
                 const orientation = (currentOrientation === 'enabled' && seededRandomWithHash() < 0.5) ? 'R' : 'U'; 
                 const positionName = getPositionName(spreadName, i, numCards);
                 
@@ -692,13 +655,12 @@
                 }, delay);
             }
 
-            // Lưu kết quả vào lịch sử sau khi lật xong
             setTimeout(() => {
                 saveToHistory(spreadName, currentDrawnCards, currentDeckType, entropyValue);
             }, (numCards * DRAW_DELAY) + 1000); 
         }
 
-        // --- Hàm Lật Bài và Kết quả (Fixed: Kích hoạt nút) ---
+        // --- Hàm Lật Bài và Kết quả ---
         function revealCard(index, totalCards) {
             const cardData = currentDrawnCards[index];
             const cardItem = document.getElementById(`card-idx-${index}`);
@@ -716,14 +678,12 @@
                 <span>(${orientationText})</span>
             `;
 
-            // Lật thẻ bài
             cardItem.classList.add('revealed');
 
             if (index === totalCards - 1) {
                 setTimeout(() => {
                     drawingStatus.style.display = 'none';
                     displayFinalResults();
-                    // Kích hoạt lại các nút điều khiển
                     allButtons.forEach(button => button.disabled = false); 
                     copyToClipboard();
                 }, 1000); 
@@ -739,8 +699,7 @@
              aiSelection.style.display = 'block';
         }
 
-        // --- Các Hàm Phụ (Giữ nguyên) ---
-        
+        // --- Hàm Lấy Tên Vị trí Tối ưu (Giữ nguyên) ---
         function getPositionName(spreadName, index, numCards) {
             if (SPREAD_POSITIONS_MAP[spreadName]) {
                 return SPREAD_POSITIONS_MAP[spreadName][index] || `Vị trí ${index + 1}`;
@@ -774,7 +733,8 @@
 
             return `Vị trí ${index + 1}`;
         }
-        
+
+        // --- Các Hàm Phụ (Copy, History, AI) (Giữ nguyên) ---
         function copyToClipboard() {
             if (currentDrawnCards.length === 0) return;
 
@@ -783,8 +743,8 @@
                 return `${card.position}: ${card.name} (${orientationText})`;
             }).join('\n');
             
-            let entropyValue = (document.getElementById('entropy-form-container').style.display === 'flex' 
-                ? entropyInput.value.trim() : customEntropyInput.value.trim()) || '';
+            // Lấy giá trị entropy từ form đang hiển thị (cần form input để lấy giá trị)
+            let entropyValue = (entropyFormContainer.style.display === 'flex' ? entropyInput.value.trim() : customEntropyInput.value.trim()) || '';
 
             const copyText = `${currentSpreadName} (Bộ bài: ${currentDeckType}):\n${spreadDetails}\n\n[Yêu cầu giải bài chi tiết dựa trên các lá bài đã rút này, kết hợp với từ khóa: "${entropyValue || 'Năng lượng ngẫu nhiên'}" ]`;
 
@@ -880,7 +840,84 @@
             document.body.removeChild(link);
         }
         
-        document.querySelector('.main-menu-bar a[href="#"]').onclick = showHistory;
+        // --- HÀM KHỞI TẠO ĐẢM BẢO TẤT CẢ PHẦN TỬ ĐÃ TẢI ---
+        function init() {
+            // Gán giá trị cho các biến DOM sau khi tải
+            allButtons = document.querySelectorAll('.card-buttons button');
+            cardsContainer = document.getElementById('cards-container');
+            resultArea = document.getElementById('result-area');
+            drawingStatus = document.getElementById('drawing-status');
+            aiSelection = document.getElementById('ai-selection');
+            historyList = document.getElementById('history-list');
+            
+            entropyFormContainer = document.getElementById('entropy-form-container');
+            entropyInput = document.getElementById('entropy-input');
+            submitEntropyButton = document.getElementById('submit-entropy');
+            deckSelect = document.getElementById('deck-select');
+            orientationSelect = document.getElementById('orientation-select');
+
+            customSpreadFormContainer = document.getElementById('custom-spread-form-container');
+            numCardsInput = document.getElementById('num-cards-input');
+            customEntropyInput = document.getElementById('custom-entropy-input');
+            submitCustomSpreadButton = document.getElementById('submit-custom-spread');
+            customDeckSelect = document.getElementById('custom-deck-select');
+            customOrientationSelect = document.getElementById('custom-orientation-select');
+
+            // Gán Event Listener cho các nút Rút Bài theo số lượng
+            allButtons.forEach(button => {
+                if (button.id.startsWith('btn-') && button.id !== 'btn-custom') {
+                    button.addEventListener('click', () => {
+                        const num = parseInt(button.getAttribute('data-num'), 10);
+                        const name = button.getAttribute('data-name');
+                        showEntropyForm(num, name);
+                    });
+                }
+            });
+            
+            // Gán Event Listener cho nút Rút Bài Tùy Chỉnh
+            document.getElementById('btn-custom').addEventListener('click', showCustomSpreadForm);
+
+            // Gán Event Listener cho các nút Submit Form
+            submitEntropyButton.addEventListener('click', function() {
+                const entropyValue = entropyInput.value.trim() || 'random_default';
+                currentDeckType = deckSelect.value;
+                currentOrientation = orientationSelect.value;
+                entropyFormContainer.style.display = 'none';
+                
+                entropyHash = generateHash(entropyValue);
+                seed = new Date().getTime() % 233280; 
+                
+                drawCards(currentNumCards, currentSpreadName, entropyValue);
+            });
+            
+            submitCustomSpreadButton.addEventListener('click', function() {
+                const numCards = parseInt(numCardsInput.value, 10);
+                const entropyValue = customEntropyInput.value.trim() || 'random_default';
+                currentDeckType = customDeckSelect.value;
+                currentOrientation = customOrientationSelect.value;
+                
+                if (isNaN(numCards) || numCards < 1 || numCards > 12) {
+                    alert("Số lượng lá bài phải từ 1 đến 12.");
+                    return;
+                }
+
+                customSpreadFormContainer.style.display = 'none';
+                
+                entropyHash = generateHash(entropyValue);
+                seed = new Date().getTime() % 233280; 
+                
+                drawCards(numCards, `Trải Bài Tùy Chỉnh (${numCards} Lá)`, entropyValue);
+            });
+            
+            // Gán Event Listener cho nút Lịch sử
+            document.getElementById('history-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showHistory();
+            });
+        }
+
+        // Chắc chắn hàm init() được gọi sau khi toàn bộ DOM đã tải
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
