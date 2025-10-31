@@ -1,0 +1,406 @@
+<script>
+    // --- DỮ LIỆU BỘ BÀI MỞ RỘNG (Mock Data) ---
+    const MAJOR_ARCANA = [
+        '0 - The Fool', 'I - The Magician', 'II - The High Priestess', 'III - The Empress', 
+        'IV - The Emperor', 'V - The Hierophant', 'VI - The Lovers', 'VII - The Chariot', 
+        'VIII - Strength', 'IX - The Hermit', 'X - Wheel of Fortune', 'XI - Justice', 
+        'XII - The Hanged Man', 'XIII - Death', 'XIV - Temperance', 'XV - The Devil', 
+        'XVI - The Tower', 'XVII - The Star', 'XVIII - The Moon', 'XIX - The Sun', 
+        'XX - Judgement', 'XXI - The World'
+    ];
+    const MINOR_ARCANA_SUITS = ['Wands', 'Cups', 'Swords', 'Pentacles'];
+    const CARD_RANKS = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Page', 'Knight', 'Queen', 'King'];
+    const ORACLE_CARDS = [
+         'The Vision', 'The Journey', 'The Anchor', 'The Light', 'The Shadow', 'The Gift', 'The Storm', 'The Calm', 'The Barrier', 'The Bridge'
+    ];
+    // --- Cấu trúc dữ liệu Tối ưu hóa Vị trí Trải bài ---
+    const MONTH_NAMES = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 
+                         'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
+    const SPREAD_POSITIONS_MAP = {
+        'Trải Bài Năng Lượng Sự Việc Cụ Thể': ['Năng Lượng Chính'],
+        'Trải Bài Phân Tích Sự Việc': ['Lá 1: Quá Khứ (Gốc rễ)', 'Lá 2: Hiện Tại (Cốt lõi)', 'Lá 3: Tương Lai (Tiềm năng)'],
+        'Trải Bài Tarot 1 Tuần': ['Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy', 'Chủ Nhật'],
+        'Trải Bài Tarot 1 Tháng': ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
+    };
+
+    // --- Biến Chung ---
+    const **DRAW_DELAY = 3000;** // **Đã cập nhật: 3 giây**
+    const allButtons = document.querySelectorAll('.card-buttons button');
+    const cardsContainer = document.getElementById('cards-container');
+    const resultArea = document.getElementById('result-area');
+    const drawingStatus = document.getElementById('drawing-status');
+    const aiSelection = document.getElementById('ai-selection');
+    const historyList = document.getElementById('history-list');
+    
+    // Form Entropy Elements
+    const entropyFormContainer = document.getElementById('entropy-form-container');
+    const entropyInput = document.getElementById('entropy-input');
+    const submitEntropyButton = document.getElementById('submit-entropy');
+    const deckSelect = document.getElementById('deck-select');
+    const orientationSelect = document.getElementById('orientation-select');
+
+    // Custom Spread Elements
+    const customSpreadFormContainer = document.getElementById('custom-spread-form-container');
+    const numCardsInput = document.getElementById('num-cards-input');
+    const customEntropyInput = document.getElementById('custom-entropy-input');
+    const submitCustomSpreadButton = document.getElementById('submit-custom-spread');
+    const customDeckSelect = document.getElementById('custom-deck-select');
+    const customOrientationSelect = document.getElementById('custom-orientation-select');
+    
+    let currentNumCards = 0;
+    let currentSpreadName = '';
+    let currentDrawnCards = [];
+    let currentDeckType = 'Rider-Waite';
+    let currentOrientation = 'enabled';
+    let **entropyHash** = 0; // Biến lưu giá trị băm từ từ khóa
+    let **seed** = 1; // Biến seed nội bộ cho thuật toán ngẫu nhiên
+
+    // --- Hàm Khởi tạo Bộ bài (Giữ nguyên) ---
+    function createDeck(deckType) {
+        if (deckType === 'Oracle') {
+            return [...ORACLE_CARDS];
+        }
+        let deck = [...MAJOR_ARCANA];
+        for (const suit of MINOR_ARCANA_SUITS) {
+            for (const rank of CARD_RANKS) {
+                deck.push(`${rank} of ${suit}`);
+            }
+        }
+        return deck;
+    }
+
+    // --- Hàm Xử lý Thời gian (Giữ nguyên) ---
+    function getMonthName(offset = 0) {
+        const date = new Date();
+        const currentMonthIndex = date.getMonth();
+        const targetMonthIndex = (currentMonthIndex + offset) % 12; 
+        const targetYear = date.getFullYear() + Math.floor((currentMonthIndex + offset) / 12); 
+        return `${MONTH_NAMES[targetMonthIndex]} ${targetYear}`;
+    }
+
+    // --- **THUẬT TOÁN ENTROPY MỚI: Dựa trên Hash và Seed** ---
+    // Hàm băm đơn giản (FNV-1a 32 bit) cho từ khóa
+    function **generateHash(input)** {
+        let hash = 2166136261; // Offset basis
+        for (let i = 0; i < input.length; i++) {
+            hash ^= input.charCodeAt(i);
+            hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+        }
+        return hash >>> 0; // Convert to unsigned 32-bit integer
+    }
+
+    // Hàm Ngẫu nhiên sử dụng Hash và Seed (PRNG cải tiến)
+    function **seededRandomWithHash()** {
+        // Kết hợp giá trị băm (entropyHash) với seed nội bộ để tạo ngẫu nhiên
+        seed = (seed * 9301 + 49297 + entropyHash) % 233280;
+        
+        // Cập nhật lại entropyHash một chút để tạo sự thay đổi cho lần gọi tiếp theo
+        // Sử dụng một phép toán bitwise đơn giản để "xáo trộn" hash
+        entropyHash = (entropyHash + seed) & 0xFFFFFFFF; 
+
+        return seed / 233280;
+    }
+    // --- **KẾT THÚC THUẬT TOÁN ENTROPY MỚI** ---
+
+
+    // --- Logic Show Form (Giữ nguyên) ---
+    function showEntropyForm(numCards, spreadName) {
+        currentNumCards = numCards;
+        currentSpreadName = spreadName;
+        
+        allButtons.forEach(button => button.disabled = true);
+        
+        document.getElementById('entropy-title').textContent = `Kết nối năng lượng cho ${spreadName}`;
+        entropyInput.value = '';
+        entropyFormContainer.style.display = 'flex';
+        customSpreadFormContainer.style.display = 'none';
+        entropyInput.focus();
+    }
+    
+    function showCustomSpreadForm() {
+        allButtons.forEach(button => button.disabled = true);
+        entropyFormContainer.style.display = 'none';
+        customSpreadFormContainer.style.display = 'flex';
+        customEntropyInput.focus();
+    }
+
+    // --- Event Listeners Form ---
+    submitEntropyButton.onclick = function() {
+        const entropyValue = entropyInput.value.trim() || 'random_default'; // Giá trị mặc định nếu rỗng
+        currentDeckType = deckSelect.value;
+        currentOrientation = orientationSelect.value;
+        entropyFormContainer.style.display = 'none';
+        
+        // Khởi tạo hash và seed
+        entropyHash = generateHash(entropyValue);
+        seed = new Date().getTime() % 233280; // Seed ban đầu là thời gian hiện tại
+        
+        drawCards(currentNumCards, currentSpreadName, entropyValue);
+    };
+    
+    submitCustomSpreadButton.onclick = function() {
+        const numCards = parseInt(numCardsInput.value, 10);
+        const entropyValue = customEntropyInput.value.trim() || 'random_default'; // Giá trị mặc định nếu rỗng
+        currentDeckType = customDeckSelect.value;
+        currentOrientation = customOrientationSelect.value;
+        
+        if (isNaN(numCards) || numCards < 1 || numCards > 12) {
+            alert("Số lượng lá bài phải từ 1 đến 12.");
+            return;
+        }
+
+        customSpreadFormContainer.style.display = 'none';
+        
+        // Khởi tạo hash và seed
+        entropyHash = generateHash(entropyValue);
+        seed = new Date().getTime() % 233280; // Seed ban đầu là thời gian hiện tại
+        
+        drawCards(numCards, `Trải Bài Tùy Chỉnh (${numCards} Lá)`, entropyValue);
+    };
+
+    // --- Hàm Rút Bài Chính ---
+    function drawCards(numCards, spreadName, entropyValue) {
+        
+        resultArea.style.display = 'block';
+        aiSelection.style.display = 'none';
+        cardsContainer.innerHTML = ''; 
+        drawingStatus.style.display = 'block';
+        document.getElementById('spread-title').textContent = `${spreadName.toUpperCase()} - BỘ BÀI: ${currentDeckType.toUpperCase()}`;
+        
+        const infoElement = document.getElementById('card-info');
+        infoElement.innerHTML = '';
+
+        // Lấy bộ bài dựa trên lựa chọn
+        const deck = createDeck(currentDeckType);
+        currentDrawnCards = [];
+        currentSpreadName = spreadName;
+
+        // Xáo trộn bộ bài bằng thuật toán ngẫu nhiên mới
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(**seededRandomWithHash()** * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+
+        // Rút và tạo thẻ bài
+        for (let i = 0; i < numCards; i++) {
+            const card = deck[i]; 
+            // Xử lý Hướng Bài
+            const orientation = (currentOrientation === 'enabled' && **seededRandomWithHash()** < 0.5) ? 'R' : 'U'; 
+            const positionName = getPositionName(spreadName, i, numCards);
+            
+            currentDrawnCards.push({
+                name: card,
+                orientation: orientation,
+                position: positionName
+            });
+            
+            const cardItem = document.createElement('div');
+            cardItem.className = 'card-item';
+            cardItem.id = `card-idx-${i}`;
+            cardItem.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-back">
+                        <i class="fas fa-hand-sparkles"></i>
+                        <span>${positionName}</span>
+                    </div>
+                    <div class="card-content">
+                    </div>
+                </div>
+            `;
+            cardsContainer.appendChild(cardItem);
+        }
+        
+        for (let i = 0; i < numCards; i++) {
+            const delay = (i + 1) * DRAW_DELAY; 
+            
+            setTimeout(() => {
+                revealCard(i, numCards);
+            }, delay);
+        }
+
+        // Lưu kết quả vào lịch sử sau khi lật xong
+        setTimeout(() => {
+            saveToHistory(spreadName, currentDrawnCards, currentDeckType, entropyValue);
+        }, (numCards * DRAW_DELAY) + 1000); 
+    }
+
+    // --- Các hàm còn lại giữ nguyên ---
+    function revealCard(index, totalCards) {
+        const cardData = currentDrawnCards[index];
+        const cardItem = document.getElementById(`card-idx-${index}`);
+        
+        if (!cardData || !cardItem) return;
+
+        drawingStatus.textContent = `Đang rút lá bài thứ ${index + 1} / ${totalCards}...`;
+
+        const orientationText = cardData.orientation === 'U' ? 'Xuôi' : 'Ngược';
+        
+        const contentDiv = cardItem.querySelector('.card-content');
+        contentDiv.innerHTML = `
+            <strong>${cardData.position}</strong>
+            <span>${cardData.name}</span>
+            <span>(${orientationText})</span>
+        `;
+
+        cardItem.classList.add('revealed');
+
+        if (index === totalCards - 1) {
+            setTimeout(() => {
+                drawingStatus.style.display = 'none';
+                displayFinalResults();
+                allButtons.forEach(button => button.disabled = false); 
+                copyToClipboard();
+            }, 1000); 
+        }
+    }
+    
+    function displayFinalResults() {
+         const cardInfos = currentDrawnCards.map(card => card.position);
+         const finalInfoElement = document.getElementById('card-info');
+         if (finalInfoElement) {
+             finalInfoElement.innerHTML = `**Các vị trí đã rút:** ${cardInfos.join(', ')}`;
+         }
+         aiSelection.style.display = 'block';
+    }
+
+    function getPositionName(spreadName, index, numCards) {
+        if (SPREAD_POSITIONS_MAP[spreadName]) {
+            return SPREAD_POSITIONS_MAP[spreadName][index] || `Vị trí ${index + 1}`;
+        }
+
+        if (spreadName === 'Trải Bài Tarot 3 Tháng') {
+            const months3 = [getMonthName(0), getMonthName(1), getMonthName(2)];
+            const positions3 = [
+                `${months3[0]} (Hiện tại)`, `${months3[1]}`, `${months3[2]}`, 
+                'Thách thức', 'Cơ hội', 'Kết quả tổng quan'
+            ];
+            return positions3[index] || `Vị trí ${index + 1}`;
+        }
+        
+        if (spreadName === 'Trải Bài Tarot 6 Tháng') {
+            const months6 = Array.from({ length: 6 }, (_, i) => getMonthName(i));
+            const positions6 = [
+                ...months6,
+                'Thách thức', 'Cơ hội', 'Kết quả (6 tháng)', 'Bài học'
+            ];
+            return positions6[index] || `Vị trí ${index + 1}`;
+        }
+        
+        if (spreadName === 'Trải Bài Tarot 1 Năm') {
+            return getMonthName(index) || `Vị trí ${index + 1}`;
+        }
+
+        if (spreadName.startsWith('Trải Bài Tùy Chỉnh')) {
+            return `Vị trí ${index + 1} / ${numCards}`;
+        }
+
+        return `Vị trí ${index + 1}`;
+    }
+
+    function copyToClipboard() {
+        if (currentDrawnCards.length === 0) return;
+
+        const spreadDetails = currentDrawnCards.map(card => {
+            const orientationText = card.orientation === 'U' ? 'Xuôi' : 'Ngược';
+            return `${card.position}: ${card.name} (${orientationText})`;
+        }).join('\n');
+        
+        const entropyValue = document.getElementById('entropy-form-container').style.display === 'flex' 
+            ? entropyInput.value.trim() : customEntropyInput.value.trim();
+
+        const copyText = `${currentSpreadName} (Bộ bài: ${currentDeckType}):\n${spreadDetails}\n\n[Yêu cầu giải bài chi tiết dựa trên các lá bài đã rút này, kết hợp với từ khóa: "${entropyValue || 'Năng lượng ngẫu nhiên'}" ]`;
+
+        navigator.clipboard.writeText(copyText).then(() => {
+            const copyMessage = document.getElementById('copy-message');
+            copyMessage.style.display = 'block';
+            setTimeout(() => {
+                copyMessage.style.display = 'none';
+            }, 3000);
+        }).catch(err => {
+            console.error('Không thể sao chép văn bản: ', err);
+            alert('Tự động sao chép thất bại. Vui lòng sao chép thủ công:\n' + copyText);
+        });
+    }
+
+    function getHistory() {
+        const history = localStorage.getItem('tarot_history');
+        return history ? JSON.parse(history) : [];
+    }
+
+    function saveToHistory(spreadName, cards, deckType, entropyValue) {
+        const history = getHistory();
+        const timestamp = new Date().toLocaleString('vi-VN');
+        
+        history.unshift({
+            timestamp,
+            spreadName,
+            deckType,
+            entropyValue,
+            cards
+        });
+        
+        if (history.length > 10) {
+            history.pop();
+        }
+
+        localStorage.setItem('tarot_history', JSON.stringify(history));
+    }
+
+    function showHistory() {
+        resultArea.style.display = 'none';
+        document.getElementById('history-area').style.display = 'block';
+        
+        const history = getHistory();
+        historyList.innerHTML = '';
+
+        if (history.length === 0) {
+            historyList.innerHTML = '<p style="text-align: center; color: #999;">Chưa có lượt rút bài nào được lưu.</p>';
+            return;
+        }
+
+        history.forEach(item => {
+            const cardDetails = item.cards.map(card => {
+                const orientationText = card.orientation === 'U' ? 'Xuôi' : 'Ngược';
+                return `<li>${card.position}: ${card.name} (${orientationText})</li>`;
+            }).join('');
+
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'history-item';
+            itemDiv.innerHTML = `
+                <strong>${item.timestamp} - ${item.spreadName}</strong>
+                <p>Bộ bài: ${item.deckType} | Từ khóa: "${item.entropyValue || 'Không có'}"</p>
+                <ul style="list-style: none; padding-left: 0; font-size: 0.95rem;">${cardDetails}</ul>
+            `;
+            historyList.appendChild(itemDiv);
+        });
+    }
+
+    function clearHistory() {
+        if (confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử rút bài?")) {
+            localStorage.removeItem('tarot_history');
+            showHistory();
+        }
+    }
+    
+    function openAI(aiName) {
+        let url = '';
+        
+        if (aiName === 'Gemini') {
+            url = 'https://gemini.google.com/app';
+        } else if (aiName === 'ChatGPT') {
+            url = 'https://chat.openai.com/';
+        }
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.style.display = 'none';
+        document.body.appendChild(link);
+
+        link.click();
+        
+        document.body.removeChild(link);
+    }
+    
+    document.querySelector('.main-menu-bar a[href="#"]').onclick = showHistory;
+</script>
