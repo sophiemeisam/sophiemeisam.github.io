@@ -164,7 +164,7 @@
             width: 100%;
             height: 100%;
             text-align: center;
-            transition: transform 3.0s; /* Tốc độ lật đồng bộ với DRAW_DELAY */
+            transition: transform 3.0s; /* Tốc độ lật đồng bộ với DRAW_DELAY (3s) */
             transform-style: preserve-3d; 
         }
         
@@ -517,6 +517,7 @@
         const customDeckSelect = document.getElementById('custom-deck-select');
         const customOrientationSelect = document.getElementById('custom-orientation-select');
         
+        // Khai báo biến toàn cục cho quá trình rút bài
         let currentNumCards = 0;
         let currentSpreadName = '';
         let currentDrawnCards = [];
@@ -550,24 +551,19 @@
 
         // --- **THUẬT TOÁN ENTROPY MỚI: Dựa trên Hash và Seed** ---
         // Hàm băm đơn giản (FNV-1a 32 bit) cho từ khóa
-        function **generateHash(input)** {
-            let hash = 2166136261; // Offset basis
+        function generateHash(input) {
+            let hash = 2166136261; 
             for (let i = 0; i < input.length; i++) {
                 hash ^= input.charCodeAt(i);
-                // Math.imul: Tối ưu hóa phép nhân 32-bit (chỉ dùng trong JS hiện đại)
                 hash = Math.imul(hash, 16777619);
             }
-            return hash >>> 0; // Convert to unsigned 32-bit integer
+            return hash >>> 0; 
         }
 
         // Hàm Ngẫu nhiên sử dụng Hash và Seed (PRNG cải tiến)
         function **seededRandomWithHash()** {
-            // Kết hợp giá trị băm (entropyHash) với seed nội bộ để tạo ngẫu nhiên
             seed = (seed * 9301 + 49297 + entropyHash) % 233280;
-            
-            // Cập nhật lại entropyHash một chút để tạo sự thay đổi cho lần gọi tiếp theo
             entropyHash = (entropyHash + seed) & 0xFFFFFFFF; 
-
             return seed / 233280;
         }
         // --- **KẾT THÚC THUẬT TOÁN ENTROPY MỚI** ---
@@ -578,6 +574,7 @@
             currentNumCards = numCards;
             currentSpreadName = spreadName;
             
+            // **Vô hiệu hóa các nút điều khiển**
             allButtons.forEach(button => button.disabled = true);
             
             document.getElementById('entropy-title').textContent = `Kết nối năng lượng cho ${spreadName}`;
@@ -588,6 +585,7 @@
         }
         
         function showCustomSpreadForm() {
+            // **Vô hiệu hóa các nút điều khiển**
             allButtons.forEach(button => button.disabled = true);
             entropyFormContainer.style.display = 'none';
             customSpreadFormContainer.style.display = 'flex';
@@ -717,6 +715,7 @@
                 setTimeout(() => {
                     drawingStatus.style.display = 'none';
                     displayFinalResults();
+                    // **Kích hoạt lại các nút điều khiển**
                     allButtons.forEach(button => button.disabled = false); 
                     copyToClipboard();
                 }, 1000); 
@@ -732,7 +731,7 @@
              aiSelection.style.display = 'block';
         }
 
-        // --- Hàm Lấy Tên Vị trí Tối ưu ---
+        // --- Hàm Lấy Tên Vị trí Tối ưu (Giữ nguyên) ---
         function getPositionName(spreadName, index, numCards) {
             if (SPREAD_POSITIONS_MAP[spreadName]) {
                 return SPREAD_POSITIONS_MAP[spreadName][index] || `Vị trí ${index + 1}`;
@@ -767,7 +766,7 @@
             return `Vị trí ${index + 1}`;
         }
 
-        // --- Sao chép vào Clipboard ---
+        // --- Sao chép vào Clipboard (Giữ nguyên) ---
         function copyToClipboard() {
             if (currentDrawnCards.length === 0) return;
 
@@ -776,8 +775,14 @@
                 return `${card.position}: ${card.name} (${orientationText})`;
             }).join('\n');
             
-            const entropyValue = (document.getElementById('entropy-form-container').style.display === 'flex' 
-                ? entropyInput.value.trim() : customEntropyInput.value.trim()) || '';
+            // Lấy giá trị entropy từ form đang hiển thị
+            let entropyValue = '';
+            if (entropyFormContainer.style.display === 'flex') {
+                entropyValue = entropyInput.value.trim();
+            } else if (customSpreadFormContainer.style.display === 'flex') {
+                entropyValue = customEntropyInput.value.trim();
+            }
+
 
             const copyText = `${currentSpreadName} (Bộ bài: ${currentDeckType}):\n${spreadDetails}\n\n[Yêu cầu giải bài chi tiết dựa trên các lá bài đã rút này, kết hợp với từ khóa: "${entropyValue || 'Năng lượng ngẫu nhiên'}" ]`;
 
@@ -793,7 +798,7 @@
             });
         }
 
-        // --- Tính năng LƯU LỊCH SỬ ---
+        // --- Tính năng LƯU LỊCH SỬ (Giữ nguyên) ---
         function getHistory() {
             const history = localStorage.getItem('tarot_history');
             return history ? JSON.parse(history) : [];
@@ -854,7 +859,7 @@
             }
         }
         
-        // --- Mở AI ---
+        // --- Mở AI (Giữ nguyên) ---
         function openAI(aiName) {
             let url = '';
             
@@ -875,6 +880,7 @@
             document.body.removeChild(link);
         }
         
+        // Gán sự kiện click cho nút lịch sử ban đầu (chắc chắn luôn hoạt động)
         document.querySelector('.main-menu-bar a[href="#"]').onclick = showHistory;
     </script>
 </body>
