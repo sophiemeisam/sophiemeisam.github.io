@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phi Tinh Lộc Mã Quý Nhân</title>
+    <style>
+        :root {
+            --bg-body: #fdfaf5;
+            --bg-card: #ffffff;
+            --primary: #b22222;
+            --gold: #d4af37;
+            --text: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            padding: 15px;
+            margin: 0;
+        }
+        .container {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            max-width: 480px;
+            width: 100%;
+        }
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 8px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+        .cell {
+            aspect-ratio: 1/1;
+            border: 1.5px solid var(--gold);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 4px;
+            background: #fff;
+            position: relative;
+        }
+        .cell-num { font-weight: bold; color: #ccc; font-size: 12px; position: absolute; top: 2px; left: 4px; }
+        .cell-name { font-size: 10px; color: #888; margin-top: 14px; font-weight: bold; }
+        .cell-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+            align-items: center;
+            margin-top: 4px;
+        }
+        .tag {
+            font-size: 10.5px;
+            font-weight: bold;
+            padding: 2px 2px;
+            border-radius: 3px;
+            width: 95%;
+            text-align: center;
+            line-height: 1.2;
+        }
+        /* Màu sắc phân biệt các Cát Tinh */
+        .tag-goc { background: #fffde7; border: 1px solid #fbc02d; color: #000; }
+        .tag-loc { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .tag-ma { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+        .tag-duong { background: #fff3e0; color: #ef6c00; border: 1px solid #ffe0b2; }
+        .tag-am { background: #f3e5f5; color: #7b1fa2; border: 1px solid #e1bee7; }
+
+        /* Vị trí Cửu Cung Lạc Thư */
+        #cell4 { grid-area: 1 / 1; } #cell9 { grid-area: 1 / 2; } #cell2 { grid-area: 1 / 3; }
+        #cell3 { grid-area: 2 / 1; } #cell5 { grid-area: 2 / 2; } #cell7 { grid-area: 2 / 3; }
+        #cell8 { grid-area: 3 / 1; } #cell1 { grid-area: 3 / 2; } #cell6 { grid-area: 3 / 3; }
+
+        .form-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .form-group { margin-bottom: 8px; }
+        .full-width { grid-column: span 2; }
+        label { font-size: 12px; font-weight: bold; display: block; margin-bottom: 3px; color: #555; }
+        select {
+            width: 100%;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: #fff;
+            font-size: 13px;
+        }
+        .result-panel {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fdfdfd;
+            border-radius: 8px;
+            border: 1px dashed var(--gold);
+            font-size: 12.5px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Phi Lộc - Mã - Quý Nhân</h1>
+    
+    <div class="grid">
+        <div class="cell" id="cell4"><span class="cell-num">4</span><span class="cell-name">Tốn-ĐN</span><div class="cell-content" id="cont4"></div></div>
+        <div class="cell" id="cell9"><span class="cell-num">9</span><span class="cell-name">Ly-Nam</span><div class="cell-content" id="cont9"></div></div>
+        <div class="cell" id="cell2"><span class="cell-num">2</span><span class="cell-name">Khôn-TN</span><div class="cell-content" id="cont2"></div></div>
+        <div class="cell" id="cell3"><span class="cell-num">3</span><span class="cell-name">Chấn-Đ</span><div class="cell-content" id="cont3"></div></div>
+        <div class="cell" id="cell5"><span class="cell-num">5</span><span class="cell-name">Trung Cung</span><div class="cell-content" id="cont5"></div></div>
+        <div class="cell" id="cell7"><span class="cell-num">7</span><span class="cell-name">Đoài-T</span><div class="cell-content" id="cont7"></div></div>
+        <div class="cell" id="cell8"><span class="cell-num">8</span><span class="cell-name">Cấn-ĐB</span><div class="cell-content" id="cont8"></div></div>
+        <div class="cell" id="cell1"><span class="cell-num">1</span><span class="cell-name">Khảm-B</span><div class="cell-content" id="cont1"></div></div>
+        <div class="cell" id="cell6"><span class="cell-num">6</span><span class="cell-name">Càn-TB</span><div class="cell-content" id="cont6"></div></div>
+    </div>
+
+    <div class="form-area">
+        <div class="form-group full-width">
+            <label style="color:var(--primary)">Năm cần xem (Nạp Trung Cung):</label>
+            <select id="selA" onchange="run()"></select>
+        </div>
+        <div class="form-group">
+            <label>Thiên Lộc:</label>
+            <select id="selB" onchange="run()"></select>
+        </div>
+        <div class="form-group">
+            <label>Thiên Mã:</label>
+            <select id="selC" onchange="run()"></select>
+        </div>
+        <div class="form-group">
+            <label>Dương Quý Nhân:</label>
+            <select id="selD" onchange="run()"></select>
+        </div>
+        <div class="form-group">
+            <label>Âm Quý Nhân:</label>
+            <select id="selE" onchange="run()"></select>
+        </div>
+    </div>
+
+    <div class="result-panel" id="msg"></div>
+</div>
+
+<script>
+    const hoaGiap = ["Giáp Tý","Ất Sửu","Bính Dần","Đinh Mão","Mậu Thìn","Kỷ Tị","Canh Ngọ","Tân Mùi","Nhâm Thân","Quý Dậu","Giáp Tuất","Ất Hợi","Bính Tý","Đinh Sửu","Mậu Dần","Kỷ Mão","Canh Thìn","Tân Tị","Nhâm Ngọ","Quý Mùi","Giáp Thân","Ất Dậu","Bính Tuất","Đinh Hợi","Mậu Tý","Kỷ Sửu","Canh Dần","Tân Mão","Nhâm Thìn","Quý Tị","Giáp Ngọ","Ất Mùi","Bính Thân","Đinh Dậu","Mậu Tuất","Kỷ Hợi","Canh Tý","Tân Sửu","Nhâm Dần","Quý Mão","Giáp Thìn","Ất Tị","Bính Ngọ","Đinh Mùi","Mậu Thân","Kỷ Dậu","Canh Tuất","Tân Hợi","Nhâm Tý","Quý Sửu","Giáp Dần","Ất Mão","Bính Thìn","Đinh Tị","Mậu Ngọ","Kỷ Mùi","Canh Thân","Tân Dậu","Nhâm Tuất","Quý Hợi"];
+    
+    const luongThienXich = [5, 6, 7, 8, 9, 1, 2, 3, 4];
+    const cungNames = {1:"Khảm", 2:"Khôn", 3:"Chấn", 4:"Tốn", 5:"Trung Cung", 6:"Càn", 7:"Đoài", 8:"Cấn", 9:"Ly"};
+
+    function init() {
+        ['selA', 'selB', 'selC', 'selD', 'selE'].forEach(id => {
+            const el = document.getElementById(id);
+            hoaGiap.forEach(item => {
+                let opt = document.createElement('option');
+                opt.value = item; opt.text = item;
+                el.appendChild(opt);
+            });
+        });
+        // Ví dụ mặc định
+        document.getElementById('selA').value = "Giáp Thìn";
+        document.getElementById('selB').value = "Giáp Dần"; // Lộc tại Dần
+        document.getElementById('selC').value = "Nhâm Thân"; // Mã tại Thân
+        document.getElementById('selD').value = "Kỷ Mùi";   // Quý nhân Mùi
+        document.getElementById('selE').value = "Tân Sửu";  // Quý nhân Sửu
+        run();
+    }
+
+    function run() {
+        for(let i=1; i<=9; i++) document.getElementById('cont' + i).innerHTML = "";
+
+        const gA = document.getElementById('selA').value;
+        const targets = [
+            { v: document.getElementById('selB').value, c: 'tag-loc', n: 'Lộc' },
+            { v: document.getElementById('selC').value, c: 'tag-ma', n: 'Mã' },
+            { v: document.getElementById('selD').value, c: 'tag-duong', n: 'D.Quý' },
+            { v: document.getElementById('selE').value, c: 'tag-am', n: 'Â.Quý' }
+        ];
+
+        document.getElementById('cont5').innerHTML = `<div class="tag tag-goc">${gA}</div>`;
+        let log = `<b>Năm xem: ${gA} (Trung Cung)</b><br>`;
+
+        targets.forEach(t => {
+            const dist = (hoaGiap.indexOf(t.v) - hoaGiap.indexOf(gA) + 60) % 60;
+            const cungNum = luongThienXich[dist % 9];
+            document.getElementById('cont' + cungNum).innerHTML += `<div class="tag ${t.c}">${t.n}: ${t.v}</div>`;
+            log += `• ${t.n} (${t.v}) đáo <b>${cungNames[cungNum]} (${cungNum})</b><br>`;
+        });
+
+        document.getElementById('msg').innerHTML = log;
+    }
+
+    window.onload = init;
+</script>
+</body>
+</html>
