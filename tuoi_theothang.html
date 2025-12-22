@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ Thống Phi Tinh Lục Giáp - Cách 2</title>
+    <style>
+        :root {
+            --color-kham: #1e88e5; --color-kim: #ffdb58; --color-tho: #8d6e63;
+            --color-moc: #43a047; --color-hoa: #e91e63; --color-trung: #d4a373;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f9; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); width: 400px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0; }
+        .cell { 
+            aspect-ratio: 1/1; border-radius: 8px; display: flex; flex-direction: column; 
+            align-items: center; justify-content: flex-start; padding: 4px; position: relative;
+            color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); font-weight: bold;
+        }
+        /* Layout Lạc Thư */
+        #c4 { grid-area: 1/1; background: var(--color-moc); } #c9 { grid-area: 1/2; background: var(--color-hoa); } #c2 { grid-area: 1/3; background: var(--color-tho); }
+        #c3 { grid-area: 2/1; background: var(--color-moc); } #c5 { grid-area: 2/2; background: var(--color-trung); border: 2px solid gold; } #c7 { grid-area: 2/3; background: var(--color-kim); color: #333; text-shadow: none; }
+        #c8 { grid-area: 3/1; background: var(--color-tho); } #c1 { grid-area: 3/2; background: var(--color-kham); } #c6 { grid-area: 3/3; background: var(--color-kim); color: #333; text-shadow: none; }
+        
+        .tag { font-size: 10px; padding: 2px; border-radius: 3px; width: 95%; text-align: center; background: rgba(255,255,255,0.9); color: #333; text-shadow: none; border: 1px solid #ccc; margin-top: 2px; }
+        select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; font-weight: bold; }
+        .info-panel { background: #fff8e1; padding: 10px; border-radius: 8px; margin-top: 15px; font-size: 12px; line-height: 1.6; border-left: 4px solid #ffa000; }
+        b { color: #b22222; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="text-align:center; color:#b22222; margin-top:0;">PHI TINH THEO VỊ TRÍ TUỔI</h2>
+    
+    <div class="grid">
+        <div class="cell" id="c4">4-Tốn<div id="v4"></div></div>
+        <div class="cell" id="c9">9-Ly<div id="v9"></div></div>
+        <div class="cell" id="c2">2-Khôn<div id="v2"></div></div>
+        <div class="cell" id="c3">3-Chấn<div id="v3"></div></div>
+        <div class="cell" id="c5">5-Trung<div id="v5"></div></div>
+        <div class="cell" id="c7">7-Đoài<div id="v7"></div></div>
+        <div class="cell" id="c8">8-Cấn<div id="v8"></div></div>
+        <div class="cell" id="c1">1-Khảm<div id="v1"></div></div>
+        <div class="cell" id="c6">6-Càn<div id="v6"></div></div>
+    </div>
+
+    <label>Tháng truy xuất (Nhập 5):</label>
+    <select id="selThang" onchange="run()"></select>
+    
+    <label style="margin-top:10px; display:block;">Tuổi cần tra vị trí:</label>
+    <select id="selTuoi" onchange="run()"></select>
+
+    <div id="msg" class="info-panel"></div>
+</div>
+
+<script>
+const hoaGiap = ["Giáp Tý","Ất Sửu","Bính Dần","Đinh Mão","Mậu Thìn","Kỷ Tị","Canh Ngọ","Tân Mùi","Nhâm Thân","Quý Dậu","Giáp Tuất","Ất Hợi","Bính Tý","Đinh Sửu","Mậu Dần","Kỷ Mão","Canh Thìn","Tân Tị","Nhâm Ngọ","Quý Mùi","Giáp Thân","Ất Dậu","Bính Tuất","Đinh Hợi","Mậu Tý","Kỷ Sửu","Canh Dần","Tân Mão","Nhâm Thìn","Quý Tị","Giáp Ngọ","Ất Mùi","Bính Thân","Đinh Dậu","Mậu Tuất","Kỷ Hợi","Canh Tý","Tân Sửu","Nhâm Dần","Quý Mão","Giáp Thìn","Ất Tị","Bính Ngọ","Đinh Mùi","Mậu Thân","Kỷ Dậu","Canh Tuất","Tân Hợi","Nhâm Tý","Quý Sửu","Giáp Dần","Ất Mão","Bính Thìn","Đinh Tị","Mậu Ngọ","Kỷ Mùi","Canh Thân","Tân Dậu","Nhâm Tuất","Quý Hợi"];
+
+// Dãy Lượng Thiên Xích chuẩn: 5-6-7-8-9-1-2-3-4
+const ltx = [5, 6, 7, 8, 9, 1, 2, 3, 4];
+
+function init() {
+    const sT = document.getElementById('selThang');
+    const sU = document.getElementById('selTuoi');
+    hoaGiap.forEach(v => {
+        sT.add(new Option(v, v));
+        sU.add(new Option(v, v));
+    });
+    // Mặc định ví dụ: Tháng Đinh Hợi, tuổi Giáp Tý
+    sT.value = "Đinh Hợi";
+    sU.value = "Giáp Tý";
+    run();
+}
+
+function run() {
+    // Xóa dữ liệu cũ
+    for(let i=1; i<=9; i++) document.getElementById('v' + i).innerHTML = "";
+    
+    const thang = document.getElementById('selThang').value;
+    const tuoi = document.getElementById('selTuoi').value;
+    
+    const idxThang = hoaGiap.indexOf(thang) + 1; // Vị trí 1-60
+    const idxTuoi = hoaGiap.indexOf(tuoi) + 1;   // Vị trí 1-60
+    
+    let diff = idxTuoi - idxThang;
+    let cungDich;
+    let moTa = "";
+
+    if (diff === 0) {
+        cungDich = 5;
+        moTa = "Tuổi và Tháng trùng nhau (Phục ngâm).";
+    } else if (diff > 0) {
+        // Tuổi nằm sau Tháng -> Đếm Thuận
+        // Ví dụ: Tháng Giáp Tý (1), Tuổi Ất Sửu (2) -> diff = 1 -> ltx[1] = 6
+        cungDich = ltx[diff % 9];
+        moTa = `Tuổi nằm <b>Sau</b> tháng (${diff} bước) -> Đếm <b>Thuận</b> LTX.`;
+    } else {
+        // Tuổi nằm trước Tháng -> Đếm Nghịch
+        // Ví dụ: Tháng Đinh Hợi (24), Tuổi Giáp Tý (1) -> diff = -23
+        // Công thức đếm nghịch: (5 - (abs(diff) % 9) + 9) ... nhưng LTX không tuyến tính
+        // Ta lấy index lùi trong mảng ltx: (0 - 23 % 9 + 9) % 9
+        let stepsLui = Math.abs(diff) % 9;
+        let indexLui = (0 - stepsLui + 9) % 9;
+        cungDich = ltx[indexLui];
+        moTa = `Tuổi nằm <b>Trước</b> tháng (${Math.abs(diff)} bước) -> Đếm <b>Lùi</b> LTX.`;
+    }
+    
+    // Hiển thị kết quả
+    document.getElementById('v' + cungDich).innerHTML = `<div class="tag">${tuoi}</div>`;
+    document.getElementById('v5').innerHTML += `<div class="tag">Gốc: ${thang}</div>`;
+    
+    document.getElementById('msg').innerHTML = `
+        Tháng gốc: <b>${thang}</b> (Vị trí ${idxThang})<br>
+        Tuổi xét: <b>${tuoi}</b> (Vị trí ${idxTuoi})<br>
+        Kết quả: ${moTa}<br>
+        => Đáo cung: <b>${cungDich}</b>
+    `;
+}
+
+window.onload = init;
+</script>
+</body>
+</html>
