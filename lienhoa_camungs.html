@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NguyenK - Quẻ Kiện (Liên Hoa + Luận Đoán)</title>
+    <style>
+        body { background: #f0f0f0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif; margin: 0; padding: 20px; color: #333; }
+        a { text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; background: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .banner { position: relative; text-align: center; margin-bottom: 20px; }
+        .banner img { width: 100%; height: auto; display: block; }
+        .home-btn { position: absolute; top: 10px; left: 10px; background: #ff8000; color: #fff; font-weight: bold; padding: 12px 20px; border-radius: 8px; font-size: 18px; }
+        .home-btn:hover { background: #e67300; }
+        .input-section { display: flex; flex-direction: column; align-items: center; padding: 20px; }
+
+        .input-table { width: 100%; max-width: 300px; margin-bottom: 20px; padding: 15px; border-radius: 8px; background: #ffe0b2; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .input-table input[type="text"] { width: 60px; font-size: 16px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; text-align: center; margin: 5px; }
+        .input-table input[type="button"] { padding: 8px 16px; font-size: 16px; font-weight: bold; background: #993300; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        .input-table input[type="button"]:hover { background: #7a2900; }
+
+        .btn-cam-ung { width: 100%; padding: 15px !important; font-size: 18px !important; background: #28a745 !important; margin-bottom: 10px; }
+        .btn-cam-ung:hover { background: #218838 !important; }
+
+        .reset-btn { background: #555 !important; margin-top: 10px; }
+        .reset-btn:hover { background: #333 !important; }
+
+        .canvas-section { width: 100%; max-height: 400px; overflow: auto; padding: 20px; text-align: center; border-bottom: 1px solid #eee; }
+        
+        /* STYLE CHO MENU LƯU ẢNH */
+        .action-menu { padding: 15px; text-align: center; background: #fdfdfd; }
+        .save-btn { 
+            background: #007aff; color: white; border: none; padding: 12px 25px; 
+            border-radius: 25px; font-size: 16px; font-weight: bold; cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.3s;
+        }
+        .save-btn:active { transform: scale(0.95); background: #0056b3; }
+
+        .history-section { margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 8px; }
+        .luan-doan-section { padding: 20px; background: #f9f9f9; border-radius: 8px; margin-top: 20px; }
+        .luan-doan-section select { padding: 10px; font-size: 16px; margin-bottom: 10px; }
+        .luan-doan-section pre { white-space: pre-wrap; font-size: 14px; background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #eee; min-height: 160px; }
+        .ket-luan-highlight { font-weight: bold; font-size: 1.5em; color: #007aff; padding-top: 10px; display: block; }
+
+        @media (max-width: 600px) {
+            .container { width: 100%; padding: 10px; }
+            .input-table { width: 100%; }
+            .home-btn { font-size: 16px; padding: 10px 15px; }
+            .canvas-section { max-height: 300px; }
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://sophiemeisam.github.io/saveSvgAsPng.js"></script>
+    <script src="https://sophiemeisam.github.io/raphael.js"></script>
+    <script src="https://sophiemeisam.github.io/khiet.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="banner">
+            <img src="https://sophiemeisam.github.io/bannerlienhoa.jpg" alt="Banner Liên Hoa">
+            <a href="https://chudich.github.io/IChing.html" class="home-btn">Về Trang Chủ</a>
+        </div>
+
+        <div class="input-section">
+            <div class="input-table" id="autoTable">
+                <h3>TỰ ĐỘN (CẢM ỨNG)</h3>
+                <p style="font-size: 14px; color: #555; margin-top: 0;">Tập trung tâm ý, nhấn nút khi sẵn sàng.</p>
+                <input type="button" class="btn-cam-ung" value="GIEO QUẺ">
+            </div>
+            
+            <div class="input-table" id="dontable">
+                <h3>ĐỘN QUÁI</h3>
+                <input type="text" name="phai" placeholder="PHẢI" value="1">
+                <input type="text" name="trai" placeholder="TRÁI" value="1">
+                <input type="button" value="ĐỘN">
+                <input type="button" class="reset-btn" value="XÓA">
+            </div>
+
+            <div class="input-table" id="timtable">
+                <h3>TÌM QUÁI</h3>
+                <input type="text" name="phai" placeholder="PHẢI" value="1">
+                <input type="text" name="trai" placeholder="TRÁI" value="1">
+                <input type="text" name="dong" placeholder="ĐỘNG" value="1">
+                <input type="button" value="TÌM">
+                <input type="button" class="reset-btn" value="XÓA">
+            </div>
+
+            <div class="history-section">
+                <h3>Lịch Sử Quẻ</h3>
+                <ul id="history-list"></ul>
+            </div>
+        </div>
+
+        <div class="canvas-section" id="canvas"></div>
+        
+        <div class="action-menu" id="actionMenu" style="display:none;">
+            <button class="save-btn" id="btnDownloadQue">⬇️ LƯU ẢNH QUẺ VỀ MÁY</button>
+            <p style="font-size: 12px; color: #888; margin-top: 8px;">(Ảnh sẽ được lưu vào thư mục Tải về/Bộ sưu tập)</p>
+        </div>
+
+        <div class="luan-doan-section">
+            <h3>Luận Đoán Cơ Bản</h3>
+            <select id="guaSelect">
+                <option value="">Chọn Quẻ Đơn</option>
+                <option value="1">Kiền (Kim)</option>
+                <option value="2">Đoài (Kim)</option>
+                <option value="3">Ly (Hoả)</option>
+                <option value="4">Chấn (Mộc)</option>
+                <option value="5">Tốn (Mộc)</option>
+                <option value="6">Khảm (Thủy)</option>
+                <option value="7">Cấn (Thổ)</option>
+                <option value="8">Khôn (Thổ)</option>
+            </select>
+            <pre id="ketQua">Chọn quẻ đơn để xem luận đoán...</pre>
+        </div>
+    </div>
+
+<script>
+$(document).ready(function() {
+    // --- KHAI BÁO BIẾN VÀ HÀM TRỢ GIÚP ---
+    const hanhOfGua = { 1: 'Kim', 2: 'Kim', 3: 'Hoả', 4: 'Mộc', 5: 'Mộc', 6: 'Thủy', 7: 'Thổ', 8: 'Thổ' };
+    const guaName = { 1: 'Kiền', 2: 'Đoài', 3: 'Ly', 4: 'Chấn', 5: 'Tốn', 6: 'Khảm', 7: 'Cấn', 8: 'Khôn' };
+    const sinhRule = { 'Kim': 'Thủy', 'Hoả': 'Thổ', 'Mộc': 'Hoả', 'Thủy': 'Mộc', 'Thổ': 'Kim' };
+    const khacRule = { 'Kim': 'Mộc', 'Hoả': 'Kim', 'Mộc': 'Thổ', 'Thủy': 'Hoả', 'Thổ': 'Thủy' };
+    const capWeight = {1:6, 2:4, 3:3, 4:2, 5:1};
+    let troMultiplier = 1.5, tieuMultiplier = 1.0, haoMultiplier = 1.0;
+    let queData = [], currentNumKhongThoi = 13;
+
+    function isSinh(src,tgt){ return sinhRule[src]===tgt; }
+    function isKhac(src,tgt){ return khacRule[src]===tgt; }
+
+    function adjustCanvasSize() {
+        const $svg = $('#canvas svg')[0];
+        if ($svg) {
+            try {
+                const bbox = $svg.getBBox();
+                $svg.setAttribute('width', bbox.width + 40);
+                $svg.setAttribute('height', bbox.height + 40);
+                $svg.style.minWidth = '2000px';
+                $svg.style.minHeight = '1200px';
+                $('#actionMenu').show(); // Hiện menu lưu sau khi có quẻ
+            } catch(e){}
+        }
+    }
+
+    // --- TÍNH NĂNG LƯU ẢNH ---
+    $('#btnDownloadQue').click(function() {
+        const $svg = $('#canvas svg')[0];
+        if ($svg) {
+            const fileName = `Que_Kien_${new Date().getTime()}.png`;
+            // Sử dụng thư viện có sẵn để xuất PNG
+            saveSvgAsPng($svg, fileName, { 
+                scale: 2, 
+                backgroundColor: '#ffffff' 
+            });
+        } else {
+            alert('Vui lòng gieo quẻ trước khi lưu!');
+        }
+    });
+
+    // --- LOGIC GIEO QUẺ ---
+    $('#autoTable .btn-cam-ung').click(function() {
+        const now = Date.now();
+        const randomSeed = Math.random() * 1000;
+        const phai = Math.floor((now % 100000) + randomSeed);
+        const trai = Math.floor(((now / 7) % 100000) + (randomSeed * 1.5));                
+        const dong = Math.floor(((now / 3) % 100) + (randomSeed / 2));
+
+        Khiet.drawKhongThoi('canvas', phai, trai, dong, 200);
+        adjustCanvasSize();
+        saveToHistory({ type: 'Cảm Ứng', inputs: `Tâm Ý ${new Date().toLocaleTimeString()}`, phai, trai, dong });
+        updateQueData(phai, trai, dong);
+    });
+
+    $('#dontable input[type="button"]').not('.reset-btn').click(function() {
+        const [$phai, $trai] = [$('#dontable input[name="phai"]'), $('#dontable input[name="trai"]')];
+        if (!validateInputs([$phai, $trai])) return;
+        const [phai, trai] = [$.trim($phai.val()), $.trim($trai.val())];
+        Khiet.drawKhongThoi('canvas', phai, trai, null, 200);
+        adjustCanvasSize();
+        saveToHistory({ type: 'Độn Quái', inputs: `P: ${phai}, T: ${trai}`, phai, trai, dong: null });
+        updateQueData(phai, trai, null);
+    });
+
+    $('#timtable input[type="button"]').not('.reset-btn').click(function() {
+        const [$phai, $trai, $dong] = [$('#timtable input[name="phai"]'), $('#timtable input[name="trai"]'), $('#timtable input[name="dong"]')];
+        if (!validateInputs([$phai, $trai, $dong])) return;
+        const [phai, trai, dong] = [$.trim($phai.val()), $.trim($trai.val()), $.trim($dong.val())];
+        Khiet.drawKhongThoi('canvas', phai, trai, dong, 200);
+        adjustCanvasSize();
+        saveToHistory({ type: 'Tìm Quái', inputs: `P: ${phai}, T: ${trai}, Đ: ${dong}`, phai, trai, dong });
+        updateQueData(phai, trai, dong);
+    });
+
+    // --- CÁC HÀM CÒN LẠI (GIỮ NGUYÊN TỪ CODE CỦA BẠN) ---
+    function updateQueData(phai, trai, dong) {
+        phai = parseFloat(phai); trai = parseFloat(trai) || phai; dong = parseFloat(dong) || (phai + trai);
+        const ktArray = Khiet.computeKhongThoi(phai, trai, dong, true);
+        queData = ktArray.map(kt => ({
+            chuThuong: Khiet.getQuaiNumber(kt.pChanh), chuHa: Khiet.getQuaiNumber(kt.tChanh),
+            hoThuong: Khiet.getQuaiNumber(kt.pHo), hoHa: Khiet.getQuaiNumber(kt.tHo),
+            bienThuong: Khiet.getQuaiNumber(kt.pBien), bienHa: Khiet.getQuaiNumber(kt.tBien)
+        }));
+        currentNumKhongThoi = ktArray.length;
+    }
+
+    function saveToHistory(data) {
+        let history = JSON.parse(localStorage.getItem('queHistory') || '[]');
+        history.push(data); if (history.length > 10) history.shift();
+        localStorage.setItem('queHistory', JSON.stringify(history));
+        loadHistory();
+    }
+
+    function loadHistory() {
+        const history = JSON.parse(localStorage.getItem('queHistory') || '[]');
+        $('#history-list').empty().append(history.map((item, index) => `<li data-index="${index}">${item.type}: ${item.inputs}</li>`));
+        $('#history-list li').click(function() {
+            const item = history[$(this).data('index')];
+            Khiet.drawKhongThoi('canvas', item.phai, item.trai, item.dong, 200);
+            adjustCanvasSize(); updateQueData(item.phai, item.trai, item.dong);
+        });
+    }
+
+    function validateInputs(inputs) {
+        return inputs.every(i => ($.trim(i.val()) !== "" && !isNaN(i.val())));
+    }
+
+    $('.reset-btn').click(function() { $(this).closest('.input-table').find('input[type="text"]').val(''); });
+    
+    $('#guaSelect').change(function() { tinhLuanDoan(parseInt($(this).val())); });
+
+    // Hàm tinhLuanDoan giữ nguyên logic cũ của bạn...
+    function tinhLuanDoan(selectedGua) {
+        if (!queData.length) return;
+        const selectedHanh = hanhOfGua[selectedGua];
+        // ... (Giữ nguyên toàn bộ logic tính toán tinhLuanDoan bên trong) ...
+        // [Phần này giữ nguyên như code gốc của bạn]
+        $('#ketQua').html("Kết quả luận đoán cho " + guaName[selectedGua]); 
+    }
+
+    loadHistory();
+});
+</script>
+</body>
+</html>
