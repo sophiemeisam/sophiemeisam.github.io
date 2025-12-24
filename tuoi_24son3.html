@@ -2,67 +2,66 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Đại Du Niên 24 Sơn - Bát Trạch Tinh Hoa</title>
+    <title>Hệ Thống Phi Tinh 24 Sơn Chuẩn - Bát Trạch Tinh Hoa</title>
     <style>
         :root {
             --color-kham: #1e88e5; --color-kim: #ffdb58; --color-tho: #8d6e63;
             --color-moc: #43a047; --color-hoa: #e91e63; --color-trung: #d4a373;
             --bad: #ff5252; --good: #27ae60;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); width: 500px; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 20px 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 480px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
         .cell { 
-            aspect-ratio: 1/1; border-radius: 12px; display: flex; flex-direction: column; 
+            aspect-ratio: 1/1; border-radius: 10px; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; position: relative;
             color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); font-weight: bold; border: 1px solid rgba(0,0,0,0.1);
         }
         #c4 { background: var(--color-moc); } #c9 { background: var(--color-hoa); } #c2 { background: var(--color-tho); }
-        #c3 { background: var(--color-moc); } #c5 { background: var(--color-trung); border: 2px solid #ffd700; } #c7 { background: var(--color-kim); color: #333; text-shadow: none; }
+        #c3 { background: var(--color-moc); } #c5 { background: var(--color-trung); border: 2px solid gold; } #c7 { background: var(--color-kim); color: #333; text-shadow: none; }
         #c8 { background: var(--color-tho); } #c1 { background: var(--color-kham); } #c6 { background: var(--color-kim); color: #333; text-shadow: none; }
         
-        .tag { font-size: 11px; padding: 4px; border-radius: 4px; width: 85%; text-align: center; background: rgba(255,255,255,0.95); color: #d32f2f; margin-top: 5px; border: 1px solid #ccc; box-shadow: 1px 1px 4px rgba(0,0,0,0.1); }
-        select { width: 100%; padding: 12px; margin: 5px 0 15px 0; border-radius: 8px; border: 1px solid #ccc; font-weight: bold; font-size: 14px; background: #fff; cursor: pointer; }
-        label { font-size: 13px; font-weight: bold; color: #444; margin-left: 2px; }
-        .analysis { background: #fffcf0; padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 6px solid #b22222; box-shadow: inset 0 0 10px rgba(0,0,0,0.05); }
-        .son-item { margin-bottom: 10px; padding: 8px; border-bottom: 1px dashed #ddd; display: flex; justify-content: space-between; align-items: center; }
-        .hung { color: var(--bad); font-weight: 800; } .cat { color: var(--good); font-weight: 800; }
-        .info-summary { text-align: center; margin-bottom: 15px; font-size: 15px; color: #b22222; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .tag { font-size: 10px; padding: 3px; border-radius: 4px; width: 90%; text-align: center; background: rgba(255,255,255,0.9); color: #333; margin-top: 3px; border: 1px solid #ccc; }
+        select { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ddd; font-weight: bold; }
+        .analysis { background: #fffdf0; padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 5px solid var(--color-hoa); font-size: 13px; }
+        .son-item { margin-bottom: 5px; padding: 5px; border-bottom: 1px dashed #ccc; display: flex; justify-content: space-between; }
+        .hung { color: var(--bad); font-weight: bold; } .cat { color: var(--good); font-weight: bold; }
+        .header-box { text-align: center; font-weight: bold; color: #b22222; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2 style="text-align:center; color:#b22222; margin:0 0 15px 0;">ĐẠI DU NIÊN 24 SƠN</h2>
+    <h2 style="text-align:center; color:#b22222; margin:0 0 15px 0;">PHI TINH & ĐẠI DU NIÊN</h2>
     
-    <div class="grid">
-        <div class="cell" id="c4">Tốn 4<div id="v4"></div></div>
-        <div class="cell" id="c9">Ly 9<div id="v9"></div></div>
-        <div class="cell" id="c2">Khôn 2<div id="v2"></div></div>
-        <div class="cell" id="c3">Chấn 3<div id="v3"></div></div>
-        <div class="cell" id="c5">Trung 5<div id="v5"></div></div>
-        <div class="cell" id="c7">Đoài 7<div id="v7"></div></div>
-        <div class="cell" id="c8">Cấn 8<div id="v8"></div></div>
-        <div class="cell" id="c1">Khảm 1<div id="v1"></div></div>
-        <div class="cell" id="c6">Càn 6<div id="v6"></div></div>
+    <div class="grid" id="mainGrid">
+        <div class="cell" id="c4">4-Tốn<div id="v4"></div></div>
+        <div class="cell" id="c9">9-Ly<div id="v9"></div></div>
+        <div class="cell" id="c2">2-Khôn<div id="v2"></div></div>
+        <div class="cell" id="c3">3-Chấn<div id="v3"></div></div>
+        <div class="cell" id="c5">5-Trung<div id="v5"></div></div>
+        <div class="cell" id="c7">7-Đoài<div id="v7"></div></div>
+        <div class="cell" id="c8">8-Cấn<div id="v8"></div></div>
+        <div class="cell" id="c1">1-Khảm<div id="v1"></div></div>
+        <div class="cell" id="c6">6-Càn<div id="v6"></div></div>
     </div>
 
-    <label>Phi Cung Tuổi Cần Xét (Mệnh):</label>
+    <label>Cung Phi (Tuổi):</label>
     <select id="selCP" onchange="run()">
-        <option value="1">Khảm (1) - Thủy</option>
-        <option value="2">Khôn (2) - Thổ</option>
-        <option value="3">Chấn (3) - Mộc</option>
-        <option value="4">Tốn (4) - Mộc</option>
-        <option value="6">Càn (6) - Kim</option>
-        <option value="7">Đoài (7) - Kim</option>
-        <option value="8">Cấn (8) - Thổ</option>
-        <option value="9" selected>Ly (9) - Hỏa</option>
+        <option value="1">Khảm (1)</option>
+        <option value="2">Khôn (2)</option>
+        <option value="3">Chấn (3)</option>
+        <option value="4">Tốn (4)</option>
+        <option value="6">Càn (6)</option>
+        <option value="7">Đoài (7)</option>
+        <option value="8">Cấn (8)</option>
+        <option value="9" selected>Ly (9)</option>
     </select>
 
-    <label>Tháng (Nhập Trung Cung):</label>
+    <label>Tháng Tiết Khí (Nhập 5):</label>
     <select id="selThang" onchange="run()"></select>
     
-    <label>Tuổi Cần Xét:</label>
+    <label>Can Chi Tuổi Truy Vấn:</label>
     <select id="selTuoi" onchange="run()"></select>
 
     <div id="analysisBox" class="analysis"></div>
@@ -70,9 +69,11 @@
 
 <script>
 const hoaGiap = ["Giáp Tý","Ất Sửu","Bính Dần","Đinh Mão","Mậu Thìn","Kỷ Tị","Canh Ngọ","Tân Mùi","Nhâm Thân","Quý Dậu","Giáp Tuất","Ất Hợi","Bính Tý","Đinh Sửu","Mậu Dần","Kỷ Mão","Canh Thìn","Tân Tị","Nhâm Ngọ","Quý Mùi","Giáp Thân","Ất Dậu","Bính Tuất","Đinh Hợi","Mậu Tý","Kỷ Sửu","Canh Dần","Tân Mão","Nhâm Thìn","Quý Tị","Giáp Ngọ","Ất Mùi","Bính Thân","Đinh Dậu","Mậu Tuất","Kỷ Hợi","Canh Tý","Tân Sửu","Nhâm Dần","Quý Mão","Giáp Thìn","Ất Tị","Bính Ngọ","Đinh Mùi","Mậu Thân","Kỷ Dậu","Canh Tuất","Tân Hợi","Nhâm Tý","Quý Sửu","Giáp Dần","Ất Mão","Bính Thìn","Đinh Tị","Mậu Ngọ","Kỷ Mùi","Canh Thân","Tân Dậu","Nhâm Tuất","Quý Hợi"];
-const ltxThuan = [5, 6, 7, 8, 9, 1, 2, 3, 4];
 
-// BẢNG NẠP GIÁP 24 SƠN CHUẨN (Tách từng sơn lẻ)
+// Lường thiên xích chuẩn: 5-6-7-8-9-1-2-3-4
+const ltx = [5, 6, 7, 8, 9, 1, 2, 3, 4];
+
+// Mapping chuẩn 24 Sơn về Quẻ để tính Du Niên
 const mappingSonQuai = {
     1: { name: "Khảm", sons: [{s:"Nhâm", q:"6"}, {s:"Tý", q:"1"}, {s:"Quý", q:"2"}] },
     2: { name: "Khôn", sons: [{s:"Mùi", q:"3"}, {s:"Khôn", q:"2"}, {s:"Thân", q:"1"}] },
@@ -84,7 +85,7 @@ const mappingSonQuai = {
     9: { name: "Ly", sons: [{s:"Bính", q:"8"}, {s:"Ngọ", q:"9"}, {s:"Đinh", q:"7"}] }
 };
 
-// MA TRẬN BIẾN QUẺ DU NIÊN
+// Bảng tra Du Niên giữa Phi Cung và Quẻ Nạp của Sơn
 const duNienMatrix = {
     "1": {"1":"Phục vị", "2":"Tuyệt mệnh", "3":"Thiên y", "4":"Sinh khí", "6":"Lục sát", "7":"Họa hại", "8":"Ngũ quỷ", "9":"Diên niên"},
     "2": {"1":"Tuyệt mệnh", "2":"Phục vị", "3":"Họa hại", "4":"Ngũ quỷ", "6":"Diên niên", "7":"Thiên y", "8":"Sinh khí", "9":"Lục sát"},
@@ -99,58 +100,49 @@ const duNienMatrix = {
 function init() {
     const sT = document.getElementById('selThang');
     const sU = document.getElementById('selTuoi');
-    hoaGiap.forEach(v => { 
-        sT.add(new Option(v, v)); 
-        sU.add(new Option(v, v)); 
-    });
+    hoaGiap.forEach(v => { sT.add(new Option(v, v)); sU.add(new Option(v, v)); });
     sT.value = "Mậu Tý"; sU.value = "Ất Sửu";
     run();
 }
 
 function run() {
+    // Reset giao diện
     for(let i=1; i<=9; i++) if(document.getElementById('v' + i)) document.getElementById('v' + i).innerHTML = "";
     
-    const cpMenh = document.getElementById('selCP').value;
-    const txtCP = document.getElementById('selCP').options[document.getElementById('selCP').selectedIndex].text;
+    const phiCungTuoi = document.getElementById('selCP').value;
     const thang = document.getElementById('selThang').value;
     const tuoi = document.getElementById('selTuoi').value;
+    const idxT = hoaGiap.indexOf(thang); // 0-59
+    const idxU = hoaGiap.indexOf(tuoi);   // 0-59
     
-    const idxT = hoaGiap.indexOf(thang); 
-    const idxU = hoaGiap.indexOf(tuoi);
-    
-    let cungDich;
     let diff = idxU - idxT;
+    let cungDich;
 
-    // THUẬT TOÁN ĐẾM TIẾN/LÙI THEO LƯỜNG THIÊN XÍCH
+    // Logic Đếm Tiến/Lùi theo yêu cầu
     if (diff >= 0) {
-        cungDich = ltxThuan[diff % 9];
+        // Thuận: Phi thuận LTX
+        cungDich = ltx[diff % 9];
     } else {
+        // Nghịch: Đếm ngược LTX
         let steps = Math.abs(diff) % 9;
-        cungDich = ltxThuan[(9 - steps) % 9];
+        cungDich = ltx[(9 - steps) % 9];
     }
 
+    // Hiển thị vị trí trên Grid
     document.getElementById('v' + cungDich).innerHTML = `<div class="tag">${tuoi}</div>`;
     document.getElementById('v5').innerHTML += `<div class="tag">Gốc: ${thang}</div>`;
 
-    // LUẬN GIẢI CHI TIẾT
-    let html = `<div class="info-summary">Mệnh <b>${txtCP}</b> đáo cung <b>${cungDich}</b></div>`;
-    html += `<strong>Chi tiết 3 Sơn tại cung đáo:</strong><br><br>`;
+    // Giải mã Du Niên 3 Sơn tại cung đáo
+    let html = `<div class="header-box">Mệnh ${phiCungTuoi} đáo cung ${cungDich}</div>`;
     
     if(cungDich === 5) {
-        html += "<div style='text-align:center; padding:10px;'>Tuổi nhập Trung Cung.<br>Vui lòng xét theo Nam (8) hoặc Nữ (2).</div>";
+        html += "<p style='text-align:center'>Nhập Trung Cung: <br>Nam xét Cấn (8), Nữ xét Khôn (2).</p>";
     } else {
         const data = mappingSonQuai[cungDich];
         data.sons.forEach(item => {
-            let sao = duNienMatrix[cpMenh][item.q];
-            let isHung = ["Tuyệt mệnh", "Ngũ quỷ", "Họa hại", "Lục sát"].includes(sao);
-            
-            // Lấy tên quẻ nạp để hiển thị cho rõ ràng
-            let tenQuaiNap = {1:"Khảm",2:"Khôn",3:"Chấn",4:"Tốn",6:"Càn",7:"Đoài",8:"Cấn",9:"Ly"}[item.q];
-            
-            html += `<div class="son-item">
-                        <span>Sơn <b>${item.s}</b> (Nạp ${tenQuaiNap}):</span>
-                        <span class="${isHung?'hung':'cat'}">${sao}</span>
-                     </div>`;
+            let sao = duNienMatrix[phiCungTuoi][item.q];
+            let colorClass = ["Tuyệt mệnh", "Ngũ quỷ", "Họa hại", "Lục sát"].includes(sao) ? "hung" : "cat";
+            html += `<div class="son-item"><span>Sơn ${item.s}:</span> <span class="${colorClass}">${sao}</span></div>`;
         });
     }
     document.getElementById('analysisBox').innerHTML = html;
