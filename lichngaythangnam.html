@@ -5,135 +5,139 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lịch Vạn Niên 2025</title>
     <style>
-        :root {
-            --primary-orange: #f26522;
-            --text-dark: #333;
-            --text-blue: #0076a3;
-        }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .calendar-card { background: #fff; width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; text-align: center; }
-        
-        /* Header Dương Lịch */
-        .header { padding: 10px; background: #fff; border-bottom: 1px solid #eee; }
-        .solar-month-year { color: var(--primary-orange); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        
-        /* Số ngày chính */
-        .solar-day { font-size: 120px; font-weight: bold; color: var(--primary-orange); line-height: 1; margin: 10px 0; }
-        
-        /* Thông tin chi tiết */
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 2px solid #ffe5d9; padding: 15px 10px; align-items: center; }
-        .side-info { font-size: 0.9rem; color: var(--text-blue); font-weight: 600; text-align: left; padding-left: 10px; }
-        .lunar-center { font-size: 2.5rem; color: #00a699; font-weight: bold; }
-        .lunar-label { font-size: 1.2rem; color: #00a699; }
-        
-        /* Can Chi */
-        .can-chi-info { background: #fffaf5; padding: 10px; font-style: italic; color: #d35400; border-top: 1px solid #eee; }
-        
-        /* Điều hướng */
-        .nav-buttons { display: flex; justify-content: space-between; padding: 15px; background: #eee; }
-        button { background: var(--primary-orange); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        button:hover { opacity: 0.8; }
-        
-        .day-of-year { font-size: 0.8rem; color: #888; margin-bottom: 10px; }
+        :root { --orange: #f26522; --blue: #0076a3; --teal: #00a699; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #fdf2e9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .calendar-box { background: #fff; width: 90%; max-width: 380px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); overflow: hidden; border: 4px solid #fff; }
+        .top-header { padding: 15px; text-align: center; background: #fff; }
+        .solar-month { color: var(--orange); font-size: 1.4rem; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .solar-day { font-size: 130px; font-weight: 800; color: var(--orange); text-align: center; line-height: 0.9; margin: 20px 0; }
+        .day-name { font-size: 1.6rem; font-weight: bold; text-align: center; color: #333; margin-bottom: 15px; }
+        .info-container { display: flex; border-top: 2px solid #ffebdf; padding: 25px 10px; background: #fff; }
+        .side { flex: 1.2; font-size: 0.9rem; color: var(--blue); font-weight: 600; line-height: 1.8; }
+        .center { flex: 1; text-align: center; color: var(--teal); border-left: 1px solid #eee; border-right: 1px solid #eee; }
+        .lunar-day { font-size: 3.5rem; font-weight: bold; display: block; line-height: 1; }
+        .lunar-text { font-size: 1.1rem; font-weight: bold; }
+        .nav { display: flex; justify-content: space-between; padding: 20px; background: #f8f8f8; gap: 10px; }
+        button { flex: 1; border: none; background: var(--orange); color: white; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1rem; }
+        button:active { transform: scale(0.95); opacity: 0.9; }
+        .footer { text-align: center; padding: 10px; font-size: 0.7rem; color: #bbb; background: #f8f8f8; }
     </style>
 </head>
 <body>
 
-<div class="calendar-card">
-    <div class="header">
-        <div id="solar-month-year" class="solar-month-year">THÁNG 12 2025</div>
+<div class="calendar-box">
+    <div class="top-header">
+        <div id="solar-month-year" class="solar-month">...</div>
     </div>
 
-    <div id="solar-day" class="solar-day">31</div>
+    <div id="solar-day" class="solar-day">..</div>
+    <div id="day-name" class="day-name">...</div>
     
-    <div id="day-of-week" style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">THỨ TƯ</div>
-    <div id="day-of-year" class="day-of-year">Ngày thứ 365 trong năm</div>
-
-    <div class="info-grid">
-        <div class="side-info">
-            <div id="lunar-month-txt">Tháng Mười Một</div>
-            <div id="lunar-year-txt">Năm Ất Tỵ</div>
+    <div class="info-container">
+        <div class="side" style="text-align: left; padding-left: 10px;">
+            <div id="lunar-month-name">...</div>
+            <div id="can-chi-year">...</div>
         </div>
-        <div>
-            <div id="lunar-day-num" class="lunar-center">12</div>
-            <div class="lunar-label">Mười Hai</div>
+        <div class="center">
+            <span id="lunar-day-num" class="lunar-day">..</span>
+            <span id="lunar-day-text" class="lunar-text">..</span>
         </div>
-        <div class="side-info" style="text-align: right; padding-right: 10px;">
-            <div id="can-chi-day">Ngày Giáp Tuất</div>
-            <div id="can-chi-month">Tháng Mậu Tý</div>
+        <div class="side" style="text-align: right; padding-right: 10px;">
+            <div id="can-chi-day">...</div>
+            <div id="can-chi-month">...</div>
         </div>
     </div>
 
-    <div class="can-chi-info" id="day-summary">
-        Tiết khí: Đông Chí - Nạp âm: Sơn Đầu Hỏa
-    </div>
+    <div style="text-align: center; color: #888; font-size: 0.85rem; padding-bottom: 10px;" id="day-of-year">...</div>
 
-    <div class="nav-buttons">
-        <button onclick="changeDate(-1)">❮ Ngày trước</button>
-        <button onclick="goToToday()">Hôm nay</button>
-        <button onclick="changeDate(1)">Ngày sau ❯</button>
+    <div class="nav">
+        <button onclick="changeDate(-1)">❮ Lùi</button>
+        <button style="background:#555" onclick="goToday()">Hôm nay</button>
+        <button onclick="changeDate(1)">Tiến ❯</button>
     </div>
+    <div class="footer">Dữ liệu: Hồ Ngọc Đức | Giao diện: Gemini</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/vananh0703/Vietnamese-Lunar-Calendar/lunar.js"></script>
-
 <script>
-    let currentDate = new Date();
+/* THUẬT TOÁN HỒ NGỌC ĐỨC ĐÃ ĐƯỢC TỐI ƯU GỘP CHUNG */
+var PI = Math.PI;
+function INT(d) { return Math.floor(d); }
+function jdFromDate(dd, mm, yy) {
+    var a = INT((14 - mm) / 12), y = yy+4800-a, m = mm+12*a-3;
+    var jd = dd + INT((153*m+2)/5) + 365*y + INT(y/4) - INT(y/100) + INT(y/400) - 32045;
+    if (jd < 2299161) jd = dd + INT((153*m+2)/5) + 365*y + INT(y/4) - 32083;
+    return jd;
+}
+function NewMoon(k) {
+    var T = k/1236.85, dr = PI/180;
+    var Jd1 = 2415020.75933 + 29.53058868*k + 0.0001178*T*T - 0.000000155*T*T*T;
+    var M = 359.2242 + 29.10535608*k, Mpr = 306.0253 + 385.81691806*k, F = 21.2964 + 390.67050646*k;
+    var C1 = (0.1734 - 0.000393*T)*Math.sin(M*dr) - 0.4068*Math.sin(Mpr*dr) + 0.0104*Math.sin(2*F*dr);
+    return Jd1 + C1;
+}
+function SunLongitude(jdn) {
+    var T = (jdn - 2451545.0) / 36525, dr = PI/180;
+    var L0 = 280.46645 + 36000.76983*T, M = 357.5291 + 35999.0503*T;
+    var L = (L0 + 1.9146*Math.sin(M*dr))*dr;
+    return L - PI*2*(INT(L/(PI*2)));
+}
+function getSunLongitude(dayNumber, timeZone) { return INT(SunLongitude(dayNumber - 0.5 - timeZone/24)/PI*6); }
+function getNewMoonDay(k, timeZone) { return INT(NewMoon(k) + 0.5 + timeZone/24); }
+function getLunarMonth11(yy, timeZone) {
+    var off = jdFromDate(31, 12, yy) - 2415021, k = INT(off / 29.530588853);
+    var nm = getNewMoonDay(k, timeZone);
+    if (getSunLongitude(nm, timeZone) >= 9) nm = getNewMoonDay(k-1, timeZone);
+    return nm;
+}
+function getLeapMonthOffset(a11, timeZone) {
+    var k = INT((a11 - 2415021.07) / 29.530588 + 0.5), i = 1;
+    while (getSunLongitude(getNewMoonDay(k+i, timeZone), timeZone) != getSunLongitude(getNewMoonDay(k+i-1, timeZone), timeZone) && i < 14) i++;
+    return i-1;
+}
+function convertSolar2Lunar(dd, mm, yy, timeZone) {
+    var dayNumber = jdFromDate(dd, mm, yy), k = INT((dayNumber - 2415021.07) / 29.530588);
+    var monthStart = getNewMoonDay(k+1, timeZone);
+    if (monthStart > dayNumber) monthStart = getNewMoonDay(k, timeZone);
+    var a11 = getLunarMonth11(yy, timeZone), lunarYear = yy;
+    if (a11 >= monthStart) a11 = getLunarMonth11(yy-1, timeZone); else lunarYear = yy+1;
+    var lunarDay = dayNumber - monthStart + 1, diff = INT((monthStart - a11)/29), lunarMonth = diff + 11;
+    if (lunarMonth > 12) lunarMonth -= 12;
+    if (lunarMonth >= 11 && diff < 4) lunarYear -= 1;
+    return [lunarDay, lunarMonth, lunarYear];
+}
 
-    function updateCalendar() {
-        const d = currentDate.getDate();
-        const m = currentDate.getMonth() + 1;
-        const y = currentDate.getFullYear();
+/* HIỂN THỊ GIAO DIỆN */
+let current = new Date();
+const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
+const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
+const MONTH_NAMES = ["Giêng", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "Tám", "Chín", "Mười", "Mười Một", "Chạp"];
+const NUM_TEXT = ["Mùng một", "Mùng hai", "Mùng ba", "Mùng bốn", "Mùng lăm", "Mùng sáu", "Mùng bảy", "Mùng tám", "Mùng chín", "Mùng mười", "Mười một", "Mười hai", "Mười ba", "Mười bốn", "Rằm", "Mười sáu", "Mười bảy", "Mười tám", "Mười chín", "Hai mươi", "Hăm mốt", "Hăm hai", "Hăm ba", "Hăm bốn", "Hăm lăm", "Hăm sáu", "Hăm bảy", "Hăm tám", "Hăm chín", "Ba mươi"];
 
-        // 1. Hiển thị Dương lịch
-        document.getElementById('solar-day').innerText = d;
-        const monthNames = ["MỘT", "HAI", "BA", "BỐN", "NĂM", "SÁU", "BẢY", "TÁM", "CHÍN", "MƯỜI", "MƯỜI MỘT", "MƯỜI HAI"];
-        document.getElementById('solar-month-year').innerText = `THÁNG ${monthNames[m-1]} ${y}`;
-        
-        const weekDays = ["CHỦ NHẬT", "THỨ HAI", "THỨ BA", "THỨ TƯ", "THỨ NĂM", "THỨ SÁU", "THỨ BẢY"];
-        document.getElementById('day-of-week').innerText = weekDays[currentDate.getDay()];
+function update() {
+    const dd = current.getDate(), mm = current.getMonth() + 1, yy = current.getFullYear();
+    document.getElementById('solar-day').innerText = dd;
+    document.getElementById('solar-month-year').innerText = `Tháng ${mm} / ${yy}`;
+    const days = ["CHỦ NHẬT", "THỨ HAI", "THỨ BA", "THỨ TƯ", "THỨ NĂM", "THỨ SÁU", "THỨ BẢY"];
+    document.getElementById('day-name').innerText = days[current.getDay()];
 
-        // 2. Tính ngày thứ bao nhiêu trong năm
-        const start = new Date(currentDate.getFullYear(), 0, 0);
-        const diff = currentDate - start;
-        const oneDay = 1000 * 60 * 60 * 24;
-        const dayOfYear = Math.floor(diff / oneDay);
-        document.getElementById('day-of-year').innerText = `Ngày thứ ${dayOfYear} trong năm`;
+    const start = new Date(yy, 0, 0);
+    const dayIdx = Math.floor((current - start) / 86400000);
+    document.getElementById('day-of-year').innerText = `Ngày thứ ${dayIdx} của năm ${yy}`;
 
-        // 3. Chuyển đổi sang Âm lịch (Sử dụng hàm từ thư viện amlich.js)
-        // getLunarDate(d, m, y) trả về mảng [ngày âm, tháng âm, năm âm, là_tháng_nhuận]
-        const lunar = getLunarDate(d, m, y);
-        const ld = lunar[0];
-        const lm = lunar[1];
-        const ly = lunar[2];
+    const lunar = convertSolar2Lunar(dd, mm, yy, 7.0);
+    document.getElementById('lunar-day-num').innerText = lunar[0];
+    document.getElementById('lunar-day-text').innerText = NUM_TEXT[lunar[0]-1];
+    document.getElementById('lunar-month-name').innerText = "Tháng " + MONTH_NAMES[lunar[1]-1];
+    
+    const jd = jdFromDate(dd, mm, yy);
+    document.getElementById('can-chi-day').innerText = "Ngày " + CAN[(jd + 9) % 10] + " " + CHI[(jd + 1) % 12];
+    document.getElementById('can-chi-month').innerText = "Tháng " + CAN[(lunar[2] * 12 + lunar[1] + 3) % 10] + " " + CHI[(lunar[1] + 1) % 12];
+    document.getElementById('can-chi-year').innerText = "Năm " + CAN[(lunar[2] + 6) % 10] + " " + CHI[(lunar[2] + 8) % 12];
+}
 
-        document.getElementById('lunar-day-num').innerText = ld;
-        
-        // 4. Lấy Can Chi (Thư viện thường cung cấp các hàm helper)
-        // Lưu ý: Các hàm getCanDay, getChiDay... tùy thuộc vào thư viện cụ thể.
-        // Dưới đây là ví dụ minh họa cách gọi:
-        document.getElementById('can-chi-day').innerText = `Ngày ` + getCanChiDay(d, m, y);
-        document.getElementById('can-chi-month').innerText = `Tháng ` + getCanChiMonth(m, y);
-        document.getElementById('lunar-year-txt').innerText = `Năm ` + getCanChiYear(ly);
-        
-        // Cập nhật text tháng âm (ví dụ đơn giản)
-        const lunarMonthNames = ["Giêng", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "Tám", "Chín", "Mười", "Mười Một", "Chạp"];
-        document.getElementById('lunar-month-txt').innerText = `Tháng ${lunarMonthNames[lm-1]}`;
-    }
-
-    function changeDate(days) {
-        currentDate.setDate(currentDate.getDate() + days);
-        updateCalendar();
-    }
-
-    function goToToday() {
-        currentDate = new Date();
-        updateCalendar();
-    }
-
-    // Khởi tạo lần đầu
-    window.onload = updateCalendar;
+function changeDate(n) { current.setDate(current.getDate() + n); update(); }
+function goToday() { current = new Date(); update(); }
+update();
 </script>
-
 </body>
 </html>
