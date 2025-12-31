@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Vạn Niên 2025</title>
+    <style>
+        :root {
+            --primary-orange: #f26522;
+            --text-dark: #333;
+            --text-blue: #0076a3;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f0f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .calendar-card { background: #fff; width: 350px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; text-align: center; }
+        
+        /* Header Dương Lịch */
+        .header { padding: 10px; background: #fff; border-bottom: 1px solid #eee; }
+        .solar-month-year { color: var(--primary-orange); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Số ngày chính */
+        .solar-day { font-size: 120px; font-weight: bold; color: var(--primary-orange); line-height: 1; margin: 10px 0; }
+        
+        /* Thông tin chi tiết */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 2px solid #ffe5d9; padding: 15px 10px; align-items: center; }
+        .side-info { font-size: 0.9rem; color: var(--text-blue); font-weight: 600; text-align: left; padding-left: 10px; }
+        .lunar-center { font-size: 2.5rem; color: #00a699; font-weight: bold; }
+        .lunar-label { font-size: 1.2rem; color: #00a699; }
+        
+        /* Can Chi */
+        .can-chi-info { background: #fffaf5; padding: 10px; font-style: italic; color: #d35400; border-top: 1px solid #eee; }
+        
+        /* Điều hướng */
+        .nav-buttons { display: flex; justify-content: space-between; padding: 15px; background: #eee; }
+        button { background: var(--primary-orange); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { opacity: 0.8; }
+        
+        .day-of-year { font-size: 0.8rem; color: #888; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="calendar-card">
+    <div class="header">
+        <div id="solar-month-year" class="solar-month-year">THÁNG 12 2025</div>
+    </div>
+
+    <div id="solar-day" class="solar-day">31</div>
+    
+    <div id="day-of-week" style="font-weight: bold; font-size: 1.2rem; margin-bottom: 10px;">THỨ TƯ</div>
+    <div id="day-of-year" class="day-of-year">Ngày thứ 365 trong năm</div>
+
+    <div class="info-grid">
+        <div class="side-info">
+            <div id="lunar-month-txt">Tháng Mười Một</div>
+            <div id="lunar-year-txt">Năm Ất Tỵ</div>
+        </div>
+        <div>
+            <div id="lunar-day-num" class="lunar-center">12</div>
+            <div class="lunar-label">Mười Hai</div>
+        </div>
+        <div class="side-info" style="text-align: right; padding-right: 10px;">
+            <div id="can-chi-day">Ngày Giáp Tuất</div>
+            <div id="can-chi-month">Tháng Mậu Tý</div>
+        </div>
+    </div>
+
+    <div class="can-chi-info" id="day-summary">
+        Tiết khí: Đông Chí - Nạp âm: Sơn Đầu Hỏa
+    </div>
+
+    <div class="nav-buttons">
+        <button onclick="changeDate(-1)">❮ Ngày trước</button>
+        <button onclick="goToToday()">Hôm nay</button>
+        <button onclick="changeDate(1)">Ngày sau ❯</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/vananh0703/Vietnamese-Lunar-Calendar/lunar.js"></script>
+
+<script>
+    let currentDate = new Date();
+
+    function updateCalendar() {
+        const d = currentDate.getDate();
+        const m = currentDate.getMonth() + 1;
+        const y = currentDate.getFullYear();
+
+        // 1. Hiển thị Dương lịch
+        document.getElementById('solar-day').innerText = d;
+        const monthNames = ["MỘT", "HAI", "BA", "BỐN", "NĂM", "SÁU", "BẢY", "TÁM", "CHÍN", "MƯỜI", "MƯỜI MỘT", "MƯỜI HAI"];
+        document.getElementById('solar-month-year').innerText = `THÁNG ${monthNames[m-1]} ${y}`;
+        
+        const weekDays = ["CHỦ NHẬT", "THỨ HAI", "THỨ BA", "THỨ TƯ", "THỨ NĂM", "THỨ SÁU", "THỨ BẢY"];
+        document.getElementById('day-of-week').innerText = weekDays[currentDate.getDay()];
+
+        // 2. Tính ngày thứ bao nhiêu trong năm
+        const start = new Date(currentDate.getFullYear(), 0, 0);
+        const diff = currentDate - start;
+        const oneDay = 1000 * 60 * 60 * 24;
+        const dayOfYear = Math.floor(diff / oneDay);
+        document.getElementById('day-of-year').innerText = `Ngày thứ ${dayOfYear} trong năm`;
+
+        // 3. Chuyển đổi sang Âm lịch (Sử dụng hàm từ thư viện amlich.js)
+        // getLunarDate(d, m, y) trả về mảng [ngày âm, tháng âm, năm âm, là_tháng_nhuận]
+        const lunar = getLunarDate(d, m, y);
+        const ld = lunar[0];
+        const lm = lunar[1];
+        const ly = lunar[2];
+
+        document.getElementById('lunar-day-num').innerText = ld;
+        
+        // 4. Lấy Can Chi (Thư viện thường cung cấp các hàm helper)
+        // Lưu ý: Các hàm getCanDay, getChiDay... tùy thuộc vào thư viện cụ thể.
+        // Dưới đây là ví dụ minh họa cách gọi:
+        document.getElementById('can-chi-day').innerText = `Ngày ` + getCanChiDay(d, m, y);
+        document.getElementById('can-chi-month').innerText = `Tháng ` + getCanChiMonth(m, y);
+        document.getElementById('lunar-year-txt').innerText = `Năm ` + getCanChiYear(ly);
+        
+        // Cập nhật text tháng âm (ví dụ đơn giản)
+        const lunarMonthNames = ["Giêng", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "Tám", "Chín", "Mười", "Mười Một", "Chạp"];
+        document.getElementById('lunar-month-txt').innerText = `Tháng ${lunarMonthNames[lm-1]}`;
+    }
+
+    function changeDate(days) {
+        currentDate.setDate(currentDate.getDate() + days);
+        updateCalendar();
+    }
+
+    function goToToday() {
+        currentDate = new Date();
+        updateCalendar();
+    }
+
+    // Khởi tạo lần đầu
+    window.onload = updateCalendar;
+</script>
+
+</body>
+</html>
