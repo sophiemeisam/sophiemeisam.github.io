@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Vạn Niên Chuẩn Tiết Khí</title>
+    <title>Lịch Vạn Niên Chuẩn 2025</title>
     <style>
         :root { --orange: #f26522; --blue: #0076a3; --teal: #00a699; }
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #fdf2e9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
@@ -17,7 +17,7 @@
         .center { flex: 1; text-align: center; color: var(--teal); border-left: 1px solid #eee; border-right: 1px solid #eee; }
         .lunar-day { font-size: 3rem; font-weight: bold; display: block; line-height: 1; }
         .nav { display: flex; justify-content: space-between; padding: 15px; background: #f8f8f8; gap: 8px; }
-        button { flex: 1; border: none; background: var(--orange); color: white; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button { flex: 1; border: none; background: var(--orange); color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; }
         .footer { text-align: center; padding: 8px; font-size: 0.7rem; color: #bbb; }
     </style>
 </head>
@@ -50,14 +50,12 @@
         <button style="background:#555" onclick="goToday()">Hôm nay</button>
         <button onclick="changeDate(1)">Tiến ❯</button>
     </div>
-    <div class="footer">Dữ liệu thuật toán chuẩn Tiết Khí - Ho Ngoc Duc</div>
+    <div class="footer">Dữ liệu thuật toán: Hồ Ngọc Đức</div>
 </div>
 
 <script>
-const PI = Math.PI;
+/* THUẬT TOÁN GỐC ĐÃ FIX LỖI NHẢY THÁNG */
 const INT = (d) => Math.floor(d);
-
-/* THUẬT TOÁN HỒ NGỌC ĐỨC */
 function jdFromDate(d, m, y) {
     let a = INT((14 - m) / 12), y1 = y + 4800 - a, m1 = m + 12 * a - 3;
     let jd = d + INT((153 * m1 + 2) / 5) + 365 * y1 + INT(y1 / 4) - INT(y1 / 100) + INT(y1 / 400) - 32045;
@@ -65,23 +63,24 @@ function jdFromDate(d, m, y) {
     return jd;
 }
 
-function SunLongitude(jdn) {
-    let T = (jdn - 2451545.0) / 36525, dr = PI / 180;
-    let L = (280.46645 + 36000.76983 * T + (1.9146 * Math.sin((357.5291 + 35999.0503 * T) * dr))) * dr;
-    return L - PI * 2 * INT(L / (PI * 2));
-}
-
 function getNewMoonDay(k, tz) {
-    let T = k / 1236.85, Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T * T;
-    let dr = PI/180, M = (359.2242 + 29.10535608 * k)*dr, Mpr = (306.0253 + 385.81691806 * k)*dr, F = (21.2964 + 390.67050646 * k)*dr;
+    let T = k / 1236.85, dr = Math.PI/180;
+    let Jd1 = 2415020.75933 + 29.53058868 * k + 0.0001178 * T * T;
+    let M = (359.2242 + 29.10535608 * k)*dr, Mpr = (306.0253 + 385.81691806 * k)*dr, F = (21.2964 + 390.67050646 * k)*dr;
     let C1 = (0.1734 - 0.000393 * T) * Math.sin(M) - 0.4068 * Math.sin(Mpr) + 0.0104 * Math.sin(2 * F);
     return INT(Jd1 + C1 + 0.5 + tz / 24);
+}
+
+function SunLongitude(jdn) {
+    let T = (jdn - 2451545.0) / 36525, dr = Math.PI / 180;
+    let L = (280.46645 + 36000.76983 * T + (1.9146 * Math.sin((357.5291 + 35999.0503 * T) * dr))) * dr;
+    return L - Math.PI * 2 * INT(L / (Math.PI * 2));
 }
 
 function getLunarMonth11(y, tz) {
     let off = jdFromDate(31, 12, y) - 2415021, k = INT(off / 29.530588853);
     let nm = getNewMoonDay(k, tz);
-    if (INT(SunLongitude(nm - 0.5 - tz / 24) / PI * 6) >= 9) nm = getNewMoonDay(k - 1, tz);
+    if (INT(SunLongitude(nm - 0.5 - tz / 24) / Math.PI * 6) >= 9) nm = getNewMoonDay(k - 1, tz);
     return nm;
 }
 
@@ -97,29 +96,8 @@ function convertSolar2Lunar(d, m, y, tz) {
     return [ld, lm, ly];
 }
 
-/* LOGIC CAN CHI */
 const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
 const CHI = ["Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"];
-
-function getCanChiMonth(jd, ly) {
-    // Tính tiết khí dựa trên kinh độ mặt trời
-    let sunL = SunLongitude(jd - 0.5 - 7/24);
-    let tiết_khí_idx = INT(sunL / (PI/6)); // 0: Xuân phân... 9: Đại tuyết, 10: Tiểu hàn
-    
-    // Quy đổi tiết khí sang tháng địa chi (Tháng 11 âm là Tý, bắt đầu từ tiết Đại Tuyết - idx 9)
-    let chiIdx = (tiết_khí_idx + 2) % 12; 
-    
-    // Tính Thiên Can của tháng (Ngũ hổ độn)
-    let canNam = (ly + 6) % 10;
-    let canThangGieng = (canNam * 2 + 2) % 10;
-    // canThang = (canThangGieng + số_tháng_tính_từ_tháng_giêng)
-    // Vì Tý là tháng 11, cách tháng Giêng (Dần) là 10 bước.
-    let canIdx = (canThangGieng + (chiIdx + 10) % 12) % 10;
-    
-    return CAN[canIdx] + " " + CHI[chiIdx];
-}
-
-let current = new Date();
 
 function update() {
     const d = current.getDate(), m = current.getMonth() + 1, y = current.getFullYear();
@@ -134,16 +112,27 @@ function update() {
     const monthNames = ["Giêng", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "Tám", "Chín", "Mười", "Mười Một", "Chạp"];
     document.getElementById('lunar-month-name').innerText = "Tháng " + monthNames[lunar[1]-1];
 
+    // Năm Can Chi
     document.getElementById('can-chi-year').innerText = "Năm " + CAN[(lunar[2] + 6) % 10] + " " + CHI[(lunar[2] + 8) % 12];
+    
+    // Ngày Can Chi
     document.getElementById('can-chi-day').innerText = "Ngày " + CAN[(jd + 9) % 10] + " " + CHI[(jd + 1) % 12];
     
-    // Cập nhật Can Chi Tháng theo Tiết khí chuẩn
-    document.getElementById('can-chi-month').innerText = "Tháng " + getCanChiMonth(jd, lunar[2]);
+    // THÁNG CAN CHI (Sửa lỗi logic nhảy tháng)
+    // Tháng Tý (11 âm) luôn ứng với Can tương ứng của năm theo Ngũ hổ độn
+    let canNam = (lunar[2] + 6) % 10;
+    let canThangGieng = (canNam * 2 + 2) % 10;
+    // Tháng âm lịch m (Giêng=1, Hai=2...) tương ứng chi: m+1
+    // Can tháng = (CanThangGieng + m - 1) % 10
+    let canThangIdx = (canThangGieng + lunar[1] - 1) % 10;
+    let chiThangIdx = (lunar[1] + 1) % 12;
+    document.getElementById('can-chi-month').innerText = "Tháng " + CAN[canThangIdx] + " " + CHI[chiThangIdx];
 
     const startYear = new Date(y, 0, 0);
     document.getElementById('day-of-year').innerText = `Ngày thứ ${Math.floor((current - startYear) / 86400000)} của năm ${y}`;
 }
 
+let current = new Date();
 function changeDate(n) { current.setDate(current.getDate() + n); update(); }
 function goToday() { current = new Date(); update(); }
 update();
