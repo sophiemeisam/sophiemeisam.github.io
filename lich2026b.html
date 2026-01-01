@@ -76,7 +76,7 @@ button{
 </div>
 
 <script>
-/* ===== DATA TIẾT KHÍ THỦ CÔNG ===== */
+/* ================= TIẾT KHÍ THỦ CÔNG ================= */
 const BANG_TIET_KHI = [
     {y:2025,m:12,d:7,h:9,mn:53,t:"Mậu Tý",n:"Ất Tỵ"},
     {y:2026,m:1,d:5,h:15,mn:24,t:"Kỷ Sửu",n:"Ất Tỵ"},
@@ -98,7 +98,7 @@ const CHI=["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","D
 
 let curr=new Date();
 
-/* ===== JULIAN DAY ===== */
+/* ================= JULIAN DAY ================= */
 function jd(d,m,y){
     let a=Math.floor((14-m)/12),
         y1=y+4800-a,
@@ -108,7 +108,7 @@ function jd(d,m,y){
         +Math.floor(y1/400)-32045;
 }
 
-/* ===== NEW MOON – FIX UTC+7 (CỐT LÕI) ===== */
+/* ================= NEW MOON (KHÔNG FLOOR) ================= */
 function NewMoon(k){
     let T=k/1236.85, T2=T*T, T3=T2*T, dr=Math.PI/180;
     let Jd=2415020.75933+29.53058868*k+0.0001178*T2-0.000000155*T3;
@@ -123,19 +123,21 @@ function NewMoon(k){
         +0.0161*Math.sin(2*Mpr*dr)
         +0.0104*Math.sin(2*F*dr);
 
-    return Jd + C1 + 7/24; // 🔥 GMT+7 VN
+    return Jd + C1 + 7/24; // GMT+7
 }
 
-/* ===== NGÀY ÂM (MỒNG) ===== */
+/* ================= NGÀY ÂM (FIX +0.5) ================= */
 function getLunarDay(d,m,y){
-    let jdNow=jd(d,m,y);
-    let k=Math.floor((jdNow-2415021.076998695)/29.530588853);
-    let nm=Math.floor(NewMoon(k));
-    if(nm>jdNow) nm=Math.floor(NewMoon(k-1));
-    return jdNow-nm+1;
+    let jdNow = jd(d,m,y);
+    let k = Math.floor((jdNow - 2415021.076998695) / 29.530588853);
+
+    let nm = Math.floor(NewMoon(k) + 0.5);
+    if(nm > jdNow) nm = Math.floor(NewMoon(k-1) + 0.5);
+
+    return jdNow - nm + 1;
 }
 
-/* ===== RENDER ===== */
+/* ================= RENDER ================= */
 function render(){
     let d=curr.getDate(), m=curr.getMonth()+1, y=curr.getFullYear();
     let j=jd(d,m,y);
