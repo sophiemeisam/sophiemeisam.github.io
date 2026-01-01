@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Tiết Khí Chuẩn 2026</title>
+    <title>Lịch Tiết Khí 2026 - Chuẩn Data Thủ Công</title>
     <style>
         :root { --orange: #f26522; --blue: #0076a3; --red: #c0392b; --teal: #00a699; }
         body { font-family: 'Segoe UI', sans-serif; background: #fdf2e9; display: flex; justify-content: center; padding: 10px; margin: 0; }
-        .calendar-box { background: #fff; width: 100%; max-width: 380px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; border: 4px solid #fff; }
+        .calendar-box { background: #fff; width: 100%; max-width: 380px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; border: 4px solid #fff; margin-top: 10px; }
         .header { background: #fff; padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
         .solar-month { color: var(--orange); font-weight: bold; font-size: 1.3rem; text-transform: uppercase; }
-        .solar-day { font-size: 115px; font-weight: 800; color: var(--orange); text-align: center; line-height: 0.9; margin: 25px 0; }
+        .solar-day { font-size: 110px; font-weight: 800; color: var(--orange); text-align: center; line-height: 0.9; margin: 25px 0; }
         .day-name { text-align: center; font-size: 1.6rem; font-weight: bold; color: #333; margin-bottom: 20px; }
         .info-grid { display: flex; border-top: 2px solid #ffebdf; background: #fff; padding: 25px 0; }
         .col { flex: 1.2; text-align: center; font-size: 0.95rem; line-height: 1.8; color: var(--blue); font-weight: 600; }
@@ -48,25 +48,29 @@
         <button style="background:#555" onclick="goToday()">HÔM NAY</button>
         <button onclick="move(1)">TIẾN ❯</button>
     </div>
-    <div class="footer">Data Tiết Khí 2026 Manual Update</div>
+    <div class="footer">Dữ liệu tra cứu thủ công 2026-2027</div>
 </div>
 
 <script>
-/* DATA TIẾT KHÍ 2026 THEO NGƯỜI DÙNG CUNG CẤP */
-const DATA_2026 = [
-    {m: 1, d: 5, h: 15, name: "Kỷ Sửu"}, // Tiểu Hàn
-    {m: 2, d: 4, h: 3, name: "Canh Dần"}, // Lập Xuân - Tháng Giêng
-    {m: 3, d: 5, h: 21, name: "Tân Mão"}, // Kinh Trập - Tháng 2
-    {m: 4, d: 5, h: 1, name: "Nhâm Thìn"}, // Thanh Minh - Tháng 3
-    {m: 5, d: 5, h: 18, name: "Quý Tỵ"}, // Lập Hạ - Tháng 4
-    {m: 6, d: 5, h: 22, name: "Giáp Ngọ"}, // Mang Chủng - Tháng 5
-    {m: 7, d: 7, h: 8, name: "Ất Mùi"}, // Tiểu Thử - Tháng 6
-    {m: 8, d: 7, h: 18, name: "Bính Thân"}, // Lập Thu - Tháng 7
-    {m: 9, d: 7, h: 21, name: "Đinh Dậu"}, // Bạch Lộ - Tháng 8
-    {m: 10, d: 8, h: 13, name: "Mậu Tuất"}, // Hàn Lộ - Tháng 9
-    {m: 11, d: 7, h: 16, name: "Kỷ Hợi"}, // Lập Đông - Tháng 10
-    {m: 12, d: 7, h: 9, name: "Canh Tý"}, // Đại Tuyết - Tháng 11
-    {y: 2027, m: 1, d: 5, h: 21, name: "Tân Sửu"} // Tiểu Hàn - Tháng 12
+/** * DATA GỐC CỦA NGƯỜI DÙNG - KHÔNG TỰ TÍNH TOÁN
+ * Code sẽ quét từ dưới lên, mốc nào gần nhất với thời gian hiện tại sẽ lấy tên đó.
+ */
+const BANG_TIET_KHI = [
+    {y: 2025, m: 12, d: 7, h: 9, mn: 53, t: "Mậu Tý", n: "Ất Tỵ"},
+    {y: 2026, m: 1, d: 5, h: 15, mn: 24, t: "Kỷ Sửu", n: "Ất Tỵ"},
+    {y: 2026, m: 2, d: 4, h: 3, mn: 3, t: "Canh Dần", n: "Bính Ngọ"},
+    {y: 2026, m: 3, d: 5, h: 21, mn: 0, t: "Tân Mão", n: "Bính Ngọ"},
+    {y: 2026, m: 4, d: 5, h: 1, mn: 41, t: "Nhâm Thìn", n: "Bính Ngọ"},
+    {y: 2026, m: 5, d: 5, h: 18, mn: 49, t: "Quý Tị", n: "Bính Ngọ"},
+    {y: 2026, m: 6, d: 5, h: 22, mn: 49, t: "Giáp Ngọ", n: "Bính Ngọ"},
+    {y: 2026, m: 7, d: 7, h: 8, mn: 58, t: "Ất Mùi", n: "Bính Ngọ"},
+    {y: 2026, m: 8, d: 7, h: 18, mn: 43, t: "Bính Thân", n: "Bính Ngọ"},
+    {y: 2026, m: 9, d: 7, h: 21, mn: 42, t: "Đinh Dậu", n: "Bính Ngọ"},
+    {y: 2026, m: 10, d: 8, h: 13, mn: 30, t: "Mậu Tuất", n: "Bính Ngọ"},
+    {y: 2026, m: 11, d: 7, h: 16, mn: 53, t: "Kỷ Hợi", n: "Bính Ngọ"},
+    {y: 2026, m: 12, d: 7, h: 9, mn: 53, t: "Canh Tý", n: "Bính Ngọ"},
+    {y: 2027, m: 1, d: 5, h: 21, mn: 11, t: "Tân Sửu", n: "Bính Ngọ"},
+    {y: 2027, m: 2, d: 4, h: 8, mn: 47, t: "Nhâm Dần", n: "Đinh Mùi"}
 ];
 
 const CAN = ["Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"];
@@ -75,55 +79,51 @@ const L_MONTHS = ["Giêng", "Hai", "Ba", "Tư", "Năm", "Sáu", "Bảy", "Tám",
 
 let curr = new Date();
 
-function jdFromDate(d, m, y) {
+/* Thuật toán tính ngày âm và can chi ngày (Giữ nguyên vì đây là quy luật cố định) */
+function jd(d, m, y) {
     let a = Math.floor((14-m)/12), y1 = y+4800-a, m1 = m+12*a-3;
     return d + Math.floor((153*m1+2)/5) + 365*y1 + Math.floor(y1/4) - Math.floor(y1/100) + Math.floor(y1/400) - 32045;
 }
 
-// Logic tính tháng Can Chi theo bảng data thủ công
-function getCCMonth(d, m, y, h) {
-    if (y === 2025 && m === 12 && d >= 7) return "Mậu Tý";
-    if (y === 2026) {
-        let res = "Mậu Tý"; // Mặc định đầu năm 2026 trước Tiểu Hàn
-        for (let it of DATA_2026) {
-            if (m > it.m || (m === it.m && d > it.d) || (m === it.m && d === it.d && h >= it.h)) {
-                res = it.name;
-            }
-        }
-        return res;
-    }
-    if (y === 2027) {
-        if (m === 1 && (d < 5 || (d === 5 && h < 21))) return "Tân Sửu";
-        return "Nhâm Dần";
-    }
-    return "";
+// Hàm chuyển đổi ngày âm Hồ Ngọc Đức (rút gọn) để lấy mùng 1, mùng 2...
+function getLunar(d, m, y) {
+    // Để code gọn, tôi sử dụng placeholder, bạn có thể thay bằng thuật toán convert đầy đủ ở các bản trước
+    // Hiện tại tập trung vào việc hiển thị đúng DATA của bạn.
+    return [d, m]; 
 }
 
 function render() {
-    let d = curr.getDate(), m = curr.getMonth() + 1, y = curr.getFullYear(), h = curr.getHours();
-    let j = jdFromDate(d, m, y);
+    let d = curr.getDate(), m = curr.getMonth() + 1, y = curr.getFullYear();
+    let h = curr.getHours(), mn = curr.getMinutes();
+    let j = jd(d, m, y);
     
-    // Ngày Dương
+    // Tìm Can Chi Tháng và Năm từ DATA THỦ CÔNG
+    let foundMonth = "Mậu Tý";
+    let foundYear = "Ất Tỵ";
+    
+    for (let i = 0; i < BANG_TIET_KHI.length; i++) {
+        let it = BANG_TIET_KHI[i];
+        let itDate = new Date(it.y, it.m - 1, it.d, it.h, it.mn);
+        if (curr >= itDate) {
+            foundMonth = it.t;
+            foundYear = it.n;
+        }
+    }
+
+    // Hiển thị Dương lịch
     document.getElementById('s-day').innerText = d;
     document.getElementById('s-month').innerText = `THÁNG ${m} / ${y}`;
     document.getElementById('s-wk').innerText = ["CHỦ NHẬT","THỨ HAI","THỨ BA","THỨ TƯ","THỨ NĂM","THỨ SÁU","THỨ BẢY"][curr.getDay()];
     document.getElementById('s-day').style.color = (curr.getDay() === 0) ? 'red' : '#f26522';
 
-    // Can Chi Ngày
+    // Hiển thị Can Chi
+    document.getElementById('can-chi-month').innerText = "Tháng " + foundMonth;
+    document.getElementById('l-left').innerHTML = `Năm<br><b>${foundYear}</b>`;
     document.getElementById('l-right').innerHTML = `Ngày<br><b style="color:#d35400">${CAN[(j+9)%10]} ${CHI[(j+1)%12]}</b>`;
-    
-    // Can Chi Tháng (Khớp theo data bạn soạn)
-    document.getElementById('can-chi-month').innerText = "Tháng " + getCCMonth(d, m, y, h);
-    
-    // Can Chi Năm (Đổi năm đúng Tiết Lập Xuân 04/02)
-    let yCC = y;
-    if (m < 2 || (m === 2 && d < 4) || (m === 2 && d === 4 && h < 3)) yCC = y - 1;
-    document.getElementById('l-left').innerHTML = `Năm<br><b>${CAN[(yCC+6)%10]} ${CHI[(yCC+8)%12]}</b>`;
 
-    // Đồng bộ tạm thời Ngày Âm theo dữ liệu Hồ Ngọc Đức để xem lịch đầy đủ
-    // (Lưu ý: Bạn có thể thay thế bằng dữ liệu mùng 1 của bạn nếu muốn)
-    document.getElementById('l-num').innerText = d; 
-    document.getElementById('l-month-text').innerText = "Lịch Tiết Khí";
+    // Hiển thị Ngày Âm (Tạm thời lấy theo ngày Dương để bạn check Can Chi trước)
+    document.getElementById('l-num').innerText = d;
+    document.getElementById('l-month-text').innerText = "Tiết Khí";
 }
 
 function move(n) { curr.setDate(curr.getDate() + n); render(); }
