@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lịch Tiết Khí 2026 – Data Thủ Công</title>
+
+<style>
+:root { --orange:#f26522; --blue:#0076a3; --red:#c0392b; --teal:#00a699; }
+body{
+    font-family:'Segoe UI',sans-serif;
+    background:#fdf2e9;
+    display:flex;
+    justify-content:center;
+    padding:10px;margin:0
+}
+.calendar-box{
+    background:#fff;width:100%;max-width:380px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.1);
+    overflow:hidden;border:4px solid #fff;margin-top:10px
+}
+.header{padding:15px;text-align:center;border-bottom:1px solid #eee}
+.solar-month{color:var(--orange);font-weight:700;font-size:1.3rem}
+.solar-day{
+    font-size:110px;font-weight:800;color:var(--orange);
+    text-align:center;line-height:.9;margin:25px 0
+}
+.day-name{text-align:center;font-size:1.6rem;font-weight:700;margin-bottom:20px}
+.info-grid{display:flex;border-top:2px solid #ffebdf;padding:25px 0}
+.col{flex:1.2;font-size:.95rem;line-height:1.8;color:var(--blue);font-weight:600}
+.center-col{flex:1;border-left:1px solid #eee;border-right:1px solid #eee;color:var(--teal);text-align:center}
+.lunar-num{font-size:3.5rem;font-weight:800;display:block}
+.can-chi-box{text-align:center;padding-bottom:25px}
+.can-chi-month{
+    color:#fff;font-weight:800;font-size:1.1rem;
+    padding:8px 25px;background:var(--red);
+    display:inline-block;border-radius:50px
+}
+.nav{display:flex;padding:15px;gap:10px;background:#f8f8f8}
+button{
+    flex:1;padding:15px;border:none;
+    background:var(--orange);color:#fff;
+    border-radius:12px;font-weight:700;cursor:pointer
+}
+.footer{text-align:center;padding:10px;font-size:.75rem;color:#bbb;background:#f8f8f8}
+</style>
+</head>
+
+<body>
+<div class="calendar-box">
+    <div class="header"><div id="s-month" class="solar-month"></div></div>
+    <div id="s-day" class="solar-day"></div>
+    <div id="s-wk" class="day-name"></div>
+
+    <div class="info-grid">
+        <div id="l-left" class="col" style="text-align:left;padding-left:15px"></div>
+        <div class="col center-col">
+            <span id="l-num" class="lunar-num"></span>
+            <div id="l-month-text" style="font-weight:800;font-size:1.1rem">Tiết Khí</div>
+        </div>
+        <div id="l-right" class="col" style="text-align:right;padding-right:15px"></div>
+    </div>
+
+    <div class="can-chi-box">
+        <div id="can-chi-month" class="can-chi-month"></div>
+    </div>
+
+    <div class="nav">
+        <button onclick="move(-1)">❮ LÙI</button>
+        <button style="background:#555" onclick="goToday()">HÔM NAY</button>
+        <button onclick="move(1)">TIẾN ❯</button>
+    </div>
+
+    <div class="footer">LỊCH TIẾT KHÍ 2026–2027</div>
+</div>
+
+<script>
+/* ===== DATA TIẾT KHÍ THỦ CÔNG ===== */
+const BANG_TIET_KHI = [
+    {y:2025,m:12,d:7,h:9,mn:53,t:"Mậu Tý",n:"Ất Tỵ"},
+    {y:2026,m:1,d:5,h:15,mn:24,t:"Kỷ Sửu",n:"Ất Tỵ"},
+    {y:2026,m:2,d:4,h:3,mn:3,t:"Canh Dần",n:"Bính Ngọ"},
+    {y:2026,m:3,d:5,h:21,mn:0,t:"Tân Mão",n:"Bính Ngọ"},
+    {y:2026,m:4,d:5,h:1,mn:41,t:"Nhâm Thìn",n:"Bính Ngọ"},
+    {y:2026,m:5,d:5,h:18,mn:49,t:"Quý Tị",n:"Bính Ngọ"},
+    {y:2026,m:6,d:5,h:22,mn:49,t:"Giáp Ngọ",n:"Bính Ngọ"},
+    {y:2026,m:7,d:7,h:8,mn:58,t:"Ất Mùi",n:"Bính Ngọ"},
+    {y:2026,m:8,d:7,h:18,mn:43,t:"Bính Thân",n:"Bính Ngọ"},
+    {y:2026,m:9,d:7,h:21,mn:42,t:"Đinh Dậu",n:"Bính Ngọ"},
+    {y:2026,m:10,d:8,h:13,mn:30,t:"Mậu Tuất",n:"Bính Ngọ"},
+    {y:2026,m:11,d:7,h:16,mn:53,t:"Kỷ Hợi",n:"Bính Ngọ"},
+    {y:2026,m:12,d:7,h:9,mn:53,t:"Canh Tý",n:"Bính Ngọ"},
+    {y:2027,m:1,d:5,h:21,mn:11,t:"Tân Sửu",n:"Bính Ngọ"},
+    {y:2027,m:2,d:4,h:8,mn:47,t:"Nhâm Dần",n:"Đinh Mùi"}
+];
+
+const CAN = ["Giáp","Ất","Bính","Đinh","Mậu","Kỷ","Canh","Tân","Nhâm","Quý"];
+const CHI = ["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
+
+let curr = new Date();
+
+/* ===== JULIAN DAY ===== */
+function jd(d,m,y){
+    let a=Math.floor((14-m)/12),
+        y1=y+4800-a,
+        m1=m+12*a-3;
+    return d+Math.floor((153*m1+2)/5)+365*y1
+           +Math.floor(y1/4)-Math.floor(y1/100)
+           +Math.floor(y1/400)-32045;
+}
+
+/* ===== ÂM LỊCH – CHỈ LẤY NGÀY MỒNG (Hồ Ngọc Đức – rút gọn) ===== */
+function NewMoon(k){
+    let T=k/1236.85, T2=T*T, T3=T2*T, dr=Math.PI/180;
+    let Jd=2415020.75933+29.53058868*k+0.0001178*T2-0.000000155*T3;
+    Jd+=0.00033*Math.sin((166.56+132.87*T-0.009173*T2)*dr);
+    let M=359.2242+29.10535608*k-0.0000333*T2-0.00000347*T3;
+    let Mpr=306.0253+385.81691806*k+0.0107306*T2+0.00001236*T3;
+    let F=21.2964+390.67050646*k-0.0016528*T2-0.00000239*T3;
+    let C1=(0.1734-0.000393*T)*Math.sin(M*dr)-0.4068*Math.sin(Mpr*dr)
+        +0.0161*Math.sin(2*Mpr*dr)+0.0104*Math.sin(2*F*dr);
+    return Jd+C1;
+}
+
+function getLunarDay(d,m,y){
+    let jdNow=jd(d,m,y);
+    let k=Math.floor((jdNow-2415021.076998695)/29.530588853);
+    let nm=Math.floor(NewMoon(k));
+    if(nm>jdNow) nm=Math.floor(NewMoon(k-1));
+    return jdNow-nm+1;
+}
+
+/* ===== RENDER ===== */
+function render(){
+    let d=curr.getDate(), m=curr.getMonth()+1, y=curr.getFullYear();
+    let j=jd(d,m,y);
+    if(curr.getHours()<7) j-=1;
+
+    let lunarDay=getLunarDay(d,m,y);
+
+    let foundMonth="Mậu Tý", foundYear="Ất Tỵ";
+    for(let i=BANG_TIET_KHI.length-1;i>=0;i--){
+        let it=BANG_TIET_KHI[i];
+        let itDate=new Date(it.y,it.m-1,it.d,it.h,it.mn);
+        if(curr>=itDate){
+            foundMonth=it.t;
+            foundYear=it.n;
+            break;
+        }
+    }
+
+    document.getElementById('s-day').innerText=d;
+    document.getElementById('s-month').innerText=`THÁNG ${m} / ${y}`;
+    document.getElementById('s-wk').innerText=
+        ["CHỦ NHẬT","THỨ HAI","THỨ BA","THỨ TƯ","THỨ NĂM","THỨ SÁU","THỨ BẢY"][curr.getDay()];
+    document.getElementById('s-day').style.color=
+        curr.getDay()==0?'red':'#f26522';
+
+    document.getElementById('can-chi-month').innerText="Tháng "+foundMonth;
+    document.getElementById('l-left').innerHTML=`Năm<br><b>${foundYear}</b>`;
+    document.getElementById('l-right').innerHTML=
+        `Ngày<br><b style="color:#d35400">${CAN[(j+9)%10]} ${CHI[(j+1)%12]}</b>`;
+
+    document.getElementById('l-num').innerText=lunarDay;
+}
+
+function move(n){ curr.setDate(curr.getDate()+n); render(); }
+function goToday(){ curr=new Date(); render(); }
+
+render();
+</script>
+</body>
+</html>
