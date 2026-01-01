@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Âm Dương 2026 - Tiết Khí Chuẩn</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* GIỮ NGUYÊN TOÀN BỘ CSS CỦA BẠN */
+        :root { --color-primary-teal: #00BCD4; --color-secondary-coral: #FF7043; --color-accent-lime: #CDDC39; --color-bg-light: #F4F8F9; --color-text-dark: #263238; --color-text-light: #FFFFFF; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%); margin: 0; padding: 20px; color: var(--color-text-dark); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding-top: 80px; font-size: 16px; }
+        header { background: linear-gradient(90deg, var(--color-primary-teal), #00ACC1); padding: 15px 0; position: fixed; width: 100%; top: 0; z-index: 1000; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); backdrop-filter: blur(8px); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: center; align-items: center; }
+        .main-menu ul { list-style: none; display: flex; justify-content: center; flex-wrap: wrap; }
+        .main-menu ul li { margin: 0 10px; }
+        .main-menu ul li a { display: block; padding: 12px 24px; background: var(--color-secondary-coral); color: var(--color-text-light); text-decoration: none; font-size: 1.2rem; font-weight: 700; border-radius: 25px; border: 1px solid var(--color-text-light); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); text-align: center; }
+        h2, h3, h4 { color: var(--color-primary-teal); text-align: center; margin: 15px 0; font-weight: 800; text-transform: uppercase; }
+        .controls { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; background: var(--color-text-light); padding: 20px; border-radius: 16px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); width: 100%; max-width: 700px; margin-bottom: 25px; }
+        select, input { padding: 12px; font-size: 18px; font-weight: 600; border: 1px solid #B0BEC5; border-radius: 8px; background-color: #ECEFF1; width: 100%; max-width: 160px; }
+        button { padding: 12px 28px; background: linear-gradient(45deg, var(--color-primary-teal), #00ACC1); color: var(--color-text-light); border: none; border-radius: 25px; cursor: pointer; font-size: 18px; font-weight: 800; text-transform: uppercase; box-shadow: 0 4px 10px rgba(0, 188, 212, 0.3); }
+        table { width: 100%; max-width: 700px; border-collapse: collapse; background: var(--color-text-light); border-radius: 16px; overflow: hidden; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); margin-bottom: 20px; }
+        th, td { border: 1px solid #E0F7FA; padding: 12px 8px; text-align: center; cursor: pointer; }
+        th { background: linear-gradient(90deg, var(--color-secondary-coral), #FF5722); color: var(--color-text-light); }
+        .today { background-color: var(--color-accent-lime) !important; border: 2px solid #AFB42B; }
+        td strong { font-size: 24px; font-weight: 800; display: block; }
+        td small { font-size: 14px; color: #78909C; font-weight: 700; }
+        .calendar-container, #notes { background: var(--color-text-light); padding: 25px; border-radius: 16px; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08); margin: 20px 0; width: 100%; max-width: 700px; border-left: 5px solid var(--color-secondary-coral); }
+        #notes { border-left: 5px solid var(--color-primary-teal); }
+        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); justify-content: center; align-items: center; }
+        .modal-content { background: var(--color-text-light); padding: 30px; border-radius: 16px; width: 90%; max-width: 500px; }
+        .close { color: var(--color-secondary-coral); float: right; font-size: 30px; cursor: pointer; }
+        .additional-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
+        .additional-buttons button { width: 200px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container"><nav class="main-menu"><ul><li><a href="#">Về Trang Chủ</a></li></ul></nav></div>
+    </header>
+
+    <h2>Lịch Âm Dương</h2>
+    <div class="controls">
+        <label>Tháng:</label>
+        <select id="month">
+            <option value="1">Tháng 1</option><option value="2">Tháng 2</option><option value="3">Tháng 3</option>
+            <option value="4">Tháng 4</option><option value="5">Tháng 5</option><option value="6">Tháng 6</option>
+            <option value="7">Tháng 7</option><option value="8">Tháng 8</option><option value="9">Tháng 9</option>
+            <option value="10">Tháng 10</option><option value="11">Tháng 11</option><option value="12">Tháng 12</option>
+        </select>
+        <label>Năm:</label>
+        <input type="number" id="year" min="1900" max="2100" value="2026">
+        <button onclick="generateCalendar()">Xem lịch</button>
+    </div>
+
+    <div id="calendar" class="calendar-container"></div>
+    <div id="importantDays" class="calendar-container"><h3>Ngày quan trọng</h3><div id="importantDaysList"></div></div>
+    <div id="thienXaDays" class="calendar-container"><h3>Ngày Thiên Xá</h3><div id="thienXaDaysList"></div></div>
+
+    <div class="additional-buttons">
+        <button onclick="showCalcDaysModal()">Tính số ngày</button>
+        <button onclick="showFindTimeModal()">Tìm thời điểm</button>
+    </div>
+
+    <div id="dayModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('dayModal')">&times;</span><h3 id="modal-title"></h3><div id="modal-details"></div></div></div>
+    <div id="calcDaysModal" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('calcDaysModal')">&times;</span><h3>Tính số ngày</h3><input type="number" id="numDays" placeholder="Số ngày"><button onclick="calculateDate()">Tính</button><div id="calcResult"></div></div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@nghiavuive/lunar_date_vi@latest/dist/index.umd.js"></script>
+    <script>
+        const LunarDateLib = window._calendar;
+
+        // DATA THỦ CÔNG 2026 CỦA BẠN
+        const DATA_2026_MANUAL = [
+            { name: "Tiểu Hàn", day: 5, month: 1, time: "15:24", canChiMonth: "Kỷ Sửu", canChiYear: "Ất Tỵ" },
+            { name: "Đại Hàn", day: 20, month: 1, time: "08:46", canChiMonth: "Kỷ Sửu", canChiYear: "Ất Tỵ" },
+            { name: "Lập Xuân", day: 4, month: 2, time: "03:03", canChiMonth: "Canh Dần", canChiYear: "Bính Ngọ" },
+            { name: "Vũ Thủy", day: 18, month: 2, time: "22:53", canChiMonth: "Canh Dần", canChiYear: "Bính Ngọ" },
+            { name: "Kinh Trập", day: 5, month: 3, time: "21:00", canChiMonth: "Tân Mão", canChiYear: "Bính Ngọ" },
+            { name: "Xuân Phân", day: 20, month: 3, time: "21:47", canChiMonth: "Tân Mão", canChiYear: "Bính Ngọ" },
+            { name: "Thanh Minh", day: 5, month: 4, time: "01:41", canChiMonth: "Nhâm Thìn", canChiYear: "Bính Ngọ" },
+            { name: "Cốc Vũ", day: 20, month: 4, time: "08:40", canChiMonth: "Nhâm Thìn", canChiYear: "Bính Ngọ" },
+            { name: "Lập Hạ", day: 5, month: 5, time: "18:49", canChiMonth: "Quý Tị", canChiYear: "Bính Ngọ" },
+            { name: "Tiểu Mãn", day: 21, month: 5, time: "07:37", canChiMonth: "Quý Tị", canChiYear: "Bính Ngọ" },
+            { name: "Mang Chủng", day: 5, month: 6, time: "22:49", canChiMonth: "Giáp Ngọ", canChiYear: "Bính Ngọ" },
+            { name: "Hạ Chí", day: 21, month: 6, time: "15:25", canChiMonth: "Giáp Ngọ", canChiYear: "Bính Ngọ" },
+            { name: "Tiểu Thử", day: 7, month: 7, time: "08:58", canChiMonth: "Ất Mùi", canChiYear: "Bính Ngọ" },
+            { name: "Đại Thử", day: 23, month: 7, time: "02:14", canChiMonth: "Ất Mùi", canChiYear: "Bính Ngọ" },
+            { name: "Lập Thu", day: 7, month: 8, time: "18:43", canChiMonth: "Bính Thân", canChiYear: "Bính Ngọ" },
+            { name: "Xử Thử", day: 23, month: 8, time: "09:19", canChiMonth: "Bính Thân", canChiYear: "Bính Ngọ" },
+            { name: "Bạch Lộ", day: 7, month: 9, time: "21:42", canChiMonth: "Đinh Dậu", canChiYear: "Bính Ngọ" },
+            { name: "Thu Phân", day: 23, month: 9, time: "07:06", canChiMonth: "Đinh Dậu", canChiYear: "Bính Ngọ" },
+            { name: "Hàn Lộ", day: 8, month: 10, time: "13:30", canChiMonth: "Mậu Tuất", canChiYear: "Bính Ngọ" },
+            { name: "Sương Giáng", day: 23, month: 10, time: "16:39", canChiMonth: "Mậu Tuất", canChiYear: "Bính Ngọ" },
+            { name: "Lập Đông", day: 7, month: 11, time: "16:53", canChiMonth: "Kỷ Hợi", canChiYear: "Bính Ngọ" },
+            { name: "Tiểu Tuyết", day: 22, month: 11, time: "14:24", canChiMonth: "Kỷ Hợi", canChiYear: "Bính Ngọ" },
+            { name: "Đại Tuyết", day: 7, month: 12, time: "09:53", canChiMonth: "Canh Tý", canChiYear: "Bính Ngọ" },
+            { name: "Đông Chí", day: 22, month: 12, time: "03:51", canChiMonth: "Canh Tý", canChiYear: "Bính Ngọ" },
+            { name: "Tiểu Hàn", day: 5, month: 1, year: 2027, time: "21:11", canChiMonth: "Tân Sửu", canChiYear: "Bính Ngọ" },
+            { name: "Lập Xuân", day: 4, month: 2, year: 2027, time: "08:47", canChiMonth: "Nhâm Dần", canChiYear: "Đinh Mùi" }
+        ];
+
+        function getManualData(d, m, y) {
+            let found = { month: "Mậu Tý", year: "Ất Tỵ", term: "" };
+            let currentView = new Date(y, m - 1, d, 12, 0); // Lấy mốc giữa ngày để so sánh
+
+            for (let it of DATA_2026_MANUAL) {
+                let itYear = it.year || 2026;
+                let itDate = new Date(itYear, it.month - 1, it.day, parseInt(it.time.split(':')[0]), parseInt(it.time.split(':')[1]));
+                if (currentView >= itDate) {
+                    found.month = it.canChiMonth;
+                    found.year = it.canChiYear;
+                }
+                if (it.day === d && it.month === m && itYear === y) {
+                    found.term = it.name + " (" + it.time + ")";
+                }
+            }
+            return found;
+        }
+
+        function generateCalendar() {
+            const m = parseInt(document.getElementById('month').value);
+            const y = parseInt(document.getElementById('year').value);
+            const calendarDiv = document.getElementById('calendar');
+            const daysInMonth = new Date(y, m, 0).getDate();
+            const firstDay = new Date(y, m - 1, 1).getDay();
+
+            let notesHtml = `<div id="notes"><h4>Tiết khí tháng ${m}:</h4><ul>`;
+            let hasTerm = false;
+            DATA_2026_MANUAL.forEach(it => {
+                if (it.month === m && (it.year || 2026) === y) {
+                    notesHtml += `<li><span style="color:var(--color-primary-teal)">●</span> Tiết ${it.name}: ${it.time} ngày ${it.day}.${m}.${y}</li>`;
+                    hasTerm = true;
+                }
+            });
+            notesHtml += hasTerm ? "</ul></div>" : "<li>Dữ liệu đang cập nhật</li></ul></div>";
+
+            let table = '<table><thead><tr><th>CN</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th></tr></thead><tbody><tr>';
+            for (let i = 0; i < firstDay; i++) table += '<td></td>';
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                if ((firstDay + d - 1) % 7 === 0 && d > 1) table += '</tr><tr>';
+                table += getDayCell(y, m, d);
+            }
+            table += '</tr></tbody></table>';
+            calendarDiv.innerHTML = `<h3>Tháng ${m}/${y}</h3>${notesHtml}${table}`;
+        }
+
+        function getDayCell(y, m, d) {
+            const solar = new LunarDateLib.SolarDate({ day: d, month: m, year: y });
+            const lunar = solar.toLunarDate();
+            lunar.init();
+            
+            const manual = getManualData(d, m, y);
+            const weekday = new Date(y, m - 1, d).getDay();
+            let cls = weekday === 0 ? 'sunday' : (weekday === 6 ? 'saturday' : '');
+            if (d === new Date().getDate() && m === new Date().getMonth()+1 && y === new Date().getFullYear()) cls += ' today';
+
+            return `<td class="${cls}" onclick="showDetails(${y},${m},${d},'${lunar.day}/${lunar.month}','${lunar.getDayName()}','${manual.month}','${manual.year}','${manual.term || 'Không có'}')">
+                <strong>${d}</strong>
+                <small>${lunar.day}/${lunar.month}</small>
+            </td>`;
+        }
+
+        function showDetails(y, m, d, ld, cd, cm, cy, tk) {
+            document.getElementById('modal-title').innerText = `Thông tin ngày ${d}/${m}/${y}`;
+            document.getElementById('modal-details').innerHTML = `
+                <p><strong>Âm lịch:</strong> ${ld}</p>
+                <p><strong>Ngày:</strong> ${cd}</p>
+                <p><strong>Tháng:</strong> ${cm}</p>
+                <p><strong>Năm:</strong> ${cy}</p>
+                <p><strong>Tiết khí:</strong> ${tk}</p>`;
+            document.getElementById('dayModal').style.display = 'flex';
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        
+        // Khởi tạo
+        document.getElementById('month').value = new Date().getMonth() + 1;
+        generateCalendar();
+    </script>
+</body>
+</html>
