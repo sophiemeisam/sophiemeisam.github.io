@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lịch Tiết Khí 2026 – Data Thủ Công</title>
+<title>Lịch Tiết Khí 2026 – Fix Chuẩn Âm Lịch</title>
 
 <style>
 :root { --orange:#f26522; --blue:#0076a3; --red:#c0392b; --teal:#00a699; }
@@ -57,7 +57,7 @@ button{
         <div id="l-left" class="col" style="text-align:left;padding-left:15px"></div>
         <div class="col center-col">
             <span id="l-num" class="lunar-num"></span>
-            <div id="l-month-text" style="font-weight:800;font-size:1.1rem">Tiết Khí</div>
+            <div style="font-weight:800;font-size:1.1rem">ÂM LỊCH</div>
         </div>
         <div id="l-right" class="col" style="text-align:right;padding-right:15px"></div>
     </div>
@@ -72,11 +72,11 @@ button{
         <button onclick="move(1)">TIẾN ❯</button>
     </div>
 
-    <div class="footer">LỊCH TIẾT KHÍ 2026–2027</div>
+    <div class="footer">LỊCH TIẾT KHÍ 2026–2027 (FIX CHUẨN)</div>
 </div>
 
 <script>
-/* ===== DATA TIẾT KHÍ THỦ CÔNG ===== */
+/* ===== DATA TIẾT KHÍ ===== */
 const BANG_TIET_KHI = [
     {y:2025,m:12,d:7,h:9,mn:53,t:"Mậu Tý",n:"Ất Tỵ"},
     {y:2026,m:1,d:5,h:15,mn:24,t:"Kỷ Sửu",n:"Ất Tỵ"},
@@ -95,37 +95,35 @@ const BANG_TIET_KHI = [
     {y:2027,m:2,d:4,h:8,mn:47,t:"Nhâm Dần",n:"Đinh Mùi"}
 ];
 
-const CAN = ["Giáp","Ất","Bính","Đinh","Mậu","Kỷ","Canh","Tân","Nhâm","Quý"];
-const CHI = ["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
+const CAN=["Giáp","Ất","Bính","Đinh","Mậu","Kỷ","Canh","Tân","Nhâm","Quý"];
+const CHI=["Tý","Sửu","Dần","Mão","Thìn","Tỵ","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
 
-let curr = new Date();
+let curr=new Date();
 
-/* ===== JULIAN DAY ===== */
+/* ===== JULIAN DAY (CHUẨN) ===== */
 function jd(d,m,y){
     let a=Math.floor((14-m)/12),
         y1=y+4800-a,
         m1=m+12*a-3;
     return d+Math.floor((153*m1+2)/5)+365*y1
-           +Math.floor(y1/4)-Math.floor(y1/100)
-           +Math.floor(y1/400)-32045;
+        +Math.floor(y1/4)-Math.floor(y1/100)
+        +Math.floor(y1/400)-32045;
 }
 
-/* ===== ÂM LỊCH – CHỈ LẤY NGÀY MỒNG (Hồ Ngọc Đức – rút gọn) ===== */
+/* ===== NEW MOON ===== */
 function NewMoon(k){
-    let T=k/1236.85, T2=T*T, T3=T2*T, dr=Math.PI/180;
+    let T=k/1236.85,T2=T*T,T3=T2*T,dr=Math.PI/180;
     let Jd=2415020.75933+29.53058868*k+0.0001178*T2-0.000000155*T3;
     Jd+=0.00033*Math.sin((166.56+132.87*T-0.009173*T2)*dr);
-    let M=359.2242+29.10535608*k-0.0000333*T2-0.00000347*T3;
-    let Mpr=306.0253+385.81691806*k+0.0107306*T2+0.00001236*T3;
-    let F=21.2964+390.67050646*k-0.0016528*T2-0.00000239*T3;
-    let C1=(0.1734-0.000393*T)*Math.sin(M*dr)-0.4068*Math.sin(Mpr*dr)
-        +0.0161*Math.sin(2*Mpr*dr)+0.0104*Math.sin(2*F*dr);
+    let M=359.2242+29.10535608*k;
+    let Mpr=306.0253+385.81691806*k;
+    let C1=0.1734*Math.sin(M*dr)-0.4068*Math.sin(Mpr*dr);
     return Jd+C1;
 }
 
 function getLunarDay(d,m,y){
     let jdNow=jd(d,m,y);
-    let k=Math.floor((jdNow-2415021.076998695)/29.530588853);
+    let k=Math.floor((jdNow-2415021)/29.530588853);
     let nm=Math.floor(NewMoon(k));
     if(nm>jdNow) nm=Math.floor(NewMoon(k-1));
     return jdNow-nm+1;
@@ -133,35 +131,27 @@ function getLunarDay(d,m,y){
 
 /* ===== RENDER ===== */
 function render(){
-    let d=curr.getDate(), m=curr.getMonth()+1, y=curr.getFullYear();
+    let d=curr.getDate(),m=curr.getMonth()+1,y=curr.getFullYear();
     let j=jd(d,m,y);
-    if(curr.getHours()<7) j-=1;
 
     let lunarDay=getLunarDay(d,m,y);
 
-    let foundMonth="Mậu Tý", foundYear="Ất Tỵ";
+    let foundMonth="Mậu Tý",foundYear="Ất Tỵ";
     for(let i=BANG_TIET_KHI.length-1;i>=0;i--){
         let it=BANG_TIET_KHI[i];
         let itDate=new Date(it.y,it.m-1,it.d,it.h,it.mn);
-        if(curr>=itDate){
-            foundMonth=it.t;
-            foundYear=it.n;
-            break;
-        }
+        if(curr>=itDate){ foundMonth=it.t; foundYear=it.n; break; }
     }
 
     document.getElementById('s-day').innerText=d;
     document.getElementById('s-month').innerText=`THÁNG ${m} / ${y}`;
     document.getElementById('s-wk').innerText=
         ["CHỦ NHẬT","THỨ HAI","THỨ BA","THỨ TƯ","THỨ NĂM","THỨ SÁU","THỨ BẢY"][curr.getDay()];
-    document.getElementById('s-day').style.color=
-        curr.getDay()==0?'red':'#f26522';
 
     document.getElementById('can-chi-month').innerText="Tháng "+foundMonth;
     document.getElementById('l-left').innerHTML=`Năm<br><b>${foundYear}</b>`;
     document.getElementById('l-right').innerHTML=
         `Ngày<br><b style="color:#d35400">${CAN[(j+9)%10]} ${CHI[(j+1)%12]}</b>`;
-
     document.getElementById('l-num').innerText=lunarDay;
 }
 
