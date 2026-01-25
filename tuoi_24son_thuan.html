@@ -2,35 +2,38 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Bát Trạch Tinh Hoa - 24 Sơn Nạp Giáp</title>
+    <title>Bát Trạch Tinh Hoa - 24 Sơn Toàn Tập</title>
     <style>
         :root {
             --color-kham: #1e88e5; --color-kim: #ffdb58; --color-tho: #8d6e63;
             --color-moc: #43a047; --color-hoa: #e91e63; --color-trung: #d4a373;
             --bad: #ff5252; --good: #27ae60;
         }
-        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 620px; }
-        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); width: 650px; }
+        .header { text-align: center; color: #b22222; font-weight: bold; font-size: 22px; margin-bottom: 20px; border-bottom: 3px double #b22222; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
         .cell { aspect-ratio: 1/1; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); font-weight: bold; border: 1px solid rgba(0,0,0,0.1); }
         #c4 { background: var(--color-moc); } #c9 { background: var(--color-hoa); } #c2 { background: var(--color-tho); }
         #c3 { background: var(--color-moc); } #c5 { background: var(--color-trung); border: 2px solid #d4af37; } #c7 { background: var(--color-kim); color: #333; text-shadow: none; }
         #c8 { background: var(--color-tho); } #c1 { background: var(--color-kham); } #c6 { background: var(--color-kim); color: #333; text-shadow: none; }
         .tag { font-size: 11px; padding: 3px; border-radius: 4px; width: 90%; text-align: center; background: rgba(255,255,255,0.9); color: #333; margin-top: 3px; border: 1px solid #ccc; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 15px; }
-        .input-group div { flex: 1; }
-        select, input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ddd; font-weight: bold; }
-        .analysis { background: #fffdf0; padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 5px solid #b22222; }
-        .son-item { margin-bottom: 6px; padding: 8px 12px; border-radius: 6px; background: #fff; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-        .hung { color: var(--bad); font-weight: bold; } .cat { color: var(--good); font-weight: bold; }
-        .nap-info { font-size: 11px; color: #666; font-style: italic; }
-        .header { text-align: center; color: #b22222; font-weight: bold; font-size: 20px; margin-bottom: 20px; text-transform: uppercase; }
+        .input-box { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; background: #fdfdfd; padding: 15px; border-radius: 10px; border: 1px solid #eee; }
+        label { font-size: 13px; font-weight: bold; color: #555; }
+        select, input { width: 100%; padding: 8px; margin-top: 5px; border-radius: 5px; border: 1px solid #ddd; outline: none; }
+        .son-card { margin-bottom: 10px; padding: 12px; border-radius: 8px; border-left: 6px solid #ccc; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .son-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .son-name { font-weight: bold; font-size: 16px; color: #333; }
+        .sao-name { font-weight: bold; font-size: 15px; }
+        .ngu-hanh { font-size: 12px; color: #666; font-style: italic; }
+        .advice { font-size: 12.5px; color: #444; margin-top: 5px; padding-top: 5px; border-top: 1px dashed #eee; }
+        .hung { color: var(--bad); } .cat { color: var(--good); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">Bát Trạch 24 Sơn Tinh Hoa</div>
+    <div class="header">Bát Trạch Tinh Hoa - Nhị Thập Tứ Sơn</div>
 
     <div class="grid">
         <div class="cell" id="c4">Tốn (4)<div id="v4"></div></div>
@@ -44,16 +47,14 @@
         <div class="cell" id="c6">Càn (6)<div id="v6"></div></div>
     </div>
 
-    <div class="input-group">
+    <div class="input-box">
         <div><label>Năm sinh:</label><input type="number" id="txtNam" value="1984" onchange="run()"></div>
         <div><label>Giới tính:</label><select id="selGioiTinh" onchange="run()"><option value="nam">Nam</option><option value="nu">Nữ</option></select></div>
-    </div>
-    <div class="input-group">
-        <div><label>Tháng Tiết Khí:</label><select id="selThang" onchange="run()"></select></div>
-        <div><label>Tuổi Xét:</label><select id="selTuoi" onchange="run()"></select></div>
+        <div><label>Tháng gốc (Cung 5):</label><select id="selThang" onchange="run()"></select></div>
+        <div><label>Tuổi xét (Phi thuận):</label><select id="selTuoi" onchange="run()"></select></div>
     </div>
 
-    <div id="analysisBox" class="analysis"></div>
+    <div id="result"></div>
 </div>
 
 <script>
@@ -61,41 +62,46 @@ const hoaGiap = ["Giáp Tý","Ất Sửu","Bính Dần","Đinh Mão","Mậu Thì
 const ltx = [5, 6, 7, 8, 9, 1, 2, 3, 4];
 const tenQ = {1:"Khảm", 2:"Khôn", 3:"Chấn", 4:"Tốn", 6:"Càn", 7:"Đoài", 8:"Cấn", 9:"Ly"};
 
-// DATA MAPPING 24 SƠN THEO NẠP GIÁP BẠN CUNG CẤP
+const infoSao = {
+    "Sinh khí": {sao: "Tham lang", hanh: "Mộc", loai: "Thượng cát", advise: "Tăng cường cây xanh, hành thủy (bể cá) để sinh mộc."},
+    "Diên niên": {sao: "Vũ khúc", hanh: "Kim", loai: "Thượng cát", advise: "Dùng vật phẩm kim khí, màu trắng/vàng để trợ lực."},
+    "Thiên y": {sao: "Cự môn", hanh: "Thổ", loai: "Trung cát", advise: "Tốt cho sức khỏe, dùng gốm sứ, đá tự nhiên."},
+    "Phục vị": {sao: "Tả phụ", hanh: "Thủy", loai: "Tiểu cát", advise: "Thích hợp đặt bàn thờ, nơi tĩnh tâm."},
+    "Tuyệt mệnh": {sao: "Phá quân", hanh: "Kim", loai: "Đại hung", advise: "Cần dùng hành Hỏa (màu đỏ) hoặc Thủy để tiết chế."},
+    "Ngũ quỷ": {sao: "Liêm trinh", hanh: "Hỏa", loai: "Đại hung", advise: "Dùng hành Thổ để tiết bớt hỏa khí xấu."},
+    "Họa hại": {sao: "Lộc tồn", hanh: "Thổ", loai: "Thứ hung", advise: "Dùng hành Kim (chuông gió) để tiết bớt thổ xấu."},
+    "Lục sát": {sao: "Văn khúc", hanh: "Thủy", loai: "Thứ hung", advise: "Dùng hành Mộc để hút bớt thủy khí tà."}
+};
+
 const mappingSonQuai = {
-    1: { name: "Khảm", sons: [{s:"Nhâm", q:6}, {s:"Tý", q:1}, {s:"Quý", q:2}] },
-    2: { name: "Khôn", sons: [{s:"Mùi", q:3}, {s:"Khôn", q:2}, {s:"Thân", q:1}] },
-    3: { name: "Chấn", sons: [{s:"Giáp", q:6}, {s:"Mão", q:3}, {s:"Ất", q:2}] },
-    4: { name: "Tốn", sons: [{s:"Thìn", q:1}, {s:"Tốn", q:4}, {s:"Tỵ", q:7}] },
-    6: { name: "Càn", sons: [{s:"Tuất", q:9}, {s:"Càn", q:6}, {s:"Hợi", q:3}] },
-    7: { name: "Đoài", sons: [{s:"Canh", q:3}, {s:"Dậu", q:7}, {s:"Tân", q:4}] },
-    8: { name: "Cấn", sons: [{s:"Sửu", q:7}, {s:"Cấn", q:8}, {s:"Dần", q:9}] },
-    9: { name: "Ly", sons: [{s:"Bính", q:8}, {s:"Ngọ", q:9}, {s:"Đinh", q:7}] }
+    1: { sons: [{s:"Nhâm", q:6}, {s:"Tý", q:1}, {s:"Quý", q:2}] },
+    2: { sons: [{s:"Mùi", q:3}, {s:"Khôn", q:2}, {s:"Thân", q:1}] },
+    3: { sons: [{s:"Giáp", q:6}, {s:"Mão", q:3}, {s:"Ất", q:2}] },
+    4: { sons: [{s:"Thìn", q:1}, {s:"Tốn", q:4}, {s:"Tỵ", q:7}] },
+    6: { sons: [{s:"Tuất", q:9}, {s:"Càn", q:6}, {s:"Hợi", q:3}] },
+    7: { sons: [{s:"Canh", q:3}, {s:"Dậu", q:7}, {s:"Tân", q:4}] },
+    8: { sons: [{s:"Sửu", q:7}, {s:"Cấn", q:8}, {s:"Dần", q:9}] },
+    9: { sons: [{s:"Bính", q:8}, {s:"Ngọ", q:9}, {s:"Đinh", q:7}] }
 };
 
 const batSat = {
-    "1": {1:"Phục vị", 2:"Tuyệt mệnh", 3:"Thiên y", 4:"Sinh khí", 6:"Lục sát", 7:"Họa hại", 8:"Ngũ quỷ", 9:"Diên niên"},
-    "2": {1:"Tuyệt mệnh", 2:"Phục vị", 3:"Họa hại", 4:"Ngũ quỷ", 6:"Diên niên", 7:"Thiên y", 8:"Sinh khí", 9:"Lục sát"},
-    "3": {1:"Thiên y", 2:"Họa hại", 3:"Phục vị", 4:"Diên niên", 6:"Ngũ quỷ", 7:"Tuyệt mệnh", 8:"Lục sát", 9:"Sinh khí"},
-    "4": {1:"Sinh khí", 2:"Ngũ quỷ", 3:"Diên niên", 4:"Phục vị", 6:"Họa hại", 7:"Lục sát", 8:"Tuyệt mệnh", 9:"Thiên y"},
-    "6": {1:"Lục sát", 2:"Diên niên", 3:"Ngũ quỷ", 4:"Họa hại", 6:"Phục vị", 7:"Sinh khí", 8:"Thiên y", 9:"Tuyệt mệnh"},
-    "7": {1:"Họa hại", 2:"Thiên y", 3:"Tuyệt mệnh", 4:"Lục sát", 6:"Sinh khí", 7:"Phục vị", 8:"Diên niên", 9:"Ngũ quỷ"},
-    "8": {1:"Ngũ quỷ", 2:"Sinh khí", 3:"Lục sát", 4:"Tuyệt mệnh", 6:"Thiên y", 7:"Diên niên", 8:"Phục vị", 9:"Họa hại"},
-    "9": {1:"Diên niên", 2:"Lục sát", 3:"Sinh khí", 4:"Thiên y", 6:"Tuyệt mệnh", 7:"Ngũ quỷ", 8:"Họa hại", 9:"Phục vị"}
+    "1": {1:1, 2:5, 3:3, 4:1, 6:8, 7:7, 8:6, 9:2}, // Tương đương ma trận Du Niên
+    "7": {1:7, 2:3, 3:5, 4:8, 6:1, 7:4, 8:2, 9:6} // Ví dụ Đoài 7
+}; 
+// Logic ma trận rút gọn cho dễ code
+const getSao = (m, q) => {
+    const matrix = {
+        1: {1:"Phục vị", 2:"Tuyệt mệnh", 3:"Thiên y", 4:"Sinh khí", 6:"Lục sát", 7:"Họa hại", 8:"Ngũ quỷ", 9:"Diên niên"},
+        2: {1:"Tuyệt mệnh", 2:"Phục vị", 3:"Họa hại", 4:"Ngũ quỷ", 6:"Diên niên", 7:"Thiên y", 8:"Sinh khí", 9:"Lục sát"},
+        3: {1:"Thiên y", 2:"Họa hại", 3:"Phục vị", 4:"Diên niên", 6:"Ngũ quỷ", 7:"Tuyệt mệnh", 8:"Lục sát", 9:"Sinh khí"},
+        4: {1:"Sinh khí", 2:"Ngũ quỷ", 3:"Diên niên", 4:"Phục vị", 6:"Họa hại", 7:"Lục sát", 8:"Tuyệt mệnh", 9:"Thiên y"},
+        6: {1:"Lục sát", 2:"Diên niên", 3:"Ngũ quỷ", 4:"Họa hại", 6:"Phục vị", 7:"Sinh khí", 8:"Thiên y", 9:"Tuyệt mệnh"},
+        7: {1:"Họa hại", 2:"Thiên y", 3:"Tuyệt mệnh", 4:"Lục sát", 6:"Sinh khí", 7:"Phục vị", 8:"Diên niên", 9:"Ngũ quỷ"},
+        8: {1:"Ngũ quỷ", 2:"Sinh khí", 3:"Lục sát", 4:"Tuyệt mệnh", 6:"Thiên y", 7:"Diên niên", 8:"Phục vị", 9:"Họa hại"},
+        9: {1:"Diên niên", 2:"Lục sát", 3:"Sinh khí", 4:"Thiên y", 6:"Tuyệt mệnh", 7:"Ngũ quỷ", 8:"Họa hại", 9:"Phục vị"}
+    };
+    return matrix[m][q];
 };
-
-// ... Data cung phi (giữ nguyên chuẩn phong thủy)
-const dataCungPhi = { 1984: {nam: 7, nu: 8} /* ... thêm các năm khác ở đây */ };
-for(let y=1924; y<=2043; y++) {
-    if(!dataCungPhi[y]) {
-        let s = Math.floor(y/100); let n = y%100;
-        let m = (100-n)%9; if(m===0) m=9; // Nam
-        let f = (n+5)%9; if(f===0) f=9; // Nữ (đơn giản hóa)
-        // Lưu ý: Đây là công thức tính nhanh, trong thực tế nên dùng bảng tra như code cũ để chính xác tuyệt đối cung 5 Nam->2, Nữ->8
-    }
-}
-// Để đảm bảo chính xác, mình dùng bảng tra trực tiếp cho các năm phổ biến
-const tableCungPhi = {1984:{nam:7,nu:8}, 1983:{nam:8,nu:7}, 1982:{nam:9,nu:6}, 1985:{nam:6,nu:9}}; 
 
 function init() {
     const sT = document.getElementById('selThang');
@@ -107,35 +113,42 @@ function init() {
 
 function run() {
     for(let i=1; i<=9; i++) if(document.getElementById('v'+i)) document.getElementById('v'+i).innerHTML = "";
-    
-    // Lấy mệnh (Ví dụ mặc định Đoài 7 nếu không có trong bảng tra)
     const nam = parseInt(document.getElementById('txtNam').value);
     const gt = document.getElementById('selGioiTinh').value;
-    // Tạm thời fix cứng logic cung phi chuẩn cho ví dụ 1984
-    let menh = (nam === 1984) ? (gt === 'nam' ? 7 : 8) : 7; 
+    
+    // Tính Cung Phi chuẩn (Nam/Nữ)
+    let n = nam % 100;
+    let menh = 0;
+    if(gt==='nam') { menh = (100 - n) % 9; if(menh===0) menh=9; if(menh===5) menh=2; }
+    else { menh = (n + 5) % 9; if(menh===0) menh=9; if(menh===5) menh=8; }
 
     const thang = document.getElementById('selThang').value;
     const tuoi = document.getElementById('selTuoi').value;
-    let buoc = (hoaGiap.indexOf(tuoi) - hoaGiap.indexOf(thang) + 60) % 60;
-    let cungDich = ltx[buoc % 9];
+    let jump = (hoaGiap.indexOf(tuoi) - hoaGiap.indexOf(thang) + 60) % 60;
+    let cungDich = ltx[jump % 9];
 
     document.getElementById('v'+cungDich).innerHTML = `<div class="tag">${tuoi}</div>`;
     document.getElementById('v5').innerHTML += `<div class="tag">Gốc: ${thang}</div>`;
 
-    let html = `<div style="text-align:center; font-weight:bold; color:#b22222; margin-bottom:10px;">BẢN MỆNH: ${tenQ[menh]} (${menh})</div>`;
-    html += `<p>Tuổi <b>${tuoi}</b> phi đến cung <b>${tenQ[cungDich]}</b>:</p>`;
-
+    let html = `<div style="text-align:center; margin-bottom:15px;"><b>MỆNH CHỦ: ${tenQ[menh]} (${menh})</b></div>`;
+    
     if(mappingSonQuai[cungDich]) {
         mappingSonQuai[cungDich].sons.forEach(item => {
-            let sao = batSat[menh][item.q];
-            let hung = ["Tuyệt mệnh", "Ngũ quỷ", "Họa hại", "Lục sát"].includes(sao);
-            html += `<div class="son-item">
-                <div><b>Sơn ${item.s}</b> <span class="nap-info">(Nạp ${tenQ[item.q]})</span></div>
-                <div class="${hung?'hung':'cat'}">${sao}</div>
-            </div>`;
+            let tenSao = getSao(menh, item.q);
+            let d = infoSao[tenSao];
+            let isBad = ["Tuyệt mệnh", "Ngũ quỷ", "Họa hại", "Lục sát"].includes(tenSao);
+            html += `
+                <div class="son-card" style="border-left-color: ${isBad?'#ff5252':'#27ae60'}">
+                    <div class="son-header">
+                        <span class="son-name">Sơn ${item.s} <small style="font-weight:normal; font-size:11px">(Nạp ${tenQ[item.q]})</small></span>
+                        <span class="sao-name ${isBad?'hung':'cat'}">${tenSao}</span>
+                    </div>
+                    <div class="ngu-hanh">Sao: ${d.sao} | Hành: ${d.hanh} | Tính chất: ${d.loai}</div>
+                    <div class="advice"><b>Lời khuyên:</b> ${d.advise}</div>
+                </div>`;
         });
     }
-    document.getElementById('analysisBox').innerHTML = html;
+    document.getElementById('result').innerHTML = html;
 }
 window.onload = init;
 </script>
