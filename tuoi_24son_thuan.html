@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Hệ Thống Bát Trạch 24 Sơn Tổng Hợp</title>
+    <style>
+        :root {
+            --color-kham: #1e88e5; --color-kim: #ffdb58; --color-tho: #8d6e63;
+            --color-moc: #43a047; --color-hoa: #e91e63; --color-trung: #d4a373;
+            --bad: #ff5252; --good: #27ae60;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 550px; }
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
+        .cell { aspect-ratio: 1/1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: bold; }
+        #c4 { background: #43a047; } #c9 { background: #e91e63; } #c2 { background: #8d6e63; }
+        #c3 { background: #43a047; } #c5 { background: #d4a373; border: 2px solid gold; }
+        #c7 { background: #ffdb58; color:#333; } #c8 { background: #8d6e63; }
+        #c1 { background: #1e88e5; } #c6 { background: #ffdb58; color:#333; }
+        .tag { font-size: 11px; padding: 3px; margin-top: 4px; background: rgba(255,255,255,0.9); color:#333; border-radius: 4px; }
+        select,input { width:100%; padding:8px; margin-top:4px; }
+        .analysis { margin-top: 15px; background:#fffdf0; padding:12px; border-left:5px solid #b22222; }
+        .son-item { display:flex; justify-content:space-between; padding:6px; border-bottom:1px solid #eee; }
+        .hung { color: var(--bad); font-weight:bold; }
+        .cat { color: var(--good); font-weight:bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 style="text-align:center;color:#b22222;">PHONG THỦY 24 SƠN – LƯỜNG THIÊN XÍCH</h2>
+
+    <div class="grid">
+        <div class="cell" id="c4">4-Tốn<div id="v4"></div></div>
+        <div class="cell" id="c9">9-Ly<div id="v9"></div></div>
+        <div class="cell" id="c2">2-Khôn<div id="v2"></div></div>
+        <div class="cell" id="c3">3-Chấn<div id="v3"></div></div>
+        <div class="cell" id="c5">5-Trung<div id="v5"></div></div>
+        <div class="cell" id="c7">7-Đoài<div id="v7"></div></div>
+        <div class="cell" id="c8">8-Cấn<div id="v8"></div></div>
+        <div class="cell" id="c1">1-Khảm<div id="v1"></div></div>
+        <div class="cell" id="c6">6-Càn<div id="v6"></div></div>
+    </div>
+
+    <label>Năm sinh:</label>
+    <input type="number" id="txtNam" value="1984" onchange="run()">
+
+    <label>Giới tính:</label>
+    <select id="selGioiTinh" onchange="run()">
+        <option value="nam">Nam</option>
+        <option value="nu">Nữ</option>
+    </select>
+
+    <label>Tháng Tiết Khí:</label>
+    <select id="selThang" onchange="run()"></select>
+
+    <label>Tuổi Xét:</label>
+    <select id="selTuoi" onchange="run()"></select>
+
+    <div id="analysisBox" class="analysis"></div>
+</div>
+
+<script>
+const hoaGiap = ["Giáp Tý","Ất Sửu","Bính Dần","Đinh Mão","Mậu Thìn","Kỷ Tị","Canh Ngọ","Tân Mùi","Nhâm Thân","Quý Dậu",
+"Giáp Tuất","Ất Hợi","Bính Tý","Đinh Sửu","Mậu Dần","Kỷ Mão","Canh Thìn","Tân Tị","Nhâm Ngọ","Quý Mùi",
+"Giáp Thân","Ất Dậu","Bính Tuất","Đinh Hợi","Mậu Tý","Kỷ Sửu","Canh Dần","Tân Mão","Nhâm Thìn","Quý Tị",
+"Giáp Ngọ","Ất Mùi","Bính Thân","Đinh Dậu","Mậu Tuất","Kỷ Hợi","Canh Tý","Tân Sửu","Nhâm Dần","Quý Mão",
+"Giáp Thìn","Ất Tị","Bính Ngọ","Đinh Mùi","Mậu Thân","Kỷ Dậu","Canh Tuất","Tân Hợi","Nhâm Tý","Quý Sửu",
+"Giáp Dần","Ất Mão","Bính Thìn","Đinh Tị","Mậu Ngọ","Kỷ Mùi","Canh Thân","Tân Dậu","Nhâm Tuất","Quý Hợi"];
+
+const ltx = [5,6,7,8,9,1,2,3,4];
+
+const tenQuai = {1:"Khảm",2:"Khôn",3:"Chấn",4:"Tốn",6:"Càn",7:"Đoài",8:"Cấn",9:"Ly"};
+
+const duNienMatrix = {
+ "1":{"1":"Phục vị","2":"Tuyệt mệnh","3":"Thiên y","4":"Sinh khí","6":"Lục sát","7":"Họa hại","8":"Ngũ quỷ","9":"Diên niên"},
+ "2":{"1":"Tuyệt mệnh","2":"Phục vị","3":"Họa hại","4":"Ngũ quỷ","6":"Diên niên","7":"Thiên y","8":"Sinh khí","9":"Lục sát"},
+ "3":{"1":"Thiên y","2":"Họa hại","3":"Phục vị","4":"Diên niên","6":"Ngũ quỷ","7":"Tuyệt mệnh","8":"Lục sát","9":"Sinh khí"},
+ "4":{"1":"Sinh khí","2":"Ngũ quỷ","3":"Diên niên","4":"Phục vị","6":"Họa hại","7":"Lục sát","8":"Tuyệt mệnh","9":"Thiên y"},
+ "6":{"1":"Lục sát","2":"Diên niên","3":"Ngũ quỷ","4":"Họa hại","6":"Phục vị","7":"Sinh khí","8":"Thiên y","9":"Tuyệt mệnh"},
+ "7":{"1":"Họa hại","2":"Thiên y","3":"Tuyệt mệnh","4":"Lục sát","6":"Sinh khí","7":"Phục vị","8":"Diên niên","9":"Ngũ quỷ"},
+ "8":{"1":"Ngũ quỷ","2":"Sinh khí","3":"Lục sát","4":"Tuyệt mệnh","6":"Thiên y","7":"Diên niên","8":"Phục vị","9":"Họa hại"},
+ "9":{"1":"Diên niên","2":"Lục sát","3":"Sinh khí","4":"Thiên y","6":"Tuyệt mệnh","7":"Ngũ quỷ","8":"Họa hại","9":"Phục vị"}
+};
+
+function init(){
+    const sT=document.getElementById("selThang");
+    const sU=document.getElementById("selTuoi");
+    hoaGiap.forEach(v=>{
+        sT.add(new Option(v,v));
+        sU.add(new Option(v,v));
+    });
+    sT.value="Mậu Tý";
+    sU.value="Giáp Tý";
+    run();
+}
+
+function run(){
+    for(let i=1;i<=9;i++){
+        const d=document.getElementById("v"+i);
+        if(d) d.innerHTML="";
+    }
+
+    const thang=document.getElementById("selThang").value;
+    const tuoi=document.getElementById("selTuoi").value;
+
+    const idxT=hoaGiap.indexOf(thang);
+    const idxU=hoaGiap.indexOf(tuoi);
+
+    // ===== LOGIC CHUẨN: LUÔN ĐẾM THUẬN LƯỜNG THIÊN XÍCH =====
+    let diff = idxU - idxT;
+    if(diff < 0) diff += 60;
+    let cungDich = ltx[diff % 9];
+
+    document.getElementById("v"+cungDich).innerHTML=`<div class="tag">${tuoi}</div>`;
+    document.getElementById("v5").innerHTML=`<div class="tag">Gốc: ${thang}</div>`;
+
+    document.getElementById("analysisBox").innerHTML =
+        `<b>Tháng:</b> ${thang}<br>
+         <b>Tuổi:</b> ${tuoi}<br>
+         <b>Số bước phi:</b> ${diff % 9}<br>
+         <b>Đáo cung:</b> ${cungDich} – ${tenQuai[cungDich]}`;
+}
+
+window.onload=init;
+</script>
+</body>
+</html>
