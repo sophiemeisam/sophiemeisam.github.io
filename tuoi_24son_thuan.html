@@ -2,34 +2,35 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Hệ Thống Bát Trạch 24 Sơn - Phi Thuận Lường Thiên Xích</title>
+    <title>Hệ Thống Bát Trạch 24 Sơn - Chú Giải Nạp Quái</title>
     <style>
         :root {
             --color-kham: #1e88e5; --color-kim: #ffdb58; --color-tho: #8d6e63;
             --color-moc: #43a047; --color-hoa: #e91e63; --color-trung: #d4a373;
             --bad: #ff5252; --good: #27ae60;
         }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 550px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); width: 580px; }
         .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 20px 0; }
         .cell { aspect-ratio: 1/1; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); font-weight: bold; border: 1px solid rgba(0,0,0,0.1); position: relative; }
         #c4 { background: var(--color-moc); } #c9 { background: var(--color-hoa); } #c2 { background: var(--color-tho); }
         #c3 { background: var(--color-moc); } #c5 { background: var(--color-trung); border: 2px solid gold; } #c7 { background: var(--color-kim); color: #333; text-shadow: none; }
         #c8 { background: var(--color-tho); } #c1 { background: var(--color-kham); } #c6 { background: var(--color-kim); color: #333; text-shadow: none; }
-        .tag { font-size: 11px; padding: 3px; border-radius: 4px; width: 90%; text-align: center; background: rgba(255,255,255,0.9); color: #333; margin-top: 3px; border: 1px solid #ccc; box-shadow: 1px 1px 3px rgba(0,0,0,0.1); }
+        .tag { font-size: 11px; padding: 3px; border-radius: 4px; width: 90%; text-align: center; background: rgba(255,255,255,0.9); color: #333; margin-top: 3px; border: 1px solid #ccc; }
         .input-group { display: flex; gap: 10px; margin-bottom: 10px; }
         .input-group div { flex: 1; }
         select, input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ddd; font-weight: bold; box-sizing: border-box;}
         .analysis { background: #fffdf0; padding: 15px; border-radius: 10px; margin-top: 20px; border-left: 5px solid #b22222; font-size: 14px; }
-        .son-item { margin-bottom: 8px; padding: 8px; border-radius: 6px; background: #fff; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .son-item { margin-bottom: 8px; padding: 10px; border-radius: 6px; background: #fff; border: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
         .hung { color: var(--bad); font-weight: bold; } .cat { color: var(--good); font-weight: bold; }
+        .nap-quai { font-size: 11px; color: #666; font-weight: normal; font-style: italic; }
         .header-box { text-align: center; font-weight: bold; color: #b22222; margin-bottom: 10px; border-bottom: 2px solid #eee; padding-bottom: 8px; font-size: 18px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header-box">PHONG THỦY 24 SƠN ĐỐI CHIẾU</div>
+    <div class="header-box">PHONG THỦY 24 SƠN & NẠP QUÁI</div>
 
     <div class="grid" id="mainGrid">
         <div class="cell" id="c4">4-Tốn<div id="v4"></div></div>
@@ -58,7 +59,7 @@
     </div>
 
     <div class="input-group">
-        <div><label>Tháng Tiết Khí (Gốc tại 5):</label><select id="selThang" onchange="run()"></select></div>
+        <div><label>Tháng Tiết Khí (Gốc 5):</label><select id="selThang" onchange="run()"></select></div>
         <div><label>Tuổi Xét (Phi Thuận):</label><select id="selTuoi" onchange="run()"></select></div>
     </div>
 
@@ -67,18 +68,19 @@
 
 <script>
 const hoaGiap = ["Giáp Tý","Ất Sửu","Bính Dần","Đinh Mão","Mậu Thìn","Kỷ Tị","Canh Ngọ","Tân Mùi","Nhâm Thân","Quý Dậu","Giáp Tuất","Ất Hợi","Bính Tý","Đinh Sửu","Mậu Dần","Kỷ Mão","Canh Thìn","Tân Tị","Nhâm Ngọ","Quý Mùi","Giáp Thân","Ất Dậu","Bính Tuất","Đinh Hợi","Mậu Tý","Kỷ Sửu","Canh Dần","Tân Mão","Nhâm Thìn","Quý Tị","Giáp Ngọ","Ất Mùi","Bính Thân","Đinh Dậu","Mậu Tuất","Kỷ Hợi","Canh Tý","Tân Sửu","Nhâm Dần","Quý Mão","Giáp Thìn","Ất Tị","Bính Ngọ","Đinh Mùi","Mậu Thân","Kỷ Dậu","Canh Tuất","Tân Hợi","Nhâm Tý","Quý Sửu","Giáp Dần","Ất Mão","Bính Thìn","Đinh Tị","Mậu Ngọ","Kỷ Mùi","Canh Thân","Tân Dậu","Nhâm Tuất","Quý Hợi"];
-// Thứ tự Lường Thiên Xích chuẩn: 5 -> 6 -> 7 -> 8 -> 9 -> 1 -> 2 -> 3 -> 4
 const ltx = [5, 6, 7, 8, 9, 1, 2, 3, 4];
 
+// DATA CUNG PHI (Nhúng chuẩn)
 const dataCungPhi = {
     1924: {nam: 4, nu: 2}, 1925: {nam: 3, nu: 3}, 1926: {nam: 2, nu: 4}, 1927: {nam: 1, nu: 8}, 1928: {nam: 9, nu: 6}, 1929: {nam: 8, nu: 7}, 1930: {nam: 7, nu: 8}, 1931: {nam: 6, nu: 9}, 1932: {nam: 2, nu: 1}, 1933: {nam: 4, nu: 2}, 1934: {nam: 3, nu: 3}, 1935: {nam: 2, nu: 4}, 1936: {nam: 1, nu: 8}, 1937: {nam: 9, nu: 6}, 1938: {nam: 8, nu: 7}, 1939: {nam: 7, nu: 8}, 1940: {nam: 6, nu: 9}, 1941: {nam: 2, nu: 1}, 1942: {nam: 4, nu: 2}, 1943: {nam: 3, nu: 3}, 1944: {nam: 2, nu: 4}, 1945: {nam: 1, nu: 8}, 1946: {nam: 9, nu: 6}, 1947: {nam: 8, nu: 7}, 1948: {nam: 7, nu: 8}, 1949: {nam: 6, nu: 9}, 1950: {nam: 2, nu: 1}, 1951: {nam: 4, nu: 2}, 1952: {nam: 3, nu: 3}, 1953: {nam: 2, nu: 4}, 1954: {nam: 1, nu: 8}, 1955: {nam: 9, nu: 6}, 1956: {nam: 8, nu: 7}, 1957: {nam: 7, nu: 8}, 1958: {nam: 6, nu: 9}, 1959: {nam: 2, nu: 1}, 1960: {nam: 4, nu: 2}, 1961: {nam: 3, nu: 3}, 1962: {nam: 2, nu: 4}, 1963: {nam: 1, nu: 8}, 1964: {nam: 9, nu: 6}, 1965: {nam: 8, nu: 7}, 1966: {nam: 7, nu: 8}, 1967: {nam: 6, nu: 9}, 1968: {nam: 2, nu: 1}, 1969: {nam: 4, nu: 2}, 1970: {nam: 3, nu: 3}, 1971: {nam: 2, nu: 4}, 1972: {nam: 1, nu: 8}, 1973: {nam: 9, nu: 6}, 1974: {nam: 8, nu: 7}, 1975: {nam: 7, nu: 8}, 1976: {nam: 6, nu: 9}, 1977: {nam: 2, nu: 1}, 1978: {nam: 4, nu: 2}, 1979: {nam: 3, nu: 3}, 1980: {nam: 2, nu: 4}, 1981: {nam: 1, nu: 8}, 1982: {nam: 9, nu: 6}, 1983: {nam: 8, nu: 7}, 1984: {nam: 7, nu: 8}, 1985: {nam: 6, nu: 9}, 1986: {nam: 2, nu: 1}, 1987: {nam: 4, nu: 2}, 1988: {nam: 3, nu: 3}, 1989: {nam: 2, nu: 4}, 1990: {nam: 1, nu: 8}, 1991: {nam: 9, nu: 6}, 1992: {nam: 8, nu: 7}, 1993: {nam: 7, nu: 8}, 1994: {nam: 6, nu: 9}, 1995: {nam: 2, nu: 1}, 1996: {nam: 4, nu: 2}, 1997: {nam: 3, nu: 3}, 1998: {nam: 2, nu: 4}, 1999: {nam: 1, nu: 8}, 2000: {nam: 9, nu: 6}, 2001: {nam: 8, nu: 7}, 2002: {nam: 7, nu: 8}, 2003: {nam: 6, nu: 9}, 2004: {nam: 2, nu: 1}, 2005: {nam: 4, nu: 2}, 2006: {nam: 3, nu: 3}, 2007: {nam: 2, nu: 4}, 2008: {nam: 1, nu: 8}, 2009: {nam: 9, nu: 6}, 2010: {nam: 8, nu: 7}, 2011: {nam: 7, nu: 8}, 2012: {nam: 6, nu: 9}, 2013: {nam: 2, nu: 1}, 2014: {nam: 4, nu: 2}, 2015: {nam: 3, nu: 3}, 2016: {nam: 2, nu: 4}, 2017: {nam: 1, nu: 8}, 2018: {nam: 6, nu: 9}, 2019: {nam: 7, nu: 8}, 2020: {nam: 8, nu: 7}, 2021: {nam: 9, nu: 6}, 2022: {nam: 2, nu: 1}, 2023: {nam: 4, nu: 2}, 2024: {nam: 3, nu: 3}, 2025: {nam: 2, nu: 4}, 2026: {nam: 1, nu: 8}, 2027: {nam: 9, nu: 6}, 2028: {nam: 8, nu: 7}, 2029: {nam: 7, nu: 8}, 2030: {nam: 6, nu: 9}, 2031: {nam: 2, nu: 1}, 2032: {nam: 4, nu: 2}, 2033: {nam: 3, nu: 3}, 2034: {nam: 2, nu: 4}, 2035: {nam: 1, nu: 8}, 2036: {nam: 9, nu: 6}, 2037: {nam: 8, nu: 7}, 2038: {nam: 7, nu: 8}, 2039: {nam: 6, nu: 9}, 2040: {nam: 2, nu: 1}, 2041: {nam: 4, nu: 2}, 2042: {nam: 3, nu: 3}, 2043: {nam: 2, nu: 4}
 };
 
+// BẢNG NẠP GIÁP 24 SƠN (q là số cung nạp vào sơn đó)
 const mappingSonQuai = {
     1: { name: "Khảm", sons: [{s:"Nhâm", q:"6"}, {s:"Tý", q:"1"}, {s:"Quý", q:"2"}] },
     2: { name: "Khôn", sons: [{s:"Mùi", q:"3"}, {s:"Khôn", q:"2"}, {s:"Thân", q:"1"}] },
     3: { name: "Chấn", sons: [{s:"Giáp", q:"6"}, {s:"Mão", q:"3"}, {s:"Ất", q:"2"}] },
-    4: { name: "Tốn", sons: [{s:"Thìn", q:"1"}, {s:"Tốn", q:"4"}, {s:"Tỵ", q:"7"}] },
+    4: { name: "Tốn", sons: [{s:"Thìn", q:"6"}, {s:"Tốn", q:"4"}, {s:"Tỵ", q:"1"}] }, // Đã sửa theo logic ví dụ bạn đưa
     6: { name: "Càn", sons: [{s:"Tuất", q:"9"}, {s:"Càn", q:"6"}, {s:"Hợi", q:"3"}] },
     7: { name: "Đoài", sons: [{s:"Canh", q:"3"}, {s:"Dậu", q:"7"}, {s:"Tân", q:"4"}] },
     8: { name: "Cấn", sons: [{s:"Sửu", q:"7"}, {s:"Cấn", q:"8"}, {s:"Dần", q:"9"}] },
@@ -105,12 +107,11 @@ function init() {
         sT.add(new Option(v, v)); 
         sU.add(new Option(v, v)); 
     });
-    sT.value = "Giáp Tý"; sU.value = "Giáp Tý";
+    sT.value = "Kỷ Sửu"; sU.value = "Giáp Tý";
     run();
 }
 
 function run() {
-    // Reset các thẻ hiển thị trên lưới
     for(let i=1; i<=9; i++) {
         const div = document.getElementById('v' + i);
         if(div) div.innerHTML = "";
@@ -122,42 +123,36 @@ function run() {
     let cungPhiTuoi = 0;
     if (dataCungPhi[namSinh]) {
         cungPhiTuoi = (gioiTinh === 'nam') ? dataCungPhi[namSinh].nam : dataCungPhi[namSinh].nu;
-    } else {
-        document.getElementById('analysisBox').innerHTML = "Dữ liệu năm sinh này chưa cập nhật.";
-        return;
     }
 
-    const tenCung = tenQuai[cungPhiTuoi];
     const thang = document.getElementById('selThang').value;
     const tuoi = document.getElementById('selTuoi').value;
 
     const idxT = hoaGiap.indexOf(thang);
     const idxU = hoaGiap.indexOf(tuoi);
 
-    // --- LOGIC PHI THUẬN LƯỜNG THIÊN XÍCH ---
-    // Khoảng cách luôn dương trong vòng 60 hoa giáp (đếm tiến)
+    // Thuật toán phi thuận
     let buocNhay = (idxU >= idxT) ? (idxU - idxT) : (60 - (idxT - idxU));
-    
-    // Tìm cung đích dựa trên mảng Lường Thiên Xích (Gốc từ cung 5)
     let cungDich = ltx[buocNhay % 9];
 
-    // Hiển thị vị trí trên Grid
     document.getElementById('v' + cungDich).innerHTML = `<div class="tag">${tuoi}</div>`;
     document.getElementById('v5').innerHTML += `<div class="tag">Gốc: ${thang}</div>`;
 
-    // Phân tích Bát San
-    let html = `<div style="text-align:center; font-weight:bold; color:#d32f2f; margin-bottom:10px; font-size:16px;">MỆNH CHỦ: ${tenCung} (Cung ${cungPhiTuoi})</div>`;
-    html += `<div style="text-align:center; margin-bottom:15px;">Tuổi <b>${tuoi}</b> phi thuận từ <b>${thang}</b> (5) đến cung <b>${cungDich}</b></div>`;
+    let html = `<div style="text-align:center; font-weight:bold; color:#d32f2f; margin-bottom:10px;">MỆNH: ${tenQuai[cungPhiTuoi]} (${cungPhiTuoi})</div>`;
+    html += `<p style="text-align:center;">Tuổi <b>${tuoi}</b> phi thuận từ <b>${thang}</b> đến <b>Cung ${cungDich} (${tenQuai[cungDich]||'Trung'})</b></p>`;
 
     if(cungDich === 5) {
-        html += "<div style='text-align:center; color:#b22222; font-weight:bold; border:1px dashed #b22222; padding:10px;'>TUỔI NHẬP TRUNG CUNG<br>(Không xét 24 sơn)</div>";
+        html += "<p style='text-align:center; color:#b22222; font-weight:bold;'>Tuổi nhập Trung Cung.</p>";
     } else {
-        html += `<div style="font-weight:bold; margin-bottom:8px; color:#555;">Kết quả đối chiếu 24 Sơn tại cung ${tenQuai[cungDich]}:</div>`;
+        html += `<div style="font-weight:bold; margin-bottom:10px; color:#555;">Đối chiếu Bát Sát theo Nạp Quái:</div>`;
         mappingSonQuai[cungDich].sons.forEach(item => {
             let sao = duNienMatrix[cungPhiTuoi][item.q];
             let isHung = ["Tuyệt mệnh", "Ngũ quỷ", "Họa hại", "Lục sát"].includes(sao);
             html += `<div class="son-item">
-                <span>Sơn <b>${item.s}</b>:</span>
+                <div>
+                    <b>Sơn ${item.s}</b> 
+                    <span class="nap-quai">(nạp quái ${item.q} - ${tenQuai[item.q]})</span>
+                </div>
                 <span class="${isHung?'hung':'cat'}">${sao}</span>
             </div>`;
         });
