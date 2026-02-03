@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMA - Thuật Toán Đa Chiều v1.1</title>
+    <style>
+        :root {
+            --neon-green: #00ffcc;
+            --dark-bg: #0a0c10;
+            --text-color: #e0e0e0;
+            --error-red: #ff4d4d;
+            --accent-blue: #00aaff;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            border: 1px solid var(--neon-green);
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        h1 {
+            color: var(--neon-green);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-bottom: 1px solid var(--neon-green);
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+
+        .input-group {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--neon-green);
+            color: white;
+            padding: 12px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: var(--neon-green);
+            color: black;
+            border: none;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            box-shadow: 0 0 15px var(--neon-green);
+            transform: translateY(-2px);
+        }
+
+        .btn-copy {
+            background: var(--accent-blue);
+            display: none; /* Chỉ hiện sau khi có kết quả */
+        }
+
+        .btn-copy:hover {
+            box-shadow: 0 0 15px var(--accent-blue);
+        }
+
+        #results {
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .node-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .node-card {
+            border: 1px solid #333;
+            padding: 12px;
+            font-size: 0.85em;
+            background: rgba(255, 255, 255, 0.03);
+            position: relative;
+        }
+
+        .node-name {
+            color: var(--neon-green);
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .weight-bar {
+            height: 4px;
+            background: #222;
+            margin: 8px 0;
+            overflow: hidden;
+        }
+
+        .weight-fill {
+            height: 100%;
+            background: var(--neon-green);
+            transition: width 1s ease-in-out;
+        }
+
+        .final-verdict {
+            border: 1px double var(--neon-green);
+            padding: 20px;
+            background: rgba(0, 255, 204, 0.05);
+        }
+
+        .status-msg {
+            font-style: italic;
+            color: #888;
+            font-size: 0.8em;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            display: none;
+            color: var(--neon-green);
+            padding: 20px;
+            font-weight: bold;
+        }
+
+        #copyStatus {
+            font-size: 0.8em;
+            color: var(--accent-blue);
+            margin-left: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>TMA System v1.1</h1>
+    <p class="status-msg">> Ready for multidimensional query...</p>
+    
+    <div class="input-group">
+        <input type="text" id="userQuestion" placeholder="Nhập vấn đề bạn muốn chiêm đoán tại đây..." autocomplete="off">
+    </div>
+
+    <div class="btn-group">
+        <button onclick="runTMA()">RUN ALGORITHM</button>
+        <button id="copyBtn" class="btn-copy" onclick="copyResults()">COPY DATA</button>
+        <span id="copyStatus">COPIED!</span>
+    </div>
+
+    <div id="loader" class="loading">CALCULATING PROBABILITIES... [##########]</div>
+
+    <div id="results">
+        <div class="node-grid" id="nodeContainer"></div>
+        <div class="final-verdict">
+            <h2 id="summaryTitle" style="margin-top:0"></h2>
+            <p id="summaryText"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const nodeData = [
+        { name: "Node 01: Input", desc: "Nền tảng & Quá khứ" },
+        { name: "Node 02: Logic", desc: "Tiến trình tuyến tính" },
+        { name: "Node 03: Entropy", desc: "Biến số ngẫu nhiên" },
+        { name: "Node 04: Bias", desc: "Thiên kiến chủ quan" },
+        { name: "Node 05: Processing", desc: "Hành động thực thi" },
+        { name: "Node 06: Latency", desc: "Rào cản/Độ trễ" },
+        { name: "Node 07: Optimization", desc: "Giải pháp tối ưu" },
+        { name: "Node 08: Output", desc: "Xác suất kết quả" }
+    ];
+
+    let currentSessionData = {
+        question: "",
+        nodes: [],
+        verdict: ""
+    };
+
+    function runTMA() {
+        const question = document.getElementById('userQuestion').value;
+        if (!question) {
+            alert("Hệ thống yêu cầu dữ liệu đầu vào (Câu hỏi)!");
+            return;
+        }
+
+        currentSessionData.question = question;
+        document.getElementById('results').style.display = 'none';
+        document.getElementById('copyBtn').style.display = 'none';
+        document.getElementById('loader').style.display = 'block';
+
+        setTimeout(() => {
+            document.getElementById('loader').style.display = 'none';
+            generatePrediction();
+            document.getElementById('copyBtn').style.display = 'inline-block';
+        }, 1200);
+    }
+
+    function generatePrediction() {
+        const container = document.getElementById('nodeContainer');
+        container.innerHTML = '';
+        currentSessionData.nodes = [];
+        
+        let totalWeight = 0;
+
+        nodeData.forEach((node, index) => {
+            const weight = (Math.random() * 2 - 1).toFixed(2);
+            const val = parseFloat(weight);
+            
+            currentSessionData.nodes.push({ name: node.name, weight: weight });
+            totalWeight += val;
+
+            const card = document.createElement('div');
+            card.className = 'node-card';
+            const barWidth = ((val + 1) / 2) * 100;
+
+            card.innerHTML = `
+                <span class="node-name">${node.name}</span>
+                <div class="weight-bar"><div class="weight-fill" style="width: ${barWidth}%"></div></div>
+                <span>W: ${weight}</span>
+            `;
+            container.appendChild(card);
+        });
+
+        interpret(totalWeight);
+        document.getElementById('results').style.display = 'block';
+    }
+
+    function interpret(total) {
+        const summaryText = document.getElementById('summaryText');
+        const summaryTitle = document.getElementById('summaryTitle');
+        const weights = currentSessionData.nodes.map(n => parseFloat(n.weight));
+
+        let advice = "";
+        if (total > 1.5) {
+            summaryTitle.innerText = "STATUS: OPTIMIZED (TÍCH CỰC)";
+            summaryTitle.style.color = "var(--neon-green)";
+            advice = "Dòng chảy dữ liệu thông suốt. Cơ hội thành công cao.";
+        } else if (total < -1) {
+            summaryTitle.innerText = "STATUS: CONFLICT (RỦI RO)";
+            summaryTitle.style.color = "var(--error-red)";
+            advice = "Hệ thống phát hiện xung đột năng lượng lớn. Nên thận trọng.";
+        } else {
+            summaryTitle.innerText = "STATUS: STABLE (TRUNG DUNG)";
+            summaryTitle.style.color = "#ffcc00";
+            advice = "Dữ liệu ở trạng thái cân bằng. Cần thêm tác động ngoại lực.";
+        }
+
+        let insight = "<br><br><strong>ANALYSIS LOG:</strong><br>";
+        if (weights[2] > 0.6) insight += "- Cảnh báo Entropy cao: Biến số ngẫu nhiên có thể đảo ngược tình thế.<br>";
+        if (weights[3] > 0.6) insight += "- Cảnh báo Bias: Bạn đang bị chi phối bởi cảm xúc nhiều hơn lý trí.<br>";
+        if (weights[5] < -0.5) insight += "- Cảnh báo Latency: Có sự trì trệ trong việc triển khai thực tế.<br>";
+
+        currentSessionData.verdict = summaryTitle.innerText + " | " + advice;
+        summaryText.innerHTML = advice + insight;
+    }
+
+    function copyResults() {
+        // Tạo chuỗi văn bản để copy
+        let copyText = `[TMA DIVINATION REPORT]\n`;
+        copyText += `QUERY: ${currentSessionData.question}\n`;
+        copyText += `------------------------------\n`;
+        currentSessionData.nodes.forEach(n => {
+            copyText += `${n.name}: [Weight ${n.weight}]\n`;
+        });
+        copyText += `------------------------------\n`;
+        copyText += `FINAL VERDICT: ${currentSessionData.verdict}\n`;
+        copyText += `[End of log]`;
+
+        // Sử dụng Clipboard API
+        navigator.clipboard.writeText(copyText).then(() => {
+            const status = document.getElementById('copyStatus');
+            status.style.display = 'inline';
+            setTimeout(() => { status.style.display = 'none'; }, 2000);
+        });
+    }
+</script>
+
+</body>
+</html>
