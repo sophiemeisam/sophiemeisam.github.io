@@ -2,47 +2,44 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Liên Hoa Độn – Xin Chữ Thổ Công</title>
+<title>Liên Hoa Độn – Thỉnh Chữ Lấy Số</title>
+
 <style>
-    body {
-        font-family: "Noto Serif", serif;
-        background: #2e2b27;
-        color: #f3e9d2;
-        text-align: center;
-        padding: 20px;
-    }
-    h1 {
-        letter-spacing: 2px;
-    }
-    .box {
-        border: 1px solid #8b7e66;
-        padding: 15px;
-        margin: 15px auto;
-        width: 90%;
-        max-width: 420px;
-        background: #3a352f;
-    }
-    .han {
-        font-size: 48px;
-        margin: 10px 0;
-    }
-    button {
-        background: #8b7e66;
-        color: #2e2b27;
-        border: none;
-        padding: 10px 18px;
-        font-size: 16px;
-        cursor: pointer;
-        margin: 5px;
-    }
-    button:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-    }
-    .note {
-        font-size: 14px;
-        opacity: 0.8;
-    }
+body{
+  background:#2e2b27;
+  color:#f3e9d2;
+  font-family:"Noto Serif","Times New Roman",serif;
+  text-align:center;
+  padding:20px;
+}
+h1{letter-spacing:2px;}
+.box{
+  border:1px solid #8b7e66;
+  background:#3a352f;
+  padding:15px;
+  margin:15px auto;
+  max-width:420px;
+}
+.han{
+  font-size:52px;
+  margin:10px 0;
+}
+button{
+  background:#8b7e66;
+  color:#2e2b27;
+  border:none;
+  padding:10px 18px;
+  font-size:16px;
+  cursor:pointer;
+}
+button:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
+}
+.note{
+  font-size:14px;
+  opacity:0.8;
+}
 </style>
 </head>
 
@@ -52,152 +49,124 @@
 <div class="note">靜心 · 誠意 · 請示</div>
 
 <div class="box">
-    <h2>Quẻ Thượng</h2>
-    <div id="thuongChar" class="han">—</div>
-    <div id="thuongInfo"></div>
-    <button id="btnThuong">Thỉnh Chữ Thượng</button>
+  <h2>Quẻ Thượng</h2>
+  <div id="thuongChar" class="han">—</div>
+  <div id="thuongInfo"></div>
+  <button id="btnThuong">Thỉnh Chữ Thượng</button>
 </div>
 
 <div class="box">
-    <h2>Quẻ Hạ</h2>
-    <div id="haChar" class="han">—</div>
-    <div id="haInfo"></div>
-    <button id="btnHa" disabled>Thỉnh Chữ Hạ</button>
+  <h2>Quẻ Hạ</h2>
+  <div id="haChar" class="han">—</div>
+  <div id="haInfo"></div>
+  <button id="btnHa" disabled>Thỉnh Chữ Hạ</button>
 </div>
 
 <div class="note">此數既出 · 不可再擾</div>
 
 <script>
-// ================= DATA 100 CHỮ =================
-const data = [
- {char:"米",mean:"gạo",strokes:6},
- {char:"飯",mean:"cơm",strokes:12},
- {char:"麵",mean:"mì",strokes:20},
- {char:"菜",mean:"rau/món ăn",strokes:11},
- {char:"茶",mean:"trà",strokes:9},
- {char:"肉",mean:"thịt",strokes:6},
- {char:"魚",mean:"cá",strokes:11},
- {char:"雞",mean:"gà",strokes:18},
- {char:"豬",mean:"heo",strokes:11},
- {char:"牛",mean:"bò",strokes:4},
- {char:"羊",mean:"dê/cừu",strokes:6},
- {char:"蛋",mean:"trứng",strokes:11},
- {char:"奶",mean:"sữa",strokes:5},
- {char:"油",mean:"dầu",strokes:8},
- {char:"鹽",mean:"muối",strokes:24},
- {char:"糖",mean:"đường",strokes:16},
- {char:"醋",mean:"giấm",strokes:15},
- {char:"酒",mean:"rượu",strokes:10},
- {char:"醬",mean:"tương/sốt",strokes:18},
- {char:"蔥",mean:"hành",strokes:15},
- {char:"薑",mean:"gừng",strokes:19},
- {char:"蒜",mean:"tỏi",strokes:13},
- {char:"辣",mean:"cay",strokes:14},
- {char:"鍋",mean:"nồi/chảo",strokes:17},
- {char:"刀",mean:"dao",strokes:2},
- {char:"叉",mean:"nĩa",strokes:3},
- {char:"勺",mean:"muỗng",strokes:3},
- {char:"碗",mean:"bát",strokes:13},
- {char:"盤",mean:"đĩa",strokes:15},
- {char:"杯",mean:"ly",strokes:8},
- {char:"壺",mean:"ấm/bình",strokes:11},
- {char:"爐",mean:"bếp",strokes:20},
- {char:"火",mean:"lửa",strokes:4},
- {char:"水",mean:"nước",strokes:4},
- {char:"冰",mean:"đá",strokes:6},
- {char:"湯",mean:"canh",strokes:12},
- {char:"粥",mean:"cháo",strokes:12},
- {char:"飽",mean:"no",strokes:13},
- {char:"餓",mean:"đói",strokes:15},
- {char:"香",mean:"thơm",strokes:9},
- {char:"甜",mean:"ngọt",strokes:11},
- {char:"苦",mean:"đắng",strokes:8},
- {char:"酸",mean:"chua",strokes:14},
- {char:"鮮",mean:"tươi",strokes:17},
- {char:"熟",mean:"chín",strokes:15},
- {char:"生",mean:"sống",strokes:5},
- {char:"烤",mean:"nướng",strokes:10},
- {char:"煮",mean:"nấu",strokes:12},
- {char:"蒸",mean:"hấp",strokes:13},
- {char:"炒",mean:"xào",strokes:8},
- {char:"燉",mean:"hầm",strokes:16},
- {char:"煎",mean:"chiên",strokes:13},
- {char:"切",mean:"cắt",strokes:4},
- {char:"洗",mean:"rửa",strokes:9},
- {char:"剝",mean:"bóc",strokes:10},
- {char:"種",mean:"trồng/giống",strokes:14},
- {char:"收",mean:"thu hoạch",strokes:6},
- {char:"農",mean:"nông",strokes:13},
- {char:"田",mean:"ruộng",strokes:5},
- {char:"麥",mean:"lúa mì",strokes:11},
- {char:"豆",mean:"đậu",strokes:7},
- {char:"果",mean:"trái cây",strokes:8},
- {char:"花",mean:"hoa",strokes:8},
- {char:"葉",mean:"lá",strokes:12},
- {char:"根",mean:"rễ",strokes:10},
- {char:"莖",mean:"thân cây",strokes:10},
- {char:"瓜",mean:"dưa",strokes:5},
- {char:"薯",mean:"khoai",strokes:17},
- {char:"蔬",mean:"rau củ",strokes:15},
- {char:"桃",mean:"đào",strokes:10},
- {char:"李",mean:"mận",strokes:7},
- {char:"梨",mean:"lê",strokes:11},
- {char:"橙",mean:"cam",strokes:16},
- {char:"柑",mean:"quýt",strokes:9},
- {char:"柚",mean:"bưởi",strokes:9},
- {char:"葡",mean:"nho",strokes:12},
- {char:"萄",mean:"nho",strokes:11},
- {char:"棗",mean:"táo tàu",strokes:12},
- {char:"梅",mean:"mơ",strokes:11},
- {char:"杏",mean:"hạnh",strokes:7},
- {char:"蓮",mean:"sen",strokes:15},
- {char:"藕",mean:"củ sen",strokes:18},
- {char:"菇",mean:"nấm",strokes:11},
- {char:"菠",mean:"rau bina",strokes:14},
- {char:"蘿",mean:"củ cải",strokes:22},
- {char:"蔔",mean:"củ cải",strokes:14},
- {char:"蔗",mean:"mía",strokes:17},
- {char:"蜜",mean:"mật ong",strokes:14},
- {char:"鹿",mean:"nai",strokes:11},
- {char:"蝦",mean:"tôm",strokes:15},
- {char:"蟹",mean:"cua",strokes:19},
- {char:"貝",mean:"sò",strokes:7},
- {char:"蠔",mean:"hàu",strokes:20},
- {char:"魷",mean:"mực",strokes:19},
- {char:"鮑",mean:"bào ngư",strokes:16},
- {char:"鰻",mean:"lươn",strokes:22},
- {char:"鱈",mean:"cá tuyết",strokes:22},
- {char:"鴨",mean:"vịt",strokes:16},
- {char:"鵝",mean:"ngỗng",strokes:18},
- {char:"鴿",mean:"bồ câu",strokes:17}
+// ===================== DATA 100 CHỮ =====================
+const HAN_DATA = [
+ {char:"米",mean:"gạo",strokes:6},{char:"飯",mean:"cơm",strokes:12},
+ {char:"麵",mean:"mì",strokes:20},{char:"菜",mean:"rau/món ăn",strokes:11},
+ {char:"茶",mean:"trà",strokes:9},{char:"肉",mean:"thịt",strokes:6},
+ {char:"魚",mean:"cá",strokes:11},{char:"雞",mean:"gà",strokes:18},
+ {char:"豬",mean:"heo",strokes:11},{char:"牛",mean:"bò",strokes:4},
+ {char:"羊",mean:"dê/cừu",strokes:6},{char:"蛋",mean:"trứng",strokes:11},
+ {char:"奶",mean:"sữa",strokes:5},{char:"油",mean:"dầu",strokes:8},
+ {char:"鹽",mean:"muối",strokes:24},{char:"糖",mean:"đường",strokes:16},
+ {char:"醋",mean:"giấm",strokes:15},{char:"酒",mean:"rượu",strokes:10},
+ {char:"醬",mean:"tương/sốt",strokes:18},{char:"蔥",mean:"hành",strokes:15},
+ {char:"薑",mean:"gừng",strokes:19},{char:"蒜",mean:"tỏi",strokes:13},
+ {char:"辣",mean:"cay",strokes:14},{char:"鍋",mean:"nồi/chảo",strokes:17},
+ {char:"刀",mean:"dao",strokes:2},{char:"叉",mean:"nĩa",strokes:3},
+ {char:"勺",mean:"muỗng",strokes:3},{char:"碗",mean:"bát",strokes:13},
+ {char:"盤",mean:"đĩa",strokes:15},{char:"杯",mean:"ly",strokes:8},
+ {char:"壺",mean:"ấm/bình",strokes:11},{char:"爐",mean:"bếp",strokes:20},
+ {char:"火",mean:"lửa",strokes:4},{char:"水",mean:"nước",strokes:4},
+ {char:"冰",mean:"đá",strokes:6},{char:"湯",mean:"canh",strokes:12},
+ {char:"粥",mean:"cháo",strokes:12},{char:"飽",mean:"no",strokes:13},
+ {char:"餓",mean:"đói",strokes:15},{char:"香",mean:"thơm",strokes:9},
+ {char:"甜",mean:"ngọt",strokes:11},{char:"苦",mean:"đắng",strokes:8},
+ {char:"酸",mean:"chua",strokes:14},{char:"鮮",mean:"tươi",strokes:17},
+ {char:"熟",mean:"chín",strokes:15},{char:"生",mean:"sống",strokes:5},
+ {char:"烤",mean:"nướng",strokes:10},{char:"煮",mean:"nấu",strokes:12},
+ {char:"蒸",mean:"hấp",strokes:13},{char:"炒",mean:"xào",strokes:8},
+ {char:"燉",mean:"hầm",strokes:16},{char:"煎",mean:"chiên",strokes:13},
+ {char:"切",mean:"cắt",strokes:4},{char:"洗",mean:"rửa",strokes:9},
+ {char:"剝",mean:"bóc",strokes:10},{char:"種",mean:"trồng/giống",strokes:14},
+ {char:"收",mean:"thu hoạch",strokes:6},{char:"農",mean:"nông",strokes:13},
+ {char:"田",mean:"ruộng",strokes:5},{char:"麥",mean:"lúa mì",strokes:11},
+ {char:"豆",mean:"đậu",strokes:7},{char:"果",mean:"trái cây",strokes:8},
+ {char:"花",mean:"hoa",strokes:8},{char:"葉",mean:"lá",strokes:12},
+ {char:"根",mean:"rễ",strokes:10},{char:"莖",mean:"thân cây",strokes:10},
+ {char:"瓜",mean:"dưa",strokes:5},{char:"薯",mean:"khoai",strokes:17},
+ {char:"蔬",mean:"rau củ",strokes:15},{char:"桃",mean:"đào",strokes:10},
+ {char:"李",mean:"mận",strokes:7},{char:"梨",mean:"lê",strokes:11},
+ {char:"橙",mean:"cam",strokes:16},{char:"柑",mean:"quýt",strokes:9},
+ {char:"柚",mean:"bưởi",strokes:9},{char:"葡",mean:"nho",strokes:12},
+ {char:"萄",mean:"nho",strokes:11},{char:"棗",mean:"táo tàu",strokes:12},
+ {char:"梅",mean:"mơ",strokes:11},{char:"杏",mean:"hạnh",strokes:7},
+ {char:"蓮",mean:"sen",strokes:15},{char:"藕",mean:"củ sen",strokes:18},
+ {char:"菇",mean:"nấm",strokes:11},{char:"菠",mean:"rau bina",strokes:14},
+ {char:"蘿",mean:"củ cải",strokes:22},{char:"蔔",mean:"củ cải",strokes:14},
+ {char:"蔗",mean:"mía",strokes:17},{char:"蜜",mean:"mật ong",strokes:14},
+ {char:"鹿",mean:"nai",strokes:11},{char:"蝦",mean:"tôm",strokes:15},
+ {char:"蟹",mean:"cua",strokes:19},{char:"貝",mean:"sò",strokes:7},
+ {char:"蠔",mean:"hàu",strokes:20},{char:"魷",mean:"mực",strokes:19},
+ {char:"鮑",mean:"bào ngư",strokes:16},{char:"鰻",mean:"lươn",strokes:22},
+ {char:"鱈",mean:"cá tuyết",strokes:22},{char:"鴨",mean:"vịt",strokes:16},
+ {char:"鵝",mean:"ngỗng",strokes:18},{char:"鴿",mean:"bồ câu",strokes:17}
 ];
 
-// ================= RANDOM CÓ SEED THỜI KHẮC =================
-function pickRandomChar() {
-    const seed = Date.now();
-    const index = seed % data.length;
-    return data[index];
+// ===================== THỜI GIAN THỔ =====================
+function getThoDelay(){
+  return Math.random() < 0.5 ? 5000 : 10000;
 }
 
-// ================= EVENT =================
+// ===================== PICK CHỮ =====================
+function pickHanChar(){
+  const seed = Date.now();
+  return HAN_DATA[seed % HAN_DATA.length];
+}
+
+// ===================== UI =====================
 const btnThuong = document.getElementById("btnThuong");
 const btnHa = document.getElementById("btnHa");
 
-btnThuong.onclick = () => {
-    const c = pickRandomChar();
-    document.getElementById("thuongChar").innerText = c.char;
-    document.getElementById("thuongInfo").innerText =
-        `Nghĩa: ${c.mean} | Số nét: ${c.strokes}`;
-    btnThuong.disabled = true;
-    btnHa.disabled = false;
+btnThuong.onclick = ()=>{
+  btnThuong.disabled = true;
+  document.getElementById("thuongChar").innerText="⋯⋯";
+  document.getElementById("thuongInfo").innerText="Thổ khí đang định số…";
+
+  const delay = getThoDelay();
+
+  setTimeout(()=>{
+    const c = pickHanChar();
+    document.getElementById("thuongChar").innerText=c.char;
+    document.getElementById("thuongInfo").innerText=
+      `Nghĩa: ${c.mean} | Số nét: ${c.strokes}`;
+    btnHa.disabled=false;
+
+    // 👉 c.strokes = SỐ THƯỢNG (đưa sang Liên Hoa Độn)
+  },delay);
 };
 
-btnHa.onclick = () => {
-    const c = pickRandomChar();
-    document.getElementById("haChar").innerText = c.char;
-    document.getElementById("haInfo").innerText =
-        `Nghĩa: ${c.mean} | Số nét: ${c.strokes}`;
-    btnHa.disabled = true;
+btnHa.onclick = ()=>{
+  btnHa.disabled = true;
+  document.getElementById("haChar").innerText="⋯⋯";
+  document.getElementById("haInfo").innerText="Thổ khí đang định số…";
+
+  const delay = getThoDelay();
+
+  setTimeout(()=>{
+    const c = pickHanChar();
+    document.getElementById("haChar").innerText=c.char;
+    document.getElementById("haInfo").innerText=
+      `Nghĩa: ${c.mean} | Số nét: ${c.strokes}`;
+
+    // 👉 c.strokes = SỐ HẠ (đưa sang Liên Hoa Độn)
+  },delay);
 };
 </script>
 
