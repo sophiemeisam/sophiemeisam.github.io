@@ -20,7 +20,7 @@ body{
   padding:26px;
 }
 
-/* ===== TIÊU ĐỀ ===== */
+/* ===== TIÊU ĐỀ CHÍNH ===== */
 h1{
   letter-spacing:3px;
   color:#b30000;
@@ -33,7 +33,7 @@ h1{
 .note{
   font-size:14px;
   color:#8b2a2a;
-  margin-bottom:12px;
+  margin-bottom:14px;
 }
 
 /* ===== KHUNG QUẺ ===== */
@@ -47,24 +47,26 @@ h1{
   box-shadow:
     0 0 18px rgba(255,210,120,0.8),
     inset 0 0 20px rgba(255,245,220,0.9);
-  padding:20px;
-  margin:20px auto;
-  max-width:460px;
-  border-radius:16px;
+  padding:24px;
+  margin:22px auto;
+  max-width:480px;
+  border-radius:18px;
 }
 
-/* ===== TIÊU ĐỀ QUẺ ===== */
+/* ===== TIÊU ĐỀ QUẺ (200%) ===== */
 .box h2{
   color:#9b1c1c;
   letter-spacing:1px;
-  margin-bottom:10px;
+  margin-bottom:16px;
+  font-size:200%;
+  font-weight:bold;
 }
 
 /* ===== CHỮ HÁN ===== */
 .han{
   font-size:58px;
-  margin:14px 0;
-  color:#c40000; /* chu sa */
+  margin:16px 0;
+  color:#c40000;
   text-shadow:
     0 0 10px rgba(255,190,120,1),
     0 0 3px rgba(150,0,0,0.9);
@@ -74,10 +76,10 @@ h1{
 #thuongInfo, #haInfo{
   font-size:15px;
   color:#6b2a2a;
-  margin-bottom:12px;
+  margin-bottom:16px;
 }
 
-/* ===== NÚT ===== */
+/* ===== NÚT THỈNH CHỮ (200%) ===== */
 button{
   background:
     linear-gradient(180deg,
@@ -86,11 +88,11 @@ button{
       #f0b347 100%);
   color:#7a0000;
   border:1px solid #d49a2f;
-  padding:11px 26px;
-  font-size:16px;
+  padding:18px 36px;
+  font-size:200%;
   font-weight:bold;
   cursor:pointer;
-  border-radius:22px;
+  border-radius:28px;
   box-shadow:
     0 4px 8px rgba(150,70,20,0.45),
     inset 0 0 6px rgba(255,245,220,0.95);
@@ -112,7 +114,7 @@ button:disabled{
 
 /* ===== DÒNG KẾT ===== */
 .footer-note{
-  margin-top:18px;
+  margin-top:20px;
   font-size:14px;
   color:#7a1e1e;
   letter-spacing:1px;
@@ -142,13 +144,58 @@ button:disabled{
 <div class="footer-note">此數既出 · 不可再擾</div>
 
 <script>
-// ===================== DATA CHỮ =====================
+// ===================== DATA 100 CHỮ =====================
 const HAN_DATA = [
- {char:"福",mean:"phúc",strokes:13},{char:"德",mean:"đức",strokes:15},
- {char:"安",mean:"an",strokes:6},{char:"喜",mean:"hỷ",strokes:12},
- {char:"財",mean:"tài",strokes:10},{char:"祿",mean:"lộc",strokes:13},
- {char:"壽",mean:"thọ",strokes:14},{char:"蓮",mean:"sen",strokes:15},
- {char:"香",mean:"hương",strokes:9},{char:"金",mean:"kim",strokes:8}
+ {char:"米",mean:"gạo",strokes:6},{char:"飯",mean:"cơm",strokes:12},
+ {char:"麵",mean:"mì",strokes:20},{char:"菜",mean:"rau/món ăn",strokes:11},
+ {char:"茶",mean:"trà",strokes:9},{char:"肉",mean:"thịt",strokes:6},
+ {char:"魚",mean:"cá",strokes:11},{char:"雞",mean:"gà",strokes:18},
+ {char:"豬",mean:"heo",strokes:11},{char:"牛",mean:"bò",strokes:4},
+ {char:"羊",mean:"dê/cừu",strokes:6},{char:"蛋",mean:"trứng",strokes:11},
+ {char:"奶",mean:"sữa",strokes:5},{char:"油",mean:"dầu",strokes:8},
+ {char:"鹽",mean:"muối",strokes:24},{char:"糖",mean:"đường",strokes:16},
+ {char:"醋",mean:"giấm",strokes:15},{char:"酒",mean:"rượu",strokes:10},
+ {char:"醬",mean:"tương/sốt",strokes:18},{char:"蔥",mean:"hành",strokes:15},
+ {char:"薑",mean:"gừng",strokes:19},{char:"蒜",mean:"tỏi",strokes:13},
+ {char:"辣",mean:"cay",strokes:14},{char:"鍋",mean:"nồi/chảo",strokes:17},
+ {char:"刀",mean:"dao",strokes:2},{char:"叉",mean:"nĩa",strokes:3},
+ {char:"勺",mean:"muỗng",strokes:3},{char:"碗",mean:"bát",strokes:13},
+ {char:"盤",mean:"đĩa",strokes:15},{char:"杯",mean:"ly",strokes:8},
+ {char:"壺",mean:"ấm/bình",strokes:11},{char:"爐",mean:"bếp",strokes:20},
+ {char:"火",mean:"lửa",strokes:4},{char:"水",mean:"nước",strokes:4},
+ {char:"冰",mean:"đá",strokes:6},{char:"湯",mean:"canh",strokes:12},
+ {char:"粥",mean:"cháo",strokes:12},{char:"飽",mean:"no",strokes:13},
+ {char:"餓",mean:"đói",strokes:15},{char:"香",mean:"thơm",strokes:9},
+ {char:"甜",mean:"ngọt",strokes:11},{char:"苦",mean:"đắng",strokes:8},
+ {char:"酸",mean:"chua",strokes:14},{char:"鮮",mean:"tươi",strokes:17},
+ {char:"熟",mean:"chín",strokes:15},{char:"生",mean:"sống",strokes:5},
+ {char:"烤",mean:"nướng",strokes:10},{char:"煮",mean:"nấu",strokes:12},
+ {char:"蒸",mean:"hấp",strokes:13},{char:"炒",mean:"xào",strokes:8},
+ {char:"燉",mean:"hầm",strokes:16},{char:"煎",mean:"chiên",strokes:13},
+ {char:"切",mean:"cắt",strokes:4},{char:"洗",mean:"rửa",strokes:9},
+ {char:"剝",mean:"bóc",strokes:10},{char:"種",mean:"trồng/giống",strokes:14},
+ {char:"收",mean:"thu hoạch",strokes:6},{char:"農",mean:"nông",strokes:13},
+ {char:"田",mean:"ruộng",strokes:5},{char:"麥",mean:"lúa mì",strokes:11},
+ {char:"豆",mean:"đậu",strokes:7},{char:"果",mean:"trái cây",strokes:8},
+ {char:"花",mean:"hoa",strokes:8},{char:"葉",mean:"lá",strokes:12},
+ {char:"根",mean:"rễ",strokes:10},{char:"莖",mean:"thân cây",strokes:10},
+ {char:"瓜",mean:"dưa",strokes:5},{char:"薯",mean:"khoai",strokes:17},
+ {char:"蔬",mean:"rau củ",strokes:15},{char:"桃",mean:"đào",strokes:10},
+ {char:"李",mean:"mận",strokes:7},{char:"梨",mean:"lê",strokes:11},
+ {char:"橙",mean:"cam",strokes:16},{char:"柑",mean:"quýt",strokes:9},
+ {char:"柚",mean:"bưởi",strokes:9},{char:"葡",mean:"nho",strokes:12},
+ {char:"萄",mean:"nho",strokes:11},{char:"棗",mean:"táo tàu",strokes:12},
+ {char:"梅",mean:"mơ",strokes:11},{char:"杏",mean:"hạnh",strokes:7},
+ {char:"蓮",mean:"sen",strokes:15},{char:"藕",mean:"củ sen",strokes:18},
+ {char:"菇",mean:"nấm",strokes:11},{char:"菠",mean:"rau bina",strokes:14},
+ {char:"蘿",mean:"củ cải",strokes:22},{char:"蔔",mean:"củ cải",strokes:14},
+ {char:"蔗",mean:"mía",strokes:17},{char:"蜜",mean:"mật ong",strokes:14},
+ {char:"鹿",mean:"nai",strokes:11},{char:"蝦",mean:"tôm",strokes:15},
+ {char:"蟹",mean:"cua",strokes:19},{char:"貝",mean:"sò",strokes:7},
+ {char:"蠔",mean:"hàu",strokes:20},{char:"魷",mean:"mực",strokes:19},
+ {char:"鮑",mean:"bào ngư",strokes:16},{char:"鰻",mean:"lươn",strokes:22},
+ {char:"鱈",mean:"cá tuyết",strokes:22},{char:"鴨",mean:"vịt",strokes:16},
+ {char:"鵝",mean:"ngỗng",strokes:18},{char:"鴿",mean:"bồ câu",strokes:17}
 ];
 
 // ===================== THỜI GIAN THỔ =====================
