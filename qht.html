@@ -5,89 +5,104 @@
 <title>Liên Hoa Độn – Thỉnh Chữ Lấy Số</title>
 
 <style>
-/* ===== NỀN MIẾU ===== */
+/* ===== NỀN PHÚC KHÍ ===== */
 body{
   background:
-    radial-gradient(circle at top, #fff1d6 0%, #f3cfa5 30%, #c75b4a 65%, #7a1e1e 100%);
-  color:#4a1f1f;
+    radial-gradient(circle at top,
+      #fff6ef 0%,
+      #ffd6d6 25%,
+      #ffb3b3 45%,
+      #f7c873 70%,
+      #e89b3f 100%);
+  color:#7a1e1e;
   font-family:"Noto Serif","Times New Roman",serif;
   text-align:center;
-  padding:25px;
+  padding:26px;
 }
 
 /* ===== TIÊU ĐỀ ===== */
 h1{
   letter-spacing:3px;
-  color:#8b0000;
-  text-shadow:0 0 6px rgba(255,215,150,0.6);
-  margin-bottom:5px;
+  color:#b30000;
+  text-shadow:
+    0 0 8px rgba(255,200,120,0.9),
+    0 0 2px rgba(180,0,0,0.8);
+  margin-bottom:6px;
 }
 
 .note{
   font-size:14px;
-  color:#6b2a2a;
-  opacity:0.9;
-  margin-bottom:10px;
+  color:#8b2a2a;
+  margin-bottom:12px;
 }
 
 /* ===== KHUNG QUẺ ===== */
 .box{
   background:
-    linear-gradient(180deg, #fff7e6 0%, #f6d6a8 100%);
-  border:2px solid #c9a24d;
+    linear-gradient(180deg,
+      #fffaf3 0%,
+      #ffe2c6 55%,
+      #ffd18a 100%);
+  border:2px solid #e2b24d;
   box-shadow:
-    0 0 15px rgba(255,200,120,0.5),
-    inset 0 0 20px rgba(255,240,200,0.8);
-  padding:18px;
-  margin:18px auto;
-  max-width:440px;
-  border-radius:12px;
+    0 0 18px rgba(255,210,120,0.8),
+    inset 0 0 20px rgba(255,245,220,0.9);
+  padding:20px;
+  margin:20px auto;
+  max-width:460px;
+  border-radius:16px;
 }
 
 /* ===== TIÊU ĐỀ QUẺ ===== */
 .box h2{
-  color:#7a1e1e;
+  color:#9b1c1c;
   letter-spacing:1px;
-  margin-bottom:8px;
+  margin-bottom:10px;
 }
 
 /* ===== CHỮ HÁN ===== */
 .han{
-  font-size:56px;
-  margin:12px 0;
-  color:#b30000; /* chu sa */
+  font-size:58px;
+  margin:14px 0;
+  color:#c40000; /* chu sa */
   text-shadow:
-    0 0 8px rgba(255,180,100,0.8),
-    0 0 2px rgba(120,0,0,0.8);
+    0 0 10px rgba(255,190,120,1),
+    0 0 3px rgba(150,0,0,0.9);
 }
 
 /* ===== THÔNG TIN ===== */
 #thuongInfo, #haInfo{
   font-size:15px;
-  color:#5a2a2a;
-  margin-bottom:10px;
+  color:#6b2a2a;
+  margin-bottom:12px;
 }
 
 /* ===== NÚT ===== */
 button{
   background:
-    linear-gradient(180deg, #ffdf9a 0%, #e6a23c 100%);
-  color:#7a1e1e;
-  border:1px solid #b88a2d;
-  padding:10px 22px;
+    linear-gradient(180deg,
+      #ffd1d1 0%,
+      #ff9b9b 45%,
+      #f0b347 100%);
+  color:#7a0000;
+  border:1px solid #d49a2f;
+  padding:11px 26px;
   font-size:16px;
   font-weight:bold;
   cursor:pointer;
-  border-radius:20px;
+  border-radius:22px;
   box-shadow:
-    0 3px 6px rgba(120,60,20,0.4),
-    inset 0 0 6px rgba(255,240,200,0.9);
+    0 4px 8px rgba(150,70,20,0.45),
+    inset 0 0 6px rgba(255,245,220,0.95);
   transition:all 0.2s ease;
 }
 
 button:hover:not(:disabled){
   background:
-    linear-gradient(180deg, #ffe8b5 0%, #f1b75c 100%);
+    linear-gradient(180deg,
+      #ffe4e4 0%,
+      #ffbaba 45%,
+      #ffd36b 100%);
 }
 
 button:disabled{
@@ -97,9 +112,9 @@ button:disabled{
 
 /* ===== DÒNG KẾT ===== */
 .footer-note{
-  margin-top:15px;
+  margin-top:18px;
   font-size:14px;
-  color:#5a1f1f;
+  color:#7a1e1e;
   letter-spacing:1px;
 }
 </style>
@@ -129,18 +144,11 @@ button:disabled{
 <script>
 // ===================== DATA CHỮ =====================
 const HAN_DATA = [
- {char:"米",mean:"gạo",strokes:6},{char:"飯",mean:"cơm",strokes:12},
- {char:"麵",mean:"mì",strokes:20},{char:"菜",mean:"rau/món ăn",strokes:11},
- {char:"茶",mean:"trà",strokes:9},{char:"肉",mean:"thịt",strokes:6},
- {char:"魚",mean:"cá",strokes:11},{char:"雞",mean:"gà",strokes:18},
- {char:"豬",mean:"heo",strokes:11},{char:"牛",mean:"bò",strokes:4},
- {char:"羊",mean:"dê/cừu",strokes:6},{char:"蛋",mean:"trứng",strokes:11},
- {char:"酒",mean:"rượu",strokes:10},{char:"火",mean:"lửa",strokes:4},
- {char:"水",mean:"nước",strokes:4},{char:"蓮",mean:"sen",strokes:15},
- {char:"香",mean:"thơm",strokes:9},{char:"蜜",mean:"mật ong",strokes:14},
- {char:"鹿",mean:"nai",strokes:11},{char:"龍",mean:"rồng",strokes:16},
  {char:"福",mean:"phúc",strokes:13},{char:"德",mean:"đức",strokes:15},
- {char:"安",mean:"an",strokes:6},{char:"靜",mean:"tĩnh",strokes:16}
+ {char:"安",mean:"an",strokes:6},{char:"喜",mean:"hỷ",strokes:12},
+ {char:"財",mean:"tài",strokes:10},{char:"祿",mean:"lộc",strokes:13},
+ {char:"壽",mean:"thọ",strokes:14},{char:"蓮",mean:"sen",strokes:15},
+ {char:"香",mean:"hương",strokes:9},{char:"金",mean:"kim",strokes:8}
 ];
 
 // ===================== THỜI GIAN THỔ =====================
@@ -164,7 +172,6 @@ btnThuong.onclick = ()=>{
   document.getElementById("thuongInfo").innerText="Thổ khí đang định số…";
 
   const delay = getThoDelay();
-
   setTimeout(()=>{
     const c = pickHanChar();
     document.getElementById("thuongChar").innerText=c.char;
@@ -180,7 +187,6 @@ btnHa.onclick = ()=>{
   document.getElementById("haInfo").innerText="Thổ khí đang định số…";
 
   const delay = getThoDelay();
-
   setTimeout(()=>{
     const c = pickHanChar();
     document.getElementById("haChar").innerText=c.char;
