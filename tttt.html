@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liên Hoa Độn - Chiêm Bái Thần Minh</title>
+<style>
+    body {
+        background: radial-gradient(circle at center, #2c0e0e, #000);
+        color: #f1c40f;
+        font-family: "Noto Serif", "Times New Roman", serif;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+
+    .container {
+        max-width: 600px;
+        width: 90%;
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .thocong-img {
+        width: 220px;
+        height: auto;
+        border-radius: 50%;
+        border: 4px solid #f1c40f;
+        box-shadow: 0 0 30px rgba(241, 196, 15, 0.5);
+        margin-bottom: 30px;
+        animation: glow 3s infinite alternate;
+    }
+
+    @keyframes glow {
+        from { box-shadow: 0 0 20px rgba(241, 196, 15, 0.3); }
+        to { box-shadow: 0 0 40px rgba(255, 69, 0, 0.7); }
+    }
+
+    .van-khan {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 25px;
+        border-radius: 15px;
+        border: 1px solid #7a0000;
+        line-height: 1.8;
+        font-size: 18px;
+        color: #ffdf7f;
+        text-align: justify;
+        margin-bottom: 30px;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    .van-khan b { color: #fff; display: block; text-align: center; font-size: 22px; margin-bottom: 10px; }
+
+    /* Nút bấm ẩn lúc đầu */
+    #btnEnter {
+        display: none;
+        background: linear-gradient(to bottom, #ff82ab, #db7093); /* Màu hồng cánh sen cát lành */
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        font-size: 20px;
+        font-weight: bold;
+        border-radius: 50px;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(219, 112, 147, 0.4);
+        transition: all 0.3s;
+        animation: fadeIn 2s;
+    }
+
+    #btnEnter:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(219, 112, 147, 0.6);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .timer-info {
+        font-size: 14px;
+        color: #888;
+        margin-top: 10px;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <img src="https://chudich.github.io/ThoCong.png" alt="Phúc Đức Chính Thần" class="thocong-img">
+
+    <div class="van-khan" id="vanKhan">
+        <b>VĂN KHẤN THỈNH CHỮ</b>
+        <i>(Chắp tay cung kính, nhắm mắt định tâm)</i><br><br>
+        "Nam mô Cha Trời - Mẹ Đất Mười Phương Chư Phật, Chư Đại Bồ Tát.<br>
+      <span style="color: #8b1a1a; font-family: 'Noto Serif', serif; font-size: 1.05em;">
+    Con xin cung thỉnh :
+</span>
+<b style="color: #c9a227; text-shadow: 0 0 6px rgba(201,162,39,0.6); font-family: 'Noto Serif', serif;">
+    Phúc Đức Chính Thần - Thổ Công Bản Gia
+</b>
+<span style="
+    font-size: 1.6em;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: #a40000;
+    text-shadow: 0 0 8px rgba(164,0,0,0.5);
+    margin-left: 8px;
+">
+    謹申
+</span> Hôm nay, tâm thành ý động, chúng con (hoặc tên con là...) cúi xin Thần minh chứng giám. Trước mắt chúng con có sự việc... tâm còn mông lung, chưa tỏ đường đi nước bước. <br><br>
+        Cúi xin Thần ngài hiển linh, mượn Hán tự khai thị, chỉ rõ cát hung, dẫn lối đưa đường cho chúng con được vạn sự hanh thông, sở cầu như ý. <br><br>
+        Nhất tâm bái thỉnh, Thần minh cảm ứng!"
+    </div>
+
+    <div id="countdown" class="timer-info">Mời quý vị tịnh tâm khấn nguyện trong 15 giây...</div>
+
+    <a href="https://sophiemeisam.github.io/tapthethinhchu.html" id="btnEnter">ĐỘNG TÂM THỈNH CHỮ</a>
+</div>
+
+<script>
+    // Sau 15 giây thì hiện nút
+    let timeLeft = 15;
+    const countdownElem = document.getElementById('countdown');
+    const btnEnter = document.getElementById('btnEnter');
+
+    const timer = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+            countdownElem.innerText = `Mời quý vị tịnh tâm khấn nguyện trong ${timeLeft} giây...`;
+        } else {
+            clearInterval(timer);
+            countdownElem.style.display = 'none';
+            btnEnter.style.display = 'inline-block';
+        }
+    }, 1000);
+</script>
+
+</body>
+</html>
