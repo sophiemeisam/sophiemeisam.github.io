@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>Thỉnh Chữ Thổ Công – Tập Thể Động Tâm</title>
+<title>Thần Minh Chỉ Lộ – Tập Thể Động Tâm</title>
 <style>
 body{
   background: radial-gradient(circle at top, #1a0a0a, #4a1a1a, #000);
@@ -27,11 +27,12 @@ button{
   background: linear-gradient(#f1c40f, #d4ac0d);
   color:#4a1a1a; border:none; border-radius:8px;
   padding:15px 30px; font-size:18px; cursor:pointer; font-weight: bold; text-transform: uppercase;
+  transition: all 0.3s;
 }
 button:disabled{ opacity:0.3; cursor:not-allowed; filter: grayscale(1); }
 select { padding: 8px; font-size: 16px; background: #2c0e0e; color: #fff; border: 1px solid #f1c40f; border-radius: 5px; }
 .copyBox{ display:none; margin-top: 20px; border-top: 1px solid #f1c40f; padding-top: 20px;}
-textarea{ width:90%; height:120px; background: #000; color: #f1c40f; border: 1px solid #7a0000; padding: 10px; font-size: 16px; margin-bottom: 10px;}
+textarea{ width:90%; height:150px; background: #000; color: #f1c40f; border: 1px solid #7a0000; padding: 10px; font-size: 16px; margin-bottom: 10px; line-height: 1.5;}
 </style>
 </head>
 <body>
@@ -64,7 +65,7 @@ textarea{ width:90%; height:120px; background: #000; color: #f1c40f; border: 1px
         <button id="btnActionThuong">GÓP TÂM NĂNG LƯỢNG</button>
     </div>
 
-    <div class="box" id="boxHa" style="opacity: 0.2;">
+    <div class="box" id="boxHa" style="opacity: 0.2; pointer-events: none;">
         <div style="font-size: 1.4em; color: #ffdf7f;">PHẦN II: THỈNH QUẺ HẠ</div>
         <div id="slotsHa" class="energy-slots"></div>
         <div id="haChar" class="han">⋯</div>
@@ -82,7 +83,6 @@ textarea{ width:90%; height:120px; background: #000; color: #f1c40f; border: 1px
 <script>
 const NET_CO_BAN = ["丶", "一", "丨", "丿", "乀", "㇀", "┐", "亅"];
 const HAN_DATA = [
-    // --- 500 chữ đầu (Thiên Tự Văn) ---
     {c:"乾",v:"Càn (Trời)",n:11},{c:"坤",v:"Khôn (Đất)",n:8},{c:"震",v:"Chấn (Sấm)",n:15},{c:"巽",v:"Tốn (Gió)",n:12},
     {c:"坎",v:"Khảm (Nước)",n:7},{c:"離",v:"Ly (Lửa)",n:19},{c:"艮",v:"Cấn (Núi)",n:7},{c:"兌",v:"Đoài (Đầm)",n:7},
     {c:"天",v:"Thiên (Trời)",n:4},{c:"地",v:"Địa (Đất)",n:6},{c:"玄",v:"Huyền (Sâu kín)",n:5},{c:"黃",v:"Hoàng (Vàng)",n:12},
@@ -197,7 +197,7 @@ const HAN_DATA = [
     {c:"靈",v:"Linh (Linh thiêng)",n:24},{c:"丙",v:"Bính (Sáng)",n:5},{c:"舍",v:"Xá (Nhà)",n:8},{c:"傍",v:"Bàng (Bên cạnh)",n:12},
     {c:"啟",v:"Khải (Mở)",n:11},{c:"甲",v:"Giáp (Thứ nhất)",n:5},{c:"帳",v:"Trướng (Màn)",n:11},{c:"對",v:"Đối (Đối diện)",n:14},
     {c:"楹",v:"Doanh (Cột nhô)",n:13},{c:"肆",v:"Tứ (Bày)",n:13},{c:"筵",v:"Diên (Tiệc)",n:13},{c:"設",v:"Thiết (Bày)",n:11},
-    {c:"席",v:"Tịch (Chiếu)",n:10},{c:"鼓",v:"Cổ (Trống)",n:13},{c:"瑟",v:"Sắt (Đàn sắt)",n:13},{c:"吹",v:"Xuy (Thổi)",n:7},
+    {c:"席",v:"Tịch (Chi chiếu)",n:10},{c:"鼓",v:"Cổ (Trống)",n:13},{c:"瑟",v:"Sắt (Đàn sắt)",n:13},{c:"吹",v:"Xuy (Thổi)",n:7},
     {c:"笙",v:"Sanh (Khèn)",n:11},{c:"陞",v:"Thăng (Lên)",n:10},{c:"階",v:"Giai (Bậc thang)",n:12},{c:"納",v:"Nạp (Thu)",n:10},
     {c:"陛",v:"Bệ (Thềm vua)",n:11},{c:"弁",v:"Biện (Mũ)",n:5},{c:"轉",v:"Chuyển (Quay)",n:18},{c:"疑",v:"Nghi (Ngờ)",n:14},
     {c:"星",v:"Tinh (Sao)",n:9},{c:"右",v:"Hữu (Bên phải)",n:5},{c:"通",v:"Thông (Thông qua)",n:11},{c:"廣",v:"Quảng (Rộng)",n:15},
@@ -268,7 +268,7 @@ const HAN_DATA = [
     {c:"散",v:"Tán (Giải trí)",n:12},{c:"慮",v:"Lự (Lo nghĩ)",n:15},{c:"逍",v:"Tiêu (Thong dong)",n:10},{c:"遙",v:"Dao (Xa xăm)",n:13},
     {c:"欣",v:"Hân (Vui)",n:8},{c:"奏",v:"Tấu (Thưa)",n:9},{c:"累",v:"Lụy (Vướng bận)",n:11},{c:"遣",v:"Khiển (Đuổi đi)",n:13},
     {c:"戚",v:"Thích (Buồn)",n:11},{c:"謝",v:"Tạ (Từ biệt)",n:17},{c:"歡",v:"Hoan (Vui)",n:22},{c:"招",v:"Chiêu (Vẫy)",n:8},
-    {c:"渠",v:"Cừ (Ngòi nước)",n:12},{c:"荷",v:"Hà (Cây sen)",n:10},{c:" đích",v:"Đích (Rõ ràng)",n:8},{c:"歷",v:"Lịch (Trải qua)",n:16},
+    {c:"渠",v:"Cừ (Ngòi nước)",n:12},{c:"荷",v:"Hà (Cây sen)",n:10},{c:"đích",v:"Đích (Rõ ràng)",n:8},{c:"歷",v:"Lịch (Trải qua)",n:16},
     {c:"園",v:"Viên (Vườn)",n:13},{c:"莽",v:"Mãng (Cỏ rậm)",n:10},{c:"抽",v:"Trừu (Nảy nở)",n:8},{c:"條",v:"Điều (Cành cây)",n:11},
     {c:"枇",v:"Tỳ (Cây tỳ bà)",n:8},{c:"杷",v:"Bà (Cây tỳ bà)",n:8},{c:"晚",v:"Vãn (Muộn)",n:11},{c:"翠",v:"Thúy (Xanh)",n:14},
     {c:"梧",v:"Ngô (Cây ngô đồng)",n:11},{c:"桐",v:"Đồng (Cây ngô đồng)",n:10},{c:"早",v:"Tảo (Sớm)",n:6},{c:"凋",v:"Điều (Héo)",n:10},
@@ -284,8 +284,6 @@ const HAN_DATA = [
     {c:"口",v:"Khẩu (Miệng)",n:3},{c:"充",v:"Sung (Đầy)",n:6},{c:"腸",v:"Trường (Ruột)",n:13},{c:"飽",v:"Bão (No)",n:13},
     {c:"飫",v:"Yêu (Thỏa thuê)",n:12},{c:"烹",v:"Phanh (Nấu)",n:11},{c:"宰",v:"Tể (Mổ thịt)",n:10},{c:"饑",v:"Cơ (Đói)",n:20},
     {c:"厭",v:"Yếm (Chán)",n:14},{c:"糟",v:"Tao (Bã)",n:17},{c:"糠",v:"Khang (Cám)",n:17},
-    
-    // --- 55 chữ chọn lọc từ danh sách bổ sung (Đã lọc trùng) ---
     {c:"域",v:"Vực (Lãnh thổ)",n:11},{c:"壇",v:"Đàn (Bệ thờ)",n:16},{c:"塔",v:"Tháp",n:12},{c:"墓",v:"Mộ",n:13},
     {c:"塚",v:"Mộ lớn",n:12},{c:"坡",v:"Pha (Sườn đất)",n:8},{c:"堤",v:"Đê",n:12},{c:"埕",v:"Sân đất",n:10},
     {c:"壤",v:"Nhưỡng (Đất màu)",n:20},{c:"塵",v:"Trần (Bụi)",n:14},{c:"固",v:"Cố (Bền chắc)",n:8},{c:"厚",v:"Hậu (Dày)",n:9},
@@ -301,11 +299,14 @@ const HAN_DATA = [
     {c:"狂",v:"Cuồng (Điên loạn)",n:7},{c:"妖",v:"Yêu (Yêu tà)",n:7},{c:"魔",v:"Ma (Ma quỷ)",n:21},{c:"惱",v:"Não (Não lòng)",n:12},
     {c:"陷",v:"Hãm (Sa vào)",n:10},{c:"險",v:"Hiểm (Nguy hiểm)",n:16},{c:"崩",v:"Băng (Sụp đổ)",n:11}
 ]; 
+
 let totalMembers = 3;
 let currentThuong = 0;
 let currentHa = 0;
 let seedThuong = 0;
 let seedHa = 0;
+let finalCharThuong = null;
+let finalCharHa = null;
 
 const btnStart = document.getElementById('btnStart');
 const mainApp = document.getElementById('mainApp');
@@ -334,58 +335,70 @@ function createSlots(id, count) {
 async function handleAction(type) {
     const isThuong = type === 'thuong';
     const btn = document.getElementById(isThuong ? 'btnActionThuong' : 'btnActionHa');
-    const info = document.getElementById(isThuong ? 'thuongInfo' : 'haInfo');
-    const slotsId = isThuong ? 'slotsThuong_' : 'slotsHa_';
     
-    let count = isThuong ? currentThuong : currentHa;
-
-    // Vô hiệu hóa nút ngay lập tức để chờ 5 giây
+    // Bước quan quan trọng: Khóa nút ngay lập tức để chặn spam
+    if (btn.disabled) return;
     btn.disabled = true;
 
-    // 1. Chọn nét ngẫu nhiên
-    let randIndex = Math.floor(Math.random() * 8);
-    let ms = new Date().getMilliseconds();
+    const info = document.getElementById(isThuong ? 'thuongInfo' : 'haInfo');
+    const slotsId = isThuong ? 'slotsThuong_' : 'slotsHa_';
+    let count = isThuong ? currentThuong : currentHa;
+
+    // THUẬT TOÁN SEED MỚI: 
+    // performance.now() lấy thời gian chính xác đến micro giây (0.001ms)
+    // Kết hợp Math.random() và vị trí người bấm để tạo độ nhiễu cực lớn
+    let microTime = performance.now();
+    let randNoise = Math.random() * 1000000;
+    let personFactor = (count + 1) * 777;
     
+    let roundSeed = Math.floor(microTime + randNoise + personFactor);
+    let randIndex = roundSeed % 8; // Lấy nét cơ bản ngẫu nhiên
+
     if(isThuong) {
-        seedThuong += (randIndex + ms + count);
+        seedThuong += roundSeed;
     } else {
-        seedHa += (randIndex + ms + count);
+        seedHa += roundSeed;
     }
 
-    // 2. Cập nhật Slot năng lượng
+    // Cập nhật giao diện Slot
     let slot = document.getElementById(slotsId + count);
     slot.innerText = NET_CO_BAN[randIndex];
     slot.className = 'slot active';
 
-    // 3. Tăng biến đếm
     if(isThuong) currentThuong++; else currentHa++;
     let nextCount = isThuong ? currentThuong : currentHa;
 
-    // 4. Kiểm tra xem đã đủ người chưa
     if(nextCount < totalMembers) {
-        // Đếm ngược 5 giây cho lượt tiếp theo
+        // Đếm ngược 5 giây cưỡng bách
         for(let i=5; i>0; i--) {
             info.innerText = `Năng lượng đang tích tụ... Chờ ${i}s`;
             await new Promise(r => setTimeout(r, 1000));
         }
         info.innerText = `Mời người thứ ${nextCount + 1} Góp Tâm...`;
-        btn.disabled = false;
+        btn.disabled = false; // Mở lại nút sau 5s
     } else {
-        // Đã đủ người, đợi 3 giây để hiện kết quả cuối cùng
         info.innerText = "Tập thể đã khế hợp. Đang định hình Thần Ý...";
-        await new Promise(r => setTimeout(r, 3000));
-        
-        let finalSeed = isThuong ? seedThuong : seedHa;
-        let finalChar = HAN_DATA[finalSeed % HAN_DATA.length];
-        
-        document.getElementById(isThuong ? 'thuongChar' : 'haChar').innerText = finalChar.c;
-        info.innerText = `Kết quả: ${finalChar.v} | ${finalChar.n} nét`;
+        await new Promise(r => setTimeout(r, 2000));
+
+        let finalSeedValue = isThuong ? seedThuong : seedHa;
+        // Seed tổng kết hợp thêm một lần random cuối để chữ ra không đoán trước được
+        let finalIdx = (finalSeedValue + Math.floor(Math.random() * 999)) % HAN_DATA.length;
+        let finalCharObj = HAN_DATA[finalIdx];
 
         if(isThuong) {
+            finalCharThuong = finalCharObj;
+            document.getElementById('thuongChar').innerText = finalCharObj.c;
+            info.innerText = `Kết quả: ${finalCharObj.v} | ${finalCharObj.n} nét`;
+            
+            // Mở Quẻ Hạ
             document.getElementById('boxHa').style.opacity = '1';
+            document.getElementById('boxHa').style.pointerEvents = 'auto';
             document.getElementById('btnActionHa').disabled = false;
             document.getElementById('haInfo').innerText = "Mời người thứ 1 bắt đầu Quẻ Hạ...";
         } else {
+            finalCharHa = finalCharObj;
+            document.getElementById('haChar').innerText = finalCharObj.c;
+            info.innerText = `Kết quả: ${finalCharObj.v} | ${finalCharObj.n} nét`;
             showFinal();
         }
     }
@@ -395,21 +408,20 @@ document.getElementById('btnActionThuong').onclick = () => handleAction('thuong'
 document.getElementById('btnActionHa').onclick = () => handleAction('ha');
 
 function showFinal() {
-    const tC = document.getElementById('thuongChar').innerText;
-    const hC = document.getElementById('haChar').innerText;
-    
-    // Tìm lại object chữ để lấy nghĩa đầy đủ
-    const charT = HAN_DATA.find(x => x.c === tC);
-    const charH = HAN_DATA.find(x => x.c === hC);
-
     document.getElementById('copyBox').style.display = 'block';
+    const now = new Date();
+    const timeStr = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0') + " ngày " + now.toLocaleDateString('vi-VN');
+    
     document.getElementById('resultText').value = 
-        `--- LIÊN HOA ĐỘN (TẬP THỂ) ---\n` +
-        `Số người cộng hưởng: ${totalMembers}\n\n` +
-        `QUẺ THƯỢNG: ${charT.c} (${charT.v} - ${charT.n} nét)\n` +
-        `QUẺ HẠ: ${charH.c} (${charH.v} - ${charH.n} nét)\n\n` +
-        `Thời gian: ${new Date().toLocaleString('vi-VN')}\n` +
-        `"Thần ý tại tâm, vạn sự tùy duyên."`;
+        `--- THẦN MINH CHỈ LỘ (TẬP THỂ) ---\n` +
+        `Số người cộng hưởng: ${totalMembers}\n` +
+        `Thời gian: ${timeStr}\n\n` +
+        `QUẺ THƯỢNG: ${finalCharThuong.c} (${finalCharThuong.v} - ${finalCharThuong.n} nét)\n` +
+        `QUẺ HẠ: ${finalCharHa.c} (${finalCharHa.v} - ${finalCharHa.n} nét)\n\n` +
+        `LỜI NHẮN: "Thần ý tại tâm, vạn sự tùy duyên. Tập tâm lực mới có thể thấu triệt."`;
+    
+    // Cuộn xuống kết quả
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
 }
 </script>
 </body>
