@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tra Cứu 64 Quẻ Dịch - Binary Logic</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; background: #f4f4f4; }
+        .controls { display: flex; gap: 20px; margin-bottom: 30px; }
+        select { padding: 10px; font-size: 16px; border-radius: 5px; cursor: pointer; }
+        
+        #result-container { text-align: center; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 300px; }
+        #que-name { font-size: 32px; font-weight: bold; color: #2c3e50; margin-bottom: 20px; min-height: 40px; }
+        
+        /* Vẽ vạch quẻ */
+        .hexagram { display: flex; flex-direction: column; gap: 8px; align-items: center; }
+        .line { width: 120px; height: 12px; background-color: #007bff; border-radius: 2px; }
+        .line.broken { background-color: transparent; display: flex; justify-content: space-between; }
+        .line.broken::before, .line.broken::after { content: ""; width: 45%; height: 100%; background-color: #007bff; border-radius: 2px; }
+        
+        .binary-info { margin-top: 15px; font-family: monospace; color: #666; }
+    </style>
+</head>
+<body>
+
+    <h2>Hệ Thống Tra Cứu Quẻ Nhị Phân</h2>
+
+    <div class="controls">
+        <div>
+            <label>Quẻ Thượng:</label><br>
+            <select id="upperSelect" onchange="updateQue()"></select>
+        </div>
+        <div>
+            <label>Quẻ Hạ:</label><br>
+            <select id="lowerSelect" onchange="updateQue()"></select>
+        </div>
+    </div>
+
+    <div id="result-container">
+        <div id="que-name">Chọn quẻ...</div>
+        <div id="visual-que" class="hexagram"></div>
+        <div id="binary-code" class="binary-info"></div>
+    </div>
+
+    <script>
+        const batQuai = [
+            { name: "Kiền", code: "111", symbol: "Thiên" },
+            { name: "Đoài", code: "011", symbol: "Trạch" },
+            { name: "Ly",   code: "101", symbol: "Hỏa" },
+            { name: "Chấn", code: "001", symbol: "Lôi" },
+            { name: "Tốn",  code: "110", symbol: "Phong" },
+            { name: "Khảm", code: "010", symbol: "Thủy" },
+            { name: "Cấn",  code: "100", symbol: "Sơn" },
+            { name: "Khôn", code: "000", symbol: "Địa" }
+        ];
+
+        const data64Que = {
+            "111111": "Thuần Càn", "000000": "Thuần Khôn", "010001": "Thủy Lôi Truân", "100010": "Sơn Thủy Mông",
+            "010111": "Thủy Thiên Nhu", "111010": "Thiên Thủy Tụng", "000010": "Địa Thủy Sư", "010000": "Thủy Địa Tỷ",
+            "110111": "Phong Thiên Tiểu Súc", "111011": "Thiên Trạch Lý", "000111": "Địa Thiên Thái", "111000": "Thiên Địa Bĩ",
+            "111101": "Thiên Hỏa Đồng Nhân", "101111": "Hỏa Thiên Đại Hữu", "000100": "Địa Sơn Khiêm", "001000": "Lôi Địa Dự",
+            "011001": "Trạch Lôi Tùy", "100110": "Sơn Phong Cổ", "000011": "Địa Trạch Lâm", "110000": "Phong Địa Quán",
+            "101001": "Hỏa Lôi Phệ Hạp", "100101": "Sơn Hỏa Bí", "100000": "Sơn Địa Bác", "000001": "Địa Lôi Phục",
+            "111001": "Thiên Lôi Vô Vọng", "100111": "Sơn Thiên Đại Súc", "100001": "Sơn Lôi Di", "011110": "Trạch Phong Đại Quá",
+            "010010": "Thuần Khảm", "101101": "Thuần Ly", "011100": "Trạch Sơn Hàm", "001110": "Lôi Phong Hằng",
+            "111100": "Thiên Sơn Độn", "001111": "Lôi Thiên Đại Tráng", "101000": "Hỏa Địa Tấn", "000101": "Địa Hỏa Minh Di",
+            "110101": "Phong Hỏa Gia Nhân", "101011": "Hỏa Trạch Khuê", "010100": "Thủy Sơn Kiển", "001010": "Lôi Thủy Giải",
+            "100011": "Sơn Trạch Tổn", "110001": "Phong Lôi Ích", "011111": "Trạch Thiên Quải", "111110": "Thiên Phong Cấu",
+            "011000": "Trạch Địa Tụy", "000110": "Địa Phong Thăng", "011010": "Trạch Thủy Khốn", "010110": "Thủy Phong Tỉnh",
+            "011101": "Trạch Hỏa Cách", "101110": "Hỏa Phong Đỉnh", "001001": "Thuần Chấn", "100100": "Thuần Cấn",
+            "110100": "Phong Sơn Tiệm", "001011": "Lôi Trạch Quy Muội", "001101": "Lôi Hỏa Phong", "101100": "Hỏa Sơn Lữ",
+            "110110": "Thuần Tốn", "011011": "Thuần Đoài", "110010": "Phong Thủy Hoán", "010011": "Thủy Trạch Tiết",
+            "110011": "Phong Trạch Trung Phu", "001100": "Lôi Sơn Tiểu Quá", "010101": "Thủy Hỏa Ký Tế", "101010": "Hỏa Thủy Vị Tế"
+        };
+
+        // Khởi tạo Menu
+        function initMenu() {
+            const up = document.getElementById('upperSelect');
+            const low = document.getElementById('lowerSelect');
+            
+            batQuai.forEach((q, index) => {
+                let opt = `<option value="${q.code}">${q.name} (${q.symbol})</option>`;
+                up.innerHTML += opt;
+                low.innerHTML += opt;
+            });
+            updateQue();
+        }
+
+        function updateQue() {
+            const upCode = document.getElementById('upperSelect').value;
+            const lowCode = document.getElementById('lowerSelect').value;
+            const fullCode = upCode + lowCode;
+            
+            // Hiển thị tên quẻ
+            document.getElementById('que-name').innerText = data64Que[fullCode] || "Chưa xác định";
+            document.getElementById('binary-code').innerText = "Mã: " + upCode + " " + lowCode;
+
+            // Hiển thị vạch
+            const visual = document.getElementById('visual-que');
+            visual.innerHTML = "";
+            
+            // Vẽ từ trên xuống dưới theo chuỗi nhị phân
+            for (let char of fullCode) {
+                const line = document.createElement('div');
+                line.className = (char === '1') ? "line" : "line broken";
+                visual.appendChild(line);
+            }
+        }
+
+        initMenu();
+    </script>
+</body>
+</html>
