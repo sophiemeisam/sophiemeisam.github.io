@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dịch Học - Hệ Thống Quẻ Đối</title>
+    <style>
+        :root { --primary-blue: #007bff; --dark-blue: #004a99; --bg-gray: #f0f2f5; }
+        body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; background: var(--bg-gray); color: #1c1e21; }
+        h2 { font-size: 1.4rem; margin: 15px 0; color: #333; }
+
+        /* Menu chọn */
+        .controls { width: 95%; max-width: 500px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .select-group { display: flex; flex-direction: column; }
+        label { font-weight: bold; margin-bottom: 5px; font-size: 0.9rem; color: #555; }
+        select { padding: 12px; font-size: 1.1rem; border-radius: 8px; border: 2px solid var(--primary-blue); background: white; outline: none; }
+
+        /* Container kết quả */
+        .result-wrapper { width: 95%; max-width: 500px; display: flex; flex-direction: column; gap: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center; }
+        .card.main { border-top: 5px solid var(--dark-blue); }
+        .card.sub { border-top: 5px solid #6c757d; }
+
+        .label-tag { font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: #888; margin-bottom: 10px; display: block; }
+        .que-name { font-size: 28px; font-weight: 800; color: var(--dark-blue); margin: 10px 0; line-height: 1.2; }
+
+        /* Vẽ vạch quẻ */
+        .hexagram { display: flex; flex-direction: column; gap: 8px; align-items: center; margin: 15px 0; }
+        .line { width: 140px; height: 12px; background-color: var(--primary-blue); border-radius: 3px; }
+        .line.broken { background-color: transparent; display: flex; justify-content: space-between; }
+        .line.broken::before, .line.broken::after { content: ""; width: 44%; height: 100%; background-color: var(--primary-blue); border-radius: 3px; }
+
+        .binary-info { font-size: 0.9rem; font-family: monospace; color: #555; background: #e9ecef; padding: 4px 12px; border-radius: 10px; display: inline-block; }
+        
+        /* Button Copy */
+        .copy-btn { 
+            margin: 30px 0; padding: 15px 30px; 
+            background-color: #28a745; color: white; 
+            border: none; border-radius: 50px; 
+            font-size: 1rem; font-weight: bold; 
+            cursor: pointer; box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+            transition: all 0.2s;
+        }
+        .copy-btn:active { transform: scale(0.95); background-color: #218838; }
+        
+        hr { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
+    </style>
+</head>
+<body>
+
+    <h2>Tra Cứu Quẻ & Đối Cực</h2>
+
+    <div class="controls">
+        <div class="select-group">
+            <label>Thượng Quái (Trên)</label>
+            <select id="upperSelect" onchange="updateAll()"></select>
+        </div>
+        <div class="select-group">
+            <label>Hạ Quái (Dưới)</label>
+            <select id="lowerSelect" onchange="updateAll()"></select>
+        </div>
+    </div>
+
+    <div class="result-wrapper">
+        <div class="card main">
+            <span class="label-tag">Quẻ Ban Đầu (BD)</span>
+            <div id="name-BD" class="que-name">---</div>
+            <div id="visual-BD" class="hexagram"></div>
+            <div id="code-BD" class="binary-info">---</div>
+        </div>
+
+        <div class="card sub">
+            <span class="label-tag">Thể Tiên Thiên (Đối)</span>
+            <div id="name-TT" class="que-name">---</div>
+            <div id="visual-TT" class="hexagram"></div>
+            <div id="code-TT" class="binary-info">---</div>
+        </div>
+
+        <div class="card sub">
+            <span class="label-tag">Thể Hậu Thiên (Đối)</span>
+            <div id="name-HT" class="que-name">---</div>
+            <div id="visual-HT" class="hexagram"></div>
+            <div id="code-HT" class="binary-info">---</div>
+        </div>
+    </div>
+
+    <button class="copy-btn" onclick="copyData()"> Sao chép dữ liệu</button>
+
+    <script>
+        const batQuai = [
+            { name: "Kiền", code: "111", symbol: "Thiên" },
+            { name: "Đoài", code: "011", symbol: "Trạch" },
+            { name: "Ly",   code: "101", symbol: "Hỏa" },
+            { name: "Chấn", code: "001", symbol: "Lôi" },
+            { name: "Tốn",  code: "110", symbol: "Phong" },
+            { name: "Khảm", code: "010", symbol: "Thủy" },
+            { name: "Cấn",  code: "100", symbol: "Sơn" },
+            { name: "Khôn", code: "000", symbol: "Địa" }
+        ];
+
+        const data64Que = {
+            "111111": "Thuần Càn", "000000": "Thuần Khôn", "010001": "Thủy Lôi Truân", "100010": "Sơn Thủy Mông",
+            "010111": "Thủy Thiên Nhu", "111010": "Thiên Thủy Tụng", "000010": "Địa Thủy Sư", "010000": "Thủy Địa Tỷ",
+            "110111": "Phong Thiên Tiểu Súc", "111011": "Thiên Trạch Lý", "000111": "Địa Thiên Thái", "111000": "Thiên Địa Bĩ",
+            "111101": "Thiên Hỏa Đồng Nhân", "101111": "Hỏa Thiên Đại Hữu", "000100": "Địa Sơn Khiêm", "001000": "Lôi Địa Dự",
+            "011001": "Trạch Lôi Tùy", "100110": "Sơn Phong Cổ", "000011": "Địa Trạch Lâm", "110000": "Phong Địa Quán",
+            "101001": "Hỏa Lôi Phệ Hạp", "100101": "Sơn Hỏa Bí", "100000": "Sơn Địa Bác", "000001": "Địa Lôi Phục",
+            "111001": "Thiên Lôi Vô Vọng", "100111": "Sơn Thiên Đại Súc", "100001": "Sơn Lôi Di", "011110": "Trạch Phong Đại Quá",
+            "010010": "Thuần Khảm", "101101": "Thuần Ly", "011100": "Trạch Sơn Hàm", "001110": "Lôi Phong Hằng",
+            "111100": "Thiên Sơn Độn", "001111": "Lôi Thiên Đại Tráng", "101000": "Hỏa Địa Tấn", "000101": "Địa Hỏa Minh Di",
+            "110101": "Phong Hỏa Gia Nhân", "101011": "Hỏa Trạch Khuê", "010100": "Thủy Sơn Kiển", "001010": "Lôi Thủy Giải",
+            "100011": "Sơn Trạch Tổn", "110001": "Phong Lôi Ích", "011111": "Trạch Thiên Quải", "111110": "Thiên Phong Cấu",
+            "011000": "Trạch Địa Tụy", "000110": "Địa Phong Thăng", "011010": "Trạch Thủy Khốn", "010110": "Thủy Phong Tỉnh",
+            "011101": "Trạch Hỏa Cách", "101110": "Hỏa Phong Đỉnh", "001001": "Thuần Chấn", "100100": "Thuần Cấn",
+            "110100": "Phong Sơn Tiệm", "001011": "Lôi Trạch Quy Muội", "001101": "Lôi Hỏa Phong", "101100": "Hỏa Sơn Lữ",
+            "110110": "Thuần Tốn", "011011": "Thuần Đoài", "110010": "Phong Thủy Hoán", "010011": "Thủy Trạch Tiết",
+            "110011": "Phong Trạch Trung Phu", "001100": "Lôi Sơn Tiểu Quá", "010101": "Thủy Hỏa Ký Tế", "101010": "Hỏa Thủy Vị Tế"
+        };
+
+        const doiTienThien = { "111":"000", "000":"111", "011":"100", "100":"011", "101":"010", "010":"101", "001":"110", "110":"001" };
+        const doiHauThien = { "111":"000", "000":"111", "011":"001", "001":"011", "101":"010", "010":"101", "110":"100", "100":"110" };
+
+        function init() {
+            const up = document.getElementById('upperSelect');
+            const low = document.getElementById('lowerSelect');
+            batQuai.forEach(q => {
+                let opt = `<option value="${q.code}">${q.name} (${q.symbol})</option>`;
+                up.innerHTML += opt;
+                low.innerHTML += opt;
+            });
+            updateAll();
+        }
+
+        function drawVisual(containerId, code) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = "";
+            for (let char of code) {
+                const line = document.createElement('div');
+                line.className = (char === '1') ? "line" : "line broken";
+                container.appendChild(line);
+            }
+        }
+
+        function updateAll() {
+            const upBD = document.getElementById('upperSelect').value;
+            const lowBD = document.getElementById('lowerSelect').value;
+
+            // 1. Cập nhật Ban Đầu (BD)
+            const codeBD = upBD + lowBD;
+            document.getElementById('name-BD').innerText = data64Que[codeBD];
+            document.getElementById('code-BD').innerText = upBD + " " + lowBD;
+            drawVisual('visual-BD', codeBD);
+
+            // 2. Tính toán & Cập nhật Tiên Thiên
+            const upTT = doiTienThien[upBD];
+            const lowTT = doiTienThien[lowBD];
+            const codeTT = upTT + lowTT;
+            document.getElementById('name-TT').innerText = data64Que[codeTT];
+            document.getElementById('code-TT').innerText = upTT + " " + lowTT;
+            drawVisual('visual-TT', codeTT);
+
+            // 3. Tính toán & Cập nhật Hậu Thiên
+            const upHT = doiHauThien[upBD];
+            const lowHT = doiHauThien[lowBD];
+            const codeHT = upHT + lowHT;
+            document.getElementById('name-HT').innerText = data64Que[codeHT];
+            document.getElementById('code-HT').innerText = upHT + " " + lowHT;
+            drawVisual('visual-HT', codeHT);
+        }
+
+        function copyData() {
+            const nameBD = document.getElementById('name-BD').innerText;
+            const codeBD = document.getElementById('code-BD').innerText;
+            const nameTT = document.getElementById('name-TT').innerText;
+            const codeTT = document.getElementById('code-TT').innerText;
+            const nameHT = document.getElementById('name-HT').innerText;
+            const codeHT = document.getElementById('code-HT').innerText;
+
+            const textToCopy = 
+                `Quẻ Ban Đầu (BD): ${nameBD} [${codeBD}]\n` +
+                `Quẻ Thể Tiên Thiên: ${nameTT} [${codeTT}]\n` +
+                `Quẻ Thể Hậu Thiên: ${nameHT} [${codeHT}]`;
+
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("Đã sao chép dữ liệu vào bộ nhớ tạm!");
+            }).catch(err => {
+                console.error("Lỗi khi sao chép: ", err);
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>
