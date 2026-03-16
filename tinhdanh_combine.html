@@ -27,7 +27,6 @@
         .moving-tag { position: absolute; right: -30px; color: #ff4757; font-weight: bold; font-size: 20px; }
 
         .binary-info { font-size: 0.85rem; font-family: monospace; background: #333; padding: 4px 12px; border-radius: 5px; color: #00ff00; }
-        
         .copy-btn { width: 100%; padding: 15px; background: var(--green); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
     </style>
 </head>
@@ -107,11 +106,23 @@
         return charCount + accents;
     }
 
+    // FIX LOGIC Ở ĐÂY:
     function getNameParts(fullname) {
         const words = fullname.trim().split(/\s+/);
-        if (words.length <= 1) return { t: countKýÂm(fullname), h: 0 };
-        const tTxt = words[0];
-        const hTxt = words.slice(1).join("");
+        const n = words.length;
+        let tTxt = "", hTxt = "";
+
+        if (n <= 1) {
+            tTxt = words[0] || "";
+            hTxt = "";
+        } else {
+            // Quy tắc: 2 từ -> 1/1, 3 từ -> 1/2, 4 từ -> 2/2, 5 từ -> 2/3
+            // Dùng Math.floor(n/2) để lấy số lượng từ cho quẻ Thượng
+            const mid = Math.floor(n / 2);
+            tTxt = words.slice(0, mid).join("");
+            hTxt = words.slice(mid).join("");
+        }
+
         return { t: countKýÂm(tTxt), h: countKýÂm(hTxt) };
     }
 
@@ -142,6 +153,7 @@
         const d = parseInt(document.getElementById('day').value);
         const h = parseInt(document.getElementById('hour').value);
 
+        // Quẻ Chủ T3H3
         const scoreUp = p1.t + p2.t;
         const scoreLow = p1.h + p2.h;
         
@@ -149,9 +161,11 @@
         const lowMã = batQuaiMã[scoreLow % 8 === 0 ? 8 : scoreLow % 8];
         const codeChu = upMã + lowMã;
 
+        // Hào động: T1+T2 + H1+H2 + Năm+Tháng+Ngày+Giờ
         const totalHao = p1.t + p2.t + p1.h + p2.h + y + m + d + h;
         let haoDong = totalHao % 6 === 0 ? 6 : totalHao % 6;
 
+        // Quẻ Biến T4H4
         let binaryArr = codeChu.split("");
         let idxDong = 6 - haoDong; 
         binaryArr[idxDong] = binaryArr[idxDong] === "1" ? "0" : "1";
