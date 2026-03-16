@@ -7,34 +7,34 @@
     <style>
         :root { --primary-blue: #007bff; --dark-blue: #004a99; --bg-gray: #f0f2f5; --green: #28a745; }
         body { font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; background: var(--bg-gray); color: #1c1e21; }
-        
+
         .container { width: 95%; max-width: 500px; text-align: center; }
         h2 { font-size: 1.4rem; margin: 15px 0; }
 
         /* Form nhập tên */
         .input-section { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input[type="text"] { width: 90%; padding: 15px; font-size: 1.2rem; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 15px; outline: none; text-transform: capitalize; }
+        input[type="text"] { width: 100%; padding: 15px; font-size: 1.2rem; border: 2px solid #ddd; border-radius: 10px; margin-bottom: 15px; outline: none; text-transform: capitalize; box-sizing: border-box; }
         input[type="text"]:focus { border-color: var(--primary-blue); }
         .calc-btn { width: 100%; padding: 15px; background: var(--primary-blue); color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
 
         /* Kết quả */
-        .result-wrapper { display: flex; flex-direction: column; gap: 20px; }
+        .result-wrapper { display: flex; flex-direction: column; gap: 20px; width: 100%; }
         .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); position: relative; }
         .card.main { border: 2px solid var(--dark-blue); }
         .label-tag { font-size: 0.8rem; font-weight: bold; text-transform: uppercase; color: #888; margin-bottom: 5px; display: block; }
         .note { font-size: 0.85rem; font-style: italic; color: #666; margin-bottom: 10px; display: block; }
-        
+
         .que-name { font-size: 28px; font-weight: 800; color: var(--dark-blue); margin: 10px 0; }
-        
+
         /* Vẽ vạch quẻ */
         .hexagram { display: flex; flex-direction: column; gap: 8px; align-items: center; margin: 15px 0; }
         .line { width: 140px; height: 12px; background-color: var(--primary-blue); border-radius: 3px; }
         .line.broken { background-color: transparent; display: flex; justify-content: space-between; }
         .line.broken::before, .line.broken::after { content: ""; width: 44%; height: 100%; background-color: var(--primary-blue); border-radius: 3px; }
-        
+
         .binary-info { font-size: 0.9rem; font-family: monospace; background: #e9ecef; padding: 4px 12px; border-radius: 10px; }
-        
-        .copy-btn { margin: 25px 0; padding: 15px 30px; background: var(--green); color: white; border: none; border-radius: 50px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+
+        .copy-btn { margin: 25px 0; padding: 15px 30px; background: var(--green); color: white; border: none; border-radius: 50px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(40,167,69,0.3); width: 80%; }
     </style>
 </head>
 <body>
@@ -95,23 +95,21 @@
         "110011": "Phong Trạch Trung Phu", "001100": "Lôi Sơn Tiểu Quá", "010101": "Thủy Hỏa Ký Tế", "101010": "Hỏa Thủy Vị Tế"
     };
 
-    const batQuaiMã = ["000", "111", "011", "101", "001", "110", "010", "100", "000"]; // Index 1-8 (000 là Khôn - 8)
+    const batQuaiMã = ["000", "111", "011", "101", "001", "110", "010", "100", "000"]; 
     const doiTT = { "111":"000", "000":"111", "011":"100", "100":"011", "101":"010", "010":"101", "110":"001", "001":"110" };
     const doiHT = { "111":"000", "000":"111", "101":"010", "010":"101", "011":"001", "001":"011", "110":"100", "100":"110" };
 
     function countKýÂm(str) {
-        // Loại bỏ khoảng trắng
+        if (!str) return 0;
         let s = str.replace(/\s/g, '').toLowerCase();
-        // Đếm các ký tự chữ cái (bao gồm có mũ như â, ê, ư...)
         let charCount = s.length;
-        // Đếm các dấu thanh: sắc, huyền, hỏi, ngã, nặng
         let accents = (str.normalize('NFD').match(/[\u0300\u0301\u0303\u0309\u0323]/g) || []).length;
         return charCount + accents;
     }
 
     function getMãBátQuái(num) {
         let du = num % 8;
-        if (du === 0) return batQuaiMã[0]; // Khôn
+        if (du === 0) return batQuaiMã[0]; 
         return batQuaiMã[du];
     }
 
@@ -132,11 +130,14 @@
         const n = words.length;
         let thuongTxt = "", haTxt = "";
 
-        // Quy tắc Thiểu Vi Chủ
-        if (n === 2) { thuongTxt = words[0]; haTxt = words[1]; }
-        else if (n === 3) { thuongTxt = words[0]; haTxt = words.slice(1).join(""); }
-        else if (n === 4) { thuongTxt = words.slice(0,2).join(""); haTxt = words.slice(2).join(""); }
-        else {
+        // ÁP DỤNG LOGIC CHỦ VỊ - THIỂU VI CHỦ
+        if (n <= 1) {
+            thuongTxt = words[0];
+            haTxt = "";
+        } else {
+            // Chia đôi đại thể:
+            // Nếu chẵn (2,4,6...): mid = n/2 -> Thượng = Hạ
+            // Nếu lẻ (3,5,7...): mid = Math.floor(n/2) -> Thượng < Hạ 1 đơn vị
             let mid = Math.floor(n / 2);
             thuongTxt = words.slice(0, mid).join("");
             haTxt = words.slice(mid).join("");
@@ -150,21 +151,21 @@
 
         // 1. Quẻ Gốc
         const codeBD = upMã + lowMã;
-        document.getElementById('name-BD').innerText = data64Que[codeBD];
+        document.getElementById('name-BD').innerText = data64Que[codeBD] || "Quẻ Lạ";
         document.getElementById('code-BD').innerText = upMã + " " + lowMã;
         draw('visual-BD', codeBD);
 
         // 2. Tiên Thiên
         const upTT = doiTT[upMã]; const lowTT = doiTT[lowMã];
         const codeTT = upTT + lowTT;
-        document.getElementById('name-TT').innerText = data64Que[codeTT];
+        document.getElementById('name-TT').innerText = data64Que[codeTT] || "Quẻ Lạ";
         document.getElementById('code-TT').innerText = upTT + " " + lowTT;
         draw('visual-TT', codeTT);
 
         // 3. Hậu Thiên
         const upHT = doiHT[upMã]; const lowHT = doiHT[lowMã];
         const codeHT = upHT + lowHT;
-        document.getElementById('name-HT').innerText = data64Que[codeHT];
+        document.getElementById('name-HT').innerText = data64Que[codeHT] || "Quẻ Lạ";
         document.getElementById('code-HT').innerText = upHT + " " + lowHT;
         draw('visual-HT', codeHT);
 
@@ -176,7 +177,8 @@
             `Gốc: ${document.getElementById('name-BD').innerText} [${document.getElementById('code-BD').innerText}]\n` +
             `Tiên Thiên: ${document.getElementById('name-TT').innerText} [${document.getElementById('code-TT').innerText}]\n` +
             `Hậu Thiên: ${document.getElementById('name-HT').innerText} [${document.getElementById('code-HT').innerText}]`;
-        navigator.clipboard.writeText(res).then(() => alert("Đã sao chép!"));
+        
+        navigator.clipboard.writeText(res).then(() => alert("Đã sao chép toàn bộ dữ liệu!"));
     }
 </script>
 </body>
