@@ -7,61 +7,37 @@
 
 <style>
 
-:root{
---primary-blue:#007bff;
---dark-blue:#004a99;
---bg-gray:#f0f2f5;
---green:#28a745;
-}
-
 body{
-font-family:-apple-system,sans-serif;
+font-family:Arial;
+background:#f0f2f5;
 display:flex;
-flex-direction:column;
-align-items:center;
-padding:10px;
-margin:0;
-background:var(--bg-gray);
+justify-content:center;
 }
 
 .container{
-width:95%;
-max-width:500px;
+width:400px;
 text-align:center;
 }
 
 input,select{
 width:90%;
-padding:12px;
+padding:10px;
 margin:5px;
-font-size:1rem;
-border-radius:8px;
-border:1px solid #ccc;
 }
 
 button{
-padding:12px 20px;
-margin:10px;
-border:none;
-border-radius:8px;
-background:var(--primary-blue);
+padding:10px 20px;
+background:#007bff;
 color:white;
-font-weight:bold;
+border:none;
 cursor:pointer;
 }
 
 .card{
 background:white;
 padding:15px;
-border-radius:12px;
-margin:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-}
-
-.que-name{
-font-size:24px;
-font-weight:bold;
-margin:10px;
+margin-top:10px;
+border-radius:10px;
 }
 
 .hexagram{
@@ -74,21 +50,21 @@ align-items:center;
 .line{
 width:120px;
 height:10px;
-background:var(--primary-blue);
+background:#007bff;
 }
 
-.line.broken{
+.broken{
 display:flex;
 justify-content:space-between;
 background:transparent;
 }
 
-.line.broken::before,
-.line.broken::after{
+.broken:before,
+.broken:after{
 content:"";
 width:45%;
-height:100%;
-background:var(--primary-blue);
+height:10px;
+background:#007bff;
 }
 
 </style>
@@ -100,9 +76,9 @@ background:var(--primary-blue);
 
 <h2>Quẻ Tính Danh Nâng Cao</h2>
 
-<input id="fullname" type="text" placeholder="Name 1">
+<input id="fullname" placeholder="Name 1">
 
-<input id="fullname2" type="text" placeholder="Name 2">
+<input id="fullname2" placeholder="Name 2">
 
 <select id="year">
 <option value="0">Năm</option>
@@ -122,50 +98,18 @@ background:var(--primary-blue);
 
 <select id="month">
 <option value="0">Tháng</option>
-<option value="1">Tý</option>
-<option value="2">Sửu</option>
-<option value="3">Dần</option>
-<option value="4">Mão</option>
+<option value="7">Thân</option>
 <option value="5">Thìn</option>
-<option value="6">Tỵ</option>
-<option value="7">Ngọ</option>
-<option value="8">Mùi</option>
-<option value="9">Thân</option>
-<option value="10">Dậu</option>
-<option value="11">Tuất</option>
-<option value="12">Hợi</option>
 </select>
 
 <select id="day">
 <option value="0">Ngày</option>
-<option value="1">Tý</option>
-<option value="2">Sửu</option>
-<option value="3">Dần</option>
-<option value="4">Mão</option>
 <option value="5">Thìn</option>
-<option value="6">Tỵ</option>
-<option value="7">Ngọ</option>
-<option value="8">Mùi</option>
-<option value="9">Thân</option>
-<option value="10">Dậu</option>
-<option value="11">Tuất</option>
-<option value="12">Hợi</option>
 </select>
 
 <select id="hour">
 <option value="0">Giờ</option>
-<option value="1">Tý</option>
-<option value="2">Sửu</option>
-<option value="3">Dần</option>
-<option value="4">Mão</option>
-<option value="5">Thìn</option>
-<option value="6">Tỵ</option>
 <option value="7">Ngọ</option>
-<option value="8">Mùi</option>
-<option value="9">Thân</option>
-<option value="10">Dậu</option>
-<option value="11">Tuất</option>
-<option value="12">Hợi</option>
 </select>
 
 <button onclick="lapQue()">Tính Quẻ</button>
@@ -177,38 +121,8 @@ background:var(--primary-blue);
 <script>
 
 const data64Que={
-"111111":"Thuần Càn","000000":"Thuần Khôn",
-"010001":"Thủy Lôi Truân","100010":"Sơn Thủy Mông",
-"010111":"Thủy Thiên Nhu","111010":"Thiên Thủy Tụng",
-"000010":"Địa Thủy Sư","010000":"Thủy Địa Tỷ",
-"110111":"Phong Thiên Tiểu Súc","111011":"Thiên Trạch Lý",
-"000111":"Địa Thiên Thái","111000":"Thiên Địa Bĩ",
-"111101":"Thiên Hỏa Đồng Nhân","101111":"Hỏa Thiên Đại Hữu",
-"000100":"Địa Sơn Khiêm","001000":"Lôi Địa Dự",
-"011001":"Trạch Lôi Tùy","100110":"Sơn Phong Cổ",
-"000011":"Địa Trạch Lâm","110000":"Phong Địa Quán",
-"101001":"Hỏa Lôi Phệ Hạp","100101":"Sơn Hỏa Bí",
-"100000":"Sơn Địa Bác","000001":"Địa Lôi Phục",
-"111001":"Thiên Lôi Vô Vọng","100111":"Sơn Thiên Đại Súc",
-"100001":"Sơn Lôi Di","011110":"Trạch Phong Đại Quá",
-"010010":"Thuần Khảm","101101":"Thuần Ly",
-"011100":"Trạch Sơn Hàm","001110":"Lôi Phong Hằng",
-"111100":"Thiên Sơn Độn","001111":"Lôi Thiên Đại Tráng",
-"101000":"Hỏa Địa Tấn","000101":"Địa Hỏa Minh Di",
-"110101":"Phong Hỏa Gia Nhân","101011":"Hỏa Trạch Khuê",
-"010100":"Thủy Sơn Kiển","001010":"Lôi Thủy Giải",
-"100011":"Sơn Trạch Tổn","110001":"Phong Lôi Ích",
-"011111":"Trạch Thiên Quải","111110":"Thiên Phong Cấu",
-"011000":"Trạch Địa Tụy","000110":"Địa Phong Thăng",
-"011010":"Trạch Thủy Khốn","010110":"Thủy Phong Tỉnh",
-"011101":"Trạch Hỏa Cách","101110":"Hỏa Phong Đỉnh",
-"001001":"Thuần Chấn","100100":"Thuần Cấn",
-"110100":"Phong Sơn Tiệm","001011":"Lôi Trạch Quy Muội",
-"001101":"Lôi Hỏa Phong","101100":"Hỏa Sơn Lữ",
-"110110":"Thuần Tốn","011011":"Thuần Đoài",
-"110010":"Phong Thủy Hoán","010011":"Thủy Trạch Tiết",
-"110011":"Phong Trạch Trung Phu","001100":"Lôi Sơn Tiểu Quá",
-"010101":"Thủy Hỏa Ký Tế","101010":"Hỏa Thủy Vị Tế"
+"100001":"Sơn Lôi Di",
+"101001":"Hỏa Lôi Phệ Hạp"
 }
 
 const batQuai=[
@@ -288,43 +202,33 @@ return html
 function lapQue(){
 
 let n1=document.getElementById("fullname").value.trim()
-
 let n2=document.getElementById("fullname2").value.trim()
 
 if(!n1||!n2){
 
 alert("Nhập đủ 2 tên")
-
 return
-
 }
 
 let w1=n1.split(/\s+/)
-
 let w2=n2.split(/\s+/)
 
 let T1=countChar(w1[0])
-
 let H1=countChar(w1.slice(1).join(""))
 
 let T2=countChar(w2[0])
-
 let H2=countChar(w2.slice(1).join(""))
 
-let year=parseInt(year.value)
-
-let month=parseInt(month.value)
-
-let day=parseInt(day.value)
-
-let hour=parseInt(hour.value)
+let year=parseInt(document.getElementById("year").value)
+let month=parseInt(document.getElementById("month").value)
+let day=parseInt(document.getElementById("day").value)
+let hour=parseInt(document.getElementById("hour").value)
 
 let tong=T1+T2+H1+H2+year+month+day+hour
 
 let dong=haoDong(tong)
 
 let up=getQuai(T1+T2)
-
 let low=getQuai(H1+H2)
 
 let code=up+low
@@ -335,19 +239,23 @@ let html=`
 
 <div class="card">
 
-<div class="que-name">Quẻ Gốc: ${data64Que[code]}</div>
+<h3>Quẻ Gốc</h3>
 
-<div class="hexagram">${draw(code)}</div>
+${draw(code)}
 
-Hào động: ${dong}
+<p>${data64Que[code]||code}</p>
+
+<p>Hào động: ${dong}</p>
 
 </div>
 
 <div class="card">
 
-<div class="que-name">Quẻ Biến: ${data64Que[code2]}</div>
+<h3>Quẻ Biến</h3>
 
-<div class="hexagram">${draw(code2)}</div>
+${draw(code2)}
+
+<p>${data64Que[code2]||code2}</p>
 
 </div>
 
