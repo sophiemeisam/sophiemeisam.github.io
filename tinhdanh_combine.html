@@ -2,167 +2,176 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Sophie Meisam - Dịch Lý Combine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Combine Dịch Học - Sophie Meisam</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; color: #333; padding: 20px; line-height: 1.6; }
-        .container { max-width: 800px; margin: auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        h1 { text-align: center; color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        .section { margin-bottom: 20px; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input[type="text"], select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 4px; font-size: 18px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #2980b9; }
-        #result { margin-top: 30px; padding: 20px; background: #e8f4fd; border-radius: 8px; display: none; }
-        .hex-box { display: flex; justify-content: space-around; text-align: center; margin-top: 20px; }
-        .hex-display { font-size: 24px; font-weight: bold; color: #d35400; }
-        .binary { font-family: monospace; color: #7f8c8d; }
+        :root { --primary-gold: #f1c40f; --dark-bg: #1a1a1a; --card-bg: #262626; --text: #eee; }
+        body { font-family: -apple-system, sans-serif; background: var(--dark-bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
+        .container { width: 95%; max-width: 500px; }
+        h2 { text-align: center; color: var(--primary-gold); font-size: 1.4rem; margin: 15px 0; }
+
+        /* Form nhập */
+        .input-section { background: var(--card-bg); padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); margin-bottom: 20px; border: 1px solid #444; }
+        input[type="text"] { width: 100%; padding: 12px; font-size: 1rem; border: 1px solid #444; border-radius: 8px; margin-bottom: 12px; background: #333; color: #fff; box-sizing: border-box; }
+        .grid-time { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        select { padding: 10px; background: #333; color: white; border: 1px solid #444; border-radius: 8px; }
+        .calc-btn { width: 100%; padding: 15px; background: var(--primary-gold); color: #000; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+
+        /* Kết quả */
+        .card { background: var(--card-bg); padding: 20px; border-radius: 15px; border-left: 5px solid var(--primary-gold); margin-bottom: 20px; text-align: center; }
+        .label-tag { font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
+        .que-name { font-size: 26px; font-weight: bold; color: var(--primary-gold); margin: 10px 0; }
+        
+        /* Vẽ vạch quẻ */
+        .hexagram { display: flex; flex-direction: column; gap: 8px; align-items: center; margin: 15px 0; }
+        .line { width: 120px; height: 10px; background-color: var(--primary-gold); border-radius: 2px; position: relative; }
+        .line.broken { background-color: transparent; display: flex; justify-content: space-between; }
+        .line.broken::before, .line.broken::after { content: ""; width: 44%; height: 100%; background-color: var(--primary-gold); border-radius: 2px; }
+        .moving-tag { position: absolute; right: -30px; color: #ff4757; font-weight: bold; font-size: 20px; }
+
+        .binary-info { font-size: 0.85rem; font-family: monospace; background: #333; padding: 4px 12px; border-radius: 5px; color: #00ff00; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Hệ Thống Lập Quẻ Combine</h1>
-    
-    <div class="section">
-        <label>Họ Tên Người 1 (Name 1):</label>
-        <input type="text" id="name1" placeholder="Ví dụ: Lê Tư">
-        <label>Họ Tên Người 2 (Name 2):</label>
-        <input type="text" id="name2" placeholder="Ví dụ: Thanh Phong Dương">
-    </div>
+    <div class="container">
+        <h2>Dịch Lý Combine</h2>
 
-    <div class="section">
-        <label>Thời gian (Bỏ trống = 0):</label>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <select id="year"><option value="0">-- Năm --</option></select>
-            <select id="month"><option value="0">-- Tháng --</option></select>
-            <select id="day"><option value="0">-- Ngày --</option></select>
-            <select id="hour"><option value="0">-- Giờ --</option></select>
-        </div>
-    </div>
-
-    <button onclick="lapQue()">Lập Quẻ Kết Hợp</button>
-
-    <div id="result">
-        <h3>Kết Quả Luận Giải</h3>
-        <div id="summary"></div>
-        <div class="hex-box">
-            <div>
-                <div><strong>Quẻ Chủ (T3H3)</strong></div>
-                <div id="queChuName" class="hex-display"></div>
-                <div id="queChuBinary" class="binary"></div>
+        <div class="input-section">
+            <input type="text" id="name1" placeholder="Họ tên người 1 (Lê Tư)">
+            <input type="text" id="name2" placeholder="Họ tên người 2 (Thanh Phong Dương)">
+            
+            <div class="grid-time">
+                <select id="year"><option value="0">Năm (Chi)</option></select>
+                <select id="month"><option value="0">Tháng (Chi)</option></select>
+                <select id="day"><option value="0">Ngày (Chi)</option></select>
+                <select id="hour"><option value="0">Giờ (Chi)</option></select>
             </div>
-            <div style="font-size: 40px; align-self: center;">➔</div>
-            <div>
-                <div><strong>Quẻ Biến (T4H4)</strong></div>
-                <div id="queBienName" class="hex-display"></div>
-                <div id="queBienBinary" class="binary"></div>
+            
+            <button class="calc-btn" onclick="executeCombine()">Tính Quẻ Kết Hợp</button>
+        </div>
+
+        <div id="results" style="display:none;">
+            <div class="card">
+                <span class="label-tag">Quẻ Chủ (T3H3)</span>
+                <div id="name-Chu" class="que-name">---</div>
+                <div id="visual-Chu" class="hexagram"></div>
+                <div id="code-Chu" class="binary-info">---</div>
+            </div>
+
+            <div class="card" style="border-left-color: #ff4757;">
+                <span class="label-tag">Quẻ Biến (T4H4) - Động Hào <span id="dong-val"></span></span>
+                <div id="name-Bien" class="que-name">---</div>
+                <div id="visual-Bien" class="hexagram"></div>
+                <div id="code-Bien" class="binary-info">---</div>
             </div>
         </div>
-        <p id="dongHaoNote" style="text-align: center; font-weight: bold; margin-top: 20px;"></p>
     </div>
-</div>
 
 <script>
-    // Bảng mã Địa Chi
+    const data64Que = {
+        "111111": "Thuần Càn", "000000": "Thuần Khôn", "010001": "Thủy Lôi Truân", "100010": "Sơn Thủy Mông",
+        "010111": "Thủy Thiên Nhu", "111010": "Thiên Thủy Tụng", "000010": "Địa Thủy Sư", "010000": "Thủy Địa Tỷ",
+        "110111": "Phong Thiên Tiểu Súc", "111011": "Thiên Trạch Lý", "000111": "Địa Thiên Thái", "111000": "Thiên Địa Bĩ",
+        "111101": "Thiên Hỏa Đồng Nhân", "101111": "Hỏa Thiên Đại Hữu", "000100": "Địa Sơn Khiêm", "001000": "Lôi Địa Dự",
+        "011001": "Trạch Lôi Tùy", "100110": "Sơn Phong Cổ", "000011": "Địa Trạch Lâm", "110000": "Phong Địa Quán",
+        "101001": "Hỏa Lôi Phệ Hạp", "100101": "Sơn Hỏa Bí", "100000": "Sơn Địa Bác", "000001": "Địa Lôi Phục",
+        "111001": "Thiên Lôi Vô Vọng", "100111": "Sơn Thiên Đại Súc", "100001": "Sơn Lôi Di", "011110": "Trạch Phong Đại Quá",
+        "010010": "Thuần Khảm", "101101": "Thuần Ly", "011100": "Trạch Sơn Hàm", "001110": "Lôi Phong Hằng",
+        "111100": "Thiên Sơn Độn", "001111": "Lôi Thiên Đại Tráng", "101000": "Hỏa Địa Tấn", "000101": "Địa Hỏa Minh Di",
+        "110101": "Phong Hỏa Gia Nhân", "101011": "Hỏa Trạch Khuê", "010100": "Thủy Sơn Kiển", "001010": "Lôi Thủy Giải",
+        "100011": "Sơn Trạch Tổn", "110001": "Phong Lôi Ích", "011111": "Trạch Thiên Quải", "111110": "Thiên Phong Cấu",
+        "011000": "Trạch Địa Tụy", "000110": "Địa Phong Thăng", "011010": "Trạch Thủy Khốn", "010110": "Thủy Phong Tỉnh",
+        "011101": "Trạch Hỏa Cách", "101110": "Hỏa Phong Đỉnh", "001001": "Thuần Chấn", "100100": "Thuần Cấn",
+        "110100": "Phong Sơn Tiệm", "001011": "Lôi Trạch Quy Muội", "001101": "Lôi Hỏa Phong", "101100": "Hỏa Sơn Lữ",
+        "110110": "Thuần Tốn", "011011": "Thuần Đoài", "110010": "Phong Thủy Hoán", "010011": "Thủy Trạch Tiết",
+        "110011": "Phong Trạch Trung Phu", "001100": "Lôi Sơn Tiểu Quá", "010101": "Thủy Hỏa Ký Tế", "101010": "Hỏa Thủy Vị Tế"
+    };
+
     const chiStandard = ["Tý","Sửu","Dần","Mão","Thìn","Tị","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi"];
     const chiMonth = ["Dần","Mão","Thìn","Tị","Ngọ","Mùi","Thân","Dậu","Tuất","Hợi","Tý","Sửu"];
-    
-    // Khởi tạo menu select
-    function initSelect() {
-        const sYear = document.getElementById('year');
-        const sMonth = document.getElementById('month');
-        const sDay = document.getElementById('day');
-        const sHour = document.getElementById('hour');
+    const batQuaiMã = ["000", "111", "011", "101", "001", "110", "010", "100", "000"]; 
 
-        chiStandard.forEach((name, i) => {
-            sYear.add(new Option(name, i + 1));
-            sDay.add(new Option(name, i + 1));
-            sHour.add(new Option(name, i + 1));
-        });
-        chiMonth.forEach((name, i) => {
-            sMonth.add(new Option(name, i + 1));
-        });
+    function initSelect() {
+        const sY = document.getElementById('year'), sM = document.getElementById('month'), sD = document.getElementById('day'), sH = document.getElementById('hour');
+        chiStandard.forEach((n, i) => { sY.add(new Option(n, i + 1)); sD.add(new Option(n, i + 1)); sH.add(new Option(n, i + 1)); });
+        chiMonth.forEach((n, i) => { sM.add(new Option(n, i + 1)); });
     }
     initSelect();
 
-    const queData = {
-        1: { name: "Kiền", bin: "111" }, 2: { name: "Đoài", bin: "011" },
-        3: { name: "Ly",   bin: "101" }, 4: { name: "Chấn", bin: "001" },
-        5: { name: "Tốn",  bin: "110" }, 6: { name: "Khảm", bin: "010" },
-        7: { name: "Cấn",  bin: "100" }, 8: { name: "Khôn", bin: "000" }
-    };
-
-    const lookup64 = {
-        "74": "Sơn Lôi Di", "34": "Hỏa Lôi Phệ Hạp", // Thêm các quẻ khác tại đây
-        "11": "Thuần Kiền", "88": "Thuần Khôn"
-    };
-
-    function getNameStats(name) {
-        let words = name.trim().split(/\s+/).filter(w => w.length > 0);
-        let total = words.length;
-        if (total === 0) return { t: 0, h: 0 };
-        let t = Math.floor(total / 2);
-        let h = total - t;
-        if (t === 0) t = h; // Trường hợp 1 chữ
-        return { t, h };
+    function countKýÂm(str) {
+        let s = str.replace(/\s/g, '').toLowerCase();
+        let charCount = s.length;
+        let accents = (str.normalize('NFD').match(/[\u0300\u0301\u0303\u0309\u0323]/g) || []).length;
+        return charCount + accents;
     }
 
-    function getQueFromNum(n) {
-        let res = n % 8;
-        return res === 0 ? 8 : res;
+    function getNameParts(fullname) {
+        const words = fullname.trim().split(/\s+/);
+        if (words.length <= 1) return { t: countKýÂm(fullname), h: 0 };
+        // Thiểu vi chủ: Họ là Thượng, còn lại là Hạ
+        const tTxt = words[0];
+        const hTxt = words.slice(1).join("");
+        return { t: countKýÂm(tTxt), h: countKýÂm(hTxt) };
     }
 
-    function lapQue() {
-        let n1 = document.getElementById('name1').value;
-        let n2 = document.getElementById('name2').value;
-        let s1 = getNameStats(n1);
-        let s2 = getNameStats(n2);
-
-        let tYear = parseInt(document.getElementById('year').value);
-        let tMonth = parseInt(document.getElementById('month').value);
-        let tDay = parseInt(document.getElementById('day').value);
-        let tHour = parseInt(document.getElementById('hour').value);
-
-        // Logic T3, H3
-        let T3 = getQueFromNum(s1.t + s2.t);
-        let H3 = getQueFromNum(s1.h + s2.h);
-
-        // Hào động
-        let totalHao = s1.t + s2.t + s1.h + s2.h + tYear + tMonth + tDay + tHour;
-        let haoDong = totalHao % 6;
-        if (haoDong === 0) haoDong = 6;
-
-        // Xử lý Biến Quẻ (Nhìn từ trên xuống)
-        let t3Bin = queData[T3].bin.split(''); // [H6, H5, H4]
-        let h3Bin = queData[H3].bin.split(''); // [H3, H2, H1]
-        let fullBin = [...t3Bin, ...h3Bin]; // Index 0-5 tương ứng Hào 6-1
-        
-        // Vị trí hào động trong mảng (6 -> index 0, 5 -> index 1... 1 -> index 5)
-        let targetIndex = 6 - haoDong;
-        fullBin[targetIndex] = fullBin[targetIndex] === '1' ? '0' : '1';
-
-        let t4Bin = fullBin.slice(0, 3).join('');
-        let h4Bin = fullBin.slice(3, 6).join('');
-
-        function findQueKey(bin) {
-            for (let key in queData) if (queData[key].bin === bin) return key;
+    function draw(id, code, movingHao = -1) {
+        const c = document.getElementById(id); c.innerHTML = "";
+        for (let i = 0; i < 6; i++) {
+            const haoLevel = 6 - i; // Hào 6 ở trên cùng (index 0)
+            const l = document.createElement('div');
+            l.className = (code[i] === '1') ? "line" : "line broken";
+            if (haoLevel === movingHao) {
+                const tag = document.createElement('span'); tag.className = "moving-tag"; tag.innerText = "×";
+                l.appendChild(tag);
+            }
+            c.appendChild(l);
         }
+    }
 
-        let T4 = findQueKey(t4Bin);
-        let H4 = findQueKey(h4Bin);
+    function executeCombine() {
+        const n1 = document.getElementById('name1').value;
+        const n2 = document.getElementById('name2').value;
+        if (!n1 || !n2) return alert("Vui lòng nhập cả 2 tên!");
 
-        // Hiển thị kết quả
-        document.getElementById('result').style.display = 'block';
-        document.getElementById('queChuName').innerText = (lookup64[T3+""+H3] || queData[T3].name + " " + queData[H3].name);
-        document.getElementById('queChuBinary').innerText = t3Bin.join('') + " / " + h3Bin.join('');
+        const p1 = getNameParts(n1); // T1, H1
+        const p2 = getNameParts(n2); // T2, H2
+
+        const y = parseInt(document.getElementById('year').value);
+        const m = parseInt(document.getElementById('month').value);
+        const d = parseInt(document.getElementById('day').value);
+        const h = parseInt(document.getElementById('hour').value);
+
+        // 1. Quẻ Chủ T3H3
+        const scoreUp = p1.t + p2.t;
+        const scoreLow = p1.h + p2.h;
         
-        document.getElementById('queBienName').innerText = (lookup64[T4+""+H4] || queData[T4].name + " " + queData[H4].name);
-        document.getElementById('queBienBinary').innerText = t4Bin + " / " + h4Bin;
-        
-        document.getElementById('dongHaoNote').innerText = "Động Hào " + haoDong;
-        document.getElementById('summary').innerHTML = `Tổng số tính hào: ${totalHao} <br> Quẻ chủ: ${T3}/${H3}`;
+        const upMã = batQuaiMã[scoreUp % 8 === 0 ? 8 : scoreUp % 8];
+        const lowMã = batQuaiMã[scoreLow % 8 === 0 ? 8 : scoreLow % 8];
+        const codeChu = upMã + lowMã;
+
+        // 2. Hào động
+        const totalHao = p1.t + p2.t + p1.h + p2.h + y + m + d + h;
+        let haoDong = totalHao % 6 === 0 ? 6 : totalHao % 6;
+
+        // 3. Quẻ Biến T4H4
+        let binaryArr = codeChu.split("");
+        let idxDong = 6 - haoDong; 
+        binaryArr[idxDong] = binaryArr[idxDong] === "1" ? "0" : "1";
+        const codeBien = binaryArr.join("");
+
+        // Hiển thị
+        document.getElementById('name-Chu').innerText = data64Que[codeChu] || "Quẻ Lạ";
+        document.getElementById('code-Chu').innerText = upMã + " " + lowMã;
+        draw('visual-Chu', codeChu);
+
+        document.getElementById('dong-val').innerText = haoDong;
+        document.getElementById('name-Bien').innerText = data64Que[codeBien] || "Quẻ Lạ";
+        document.getElementById('code-Bien').innerText = codeBien.slice(0,3) + " " + codeBien.slice(3);
+        draw('visual-Bien', codeBien, haoDong);
+
+        document.getElementById('results').style.display = 'block';
     }
 </script>
-
 </body>
 </html>
