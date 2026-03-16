@@ -19,7 +19,7 @@
         .card { background: var(--card-bg); padding: 20px; border-radius: 15px; border-left: 5px solid var(--primary-gold); margin-bottom: 20px; text-align: center; }
         .label-tag { font-size: 0.75rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px; }
         .que-name { font-size: 26px; font-weight: bold; color: var(--primary-gold); margin: 10px 0; }
-        
+
         .hexagram { display: flex; flex-direction: column; gap: 8px; align-items: center; margin: 15px 0; }
         .line { width: 120px; height: 10px; background-color: var(--primary-gold); border-radius: 2px; position: relative; }
         .line.broken { background-color: transparent; display: flex; justify-content: space-between; }
@@ -38,14 +38,14 @@
         <div class="input-section">
             <input type="text" id="name1" placeholder="Họ tên người 1 (Ví dụ: Lê Tư)">
             <input type="text" id="name2" placeholder="Họ tên người 2 (Ví dụ: Thanh Phong Dương)">
-            
+
             <div class="grid-time">
                 <select id="year"><option value="0">Năm (Bỏ trống)</option></select>
                 <select id="month"><option value="0">Tháng (Bỏ trống)</option></select>
                 <select id="day"><option value="0">Ngày (Bỏ trống)</option></select>
                 <select id="hour"><option value="0">Giờ (Bỏ trống)</option></select>
             </div>
-            
+
             <button class="calc-btn" onclick="executeCombine()">Tính Quẻ Kết Hợp</button>
         </div>
 
@@ -100,25 +100,28 @@
     initSelect();
 
     function countKýÂm(str) {
+        if(!str) return 0;
         let s = str.replace(/\s/g, '').toLowerCase();
         let charCount = s.length;
         let accents = (str.normalize('NFD').match(/[\u0300\u0301\u0303\u0309\u0323]/g) || []).length;
         return charCount + accents;
     }
 
-    // FIX LOGIC Ở ĐÂY:
+    // CẬP NHẬT LOGIC THIỂU VI CHỦ TẠI ĐÂY
     function getNameParts(fullname) {
         const words = fullname.trim().split(/\s+/);
-        const n = words.length;
+        const totalWords = words.length;
         let tTxt = "", hTxt = "";
 
-        if (n <= 1) {
+        if (totalWords <= 1) {
             tTxt = words[0] || "";
             hTxt = "";
         } else {
-            // Quy tắc: 2 từ -> 1/1, 3 từ -> 1/2, 4 từ -> 2/2, 5 từ -> 2/3
-            // Dùng Math.floor(n/2) để lấy số lượng từ cho quẻ Thượng
-            const mid = Math.floor(n / 2);
+            // Nguyên lý: Chia đôi đại thể.
+            // Nếu lẻ (3, 5, 7...): Trái (Thượng) ít hơn Phải (Hạ) 1 đơn vị.
+            // Nếu chẵn (2, 4, 6...): Chia đều.
+            // Công thức: mid = Math.floor(totalWords / 2) luôn cho kết quả Thượng <= Hạ
+            const mid = Math.floor(totalWords / 2);
             tTxt = words.slice(0, mid).join("");
             hTxt = words.slice(mid).join("");
         }
@@ -156,12 +159,12 @@
         // Quẻ Chủ T3H3
         const scoreUp = p1.t + p2.t;
         const scoreLow = p1.h + p2.h;
-        
-        const upMã = batQuaiMã[scoreUp % 8 === 0 ? 8 : scoreUp % 8];
-        const lowMã = batQuaiMã[scoreLow % 8 === 0 ? 8 : scoreLow % 8];
-        const codeChu = upMã + lowMã;
 
-        // Hào động: T1+T2 + H1+H2 + Năm+Tháng+Ngày+Giờ
+        const upIdx = scoreUp % 8 === 0 ? 8 : scoreUp % 8;
+        const lowIdx = scoreLow % 8 === 0 ? 8 : scoreLow % 8;
+        const codeChu = batQuaiMã[upIdx] + batQuaiMã[lowIdx];
+
+        // Hào động: Tổng các biến số
         const totalHao = p1.t + p2.t + p1.h + p2.h + y + m + d + h;
         let haoDong = totalHao % 6 === 0 ? 6 : totalHao % 6;
 
@@ -172,7 +175,7 @@
         const codeBien = binaryArr.join("");
 
         document.getElementById('name-Chu').innerText = data64Que[codeChu] || "Quẻ Lạ";
-        document.getElementById('code-Chu').innerText = upMã + " " + lowMã;
+        document.getElementById('code-Chu').innerText = batQuaiMã[upIdx] + " " + batQuaiMã[lowIdx];
         draw('visual-Chu', codeChu);
 
         document.getElementById('dong-val').innerText = haoDong;
@@ -190,7 +193,7 @@
         const mTxt = document.getElementById('month').options[document.getElementById('month').selectedIndex].text;
         const dTxt = document.getElementById('day').options[document.getElementById('day').selectedIndex].text;
         const hTxt = document.getElementById('hour').options[document.getElementById('hour').selectedIndex].text;
-        
+
         const chu = document.getElementById('name-Chu').innerText;
         const bien = document.getElementById('name-Bien').innerText;
         const dong = document.getElementById('dong-val').innerText;
