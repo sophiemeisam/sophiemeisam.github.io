@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quẻ Liên Hoa - 1 Input</title>
+<title>Bảng Quẻ 1 Input - Chuẩn</title>
 
 <style>
 :root { --gold:#f1c40f; --dark:#121212; --card:#1e1e1e; }
@@ -71,18 +71,18 @@ button {
 
 <script>
 
-<script>
-
 const headers = ["Chính","Hỗ","Biến"];
 
 document.getElementById("input").addEventListener("input", update);
 
+// tách input (hỗ trợ dấu phẩy + khoảng trắng)
 function parseInput(str){
     return str.split(/,|\s+/).map(s => s.trim()).filter(s => s);
 }
 
 function buildTable(arr){
 
+    // đảm bảo đủ 6 giá trị
     while(arr.length < 6) arr.push("");
 
     const data = [
@@ -91,22 +91,20 @@ function buildTable(arr){
         [arr[1], arr[3], arr[5]]
     ];
 
-    // 🔥 tính width chuẩn từng cột
+    // tính độ rộng cột chuẩn
     const colWidths = headers.map((_, i) =>
         Math.max(...data.map(row => row[i].length))
     );
 
     const pad = (text, w) => text.padEnd(w, " ");
 
-    // build header
+    // header
     const headerRow = data[0].map((c,i)=>pad(c,colWidths[i])).join(" | ");
 
-    // 🔥 FIX CHUẨN separator
-    const separator = colWidths
-        .map(w => "-".repeat(w))
-        .join("-+-");
+    // separator chuẩn 100%
+    const separator = colWidths.map(w => "-".repeat(w)).join("-+-");
 
-    // rows
+    // data rows
     const row1 = data[1].map((c,i)=>pad(c,colWidths[i])).join(" | ");
     const row2 = data[2].map((c,i)=>pad(c,colWidths[i])).join(" | ");
 
@@ -128,3 +126,6 @@ function copyText(){
 update();
 
 </script>
+
+</body>
+</html>
