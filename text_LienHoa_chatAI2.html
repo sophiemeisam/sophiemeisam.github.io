@@ -71,17 +71,18 @@ button {
 
 <script>
 
+<script>
+
 const headers = ["Chính","Hỗ","Biến"];
 
 document.getElementById("input").addEventListener("input", update);
 
 function parseInput(str){
-    return str.split(",").map(s => s.trim()).filter(s => s);
+    return str.split(/,|\s+/).map(s => s.trim()).filter(s => s);
 }
 
 function buildTable(arr){
 
-    // đảm bảo đủ 6 phần tử
     while(arr.length < 6) arr.push("");
 
     const data = [
@@ -90,15 +91,22 @@ function buildTable(arr){
         [arr[1], arr[3], arr[5]]
     ];
 
-    // auto width
+    // 🔥 tính width chuẩn từng cột
     const colWidths = headers.map((_, i) =>
         Math.max(...data.map(row => row[i].length))
     );
 
     const pad = (text, w) => text.padEnd(w, " ");
 
+    // build header
     const headerRow = data[0].map((c,i)=>pad(c,colWidths[i])).join(" | ");
-    const separator = colWidths.map(w => "-".repeat(w)).join("-+-");
+
+    // 🔥 FIX CHUẨN separator
+    const separator = colWidths
+        .map(w => "-".repeat(w))
+        .join("-+-");
+
+    // rows
     const row1 = data[1].map((c,i)=>pad(c,colWidths[i])).join(" | ");
     const row2 = data[2].map((c,i)=>pad(c,colWidths[i])).join(" | ");
 
@@ -114,12 +122,9 @@ function update(){
 function copyText(){
     const text = document.getElementById("preview").innerText;
     navigator.clipboard.writeText(text);
-    alert("Đã copy! 👍");
+    alert("Đã copy chuẩn 👍");
 }
 
 update();
 
 </script>
-
-</body>
-</html>
