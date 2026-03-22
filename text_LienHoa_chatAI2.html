@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Liên Hoa Quẻ - Chuẩn Text Pro</title>
+<title>Bảng Quẻ Chuẩn Text</title>
 
 <style>
 :root { --gold:#f1c40f; --dark:#121212; --card:#1e1e1e; }
@@ -19,7 +19,7 @@ body {
 
 .container {
     width: 100%;
-    max-width: 700px;
+    max-width: 600px;
     background: var(--card);
     padding: 20px;
     border-radius: 16px;
@@ -64,11 +64,6 @@ button {
     background: var(--gold);
     font-weight: bold;
 }
-
-.toggle {
-    margin-top: 10px;
-    text-align: center;
-}
 </style>
 </head>
 
@@ -76,12 +71,19 @@ button {
 
 <div class="container">
 
-<div class="grid-inputs" id="grid"></div>
-
-<div class="toggle">
-    <label>
-        <input type="checkbox" id="iconToggle"> Hiển thị quái ☴ ☳ ☶ ☲
-    </label>
+<div class="grid-inputs">
+    <div class="col">
+        <input id="q1u" value="Tốn">
+        <input id="q1l" value="Chấn">
+    </div>
+    <div class="col">
+        <input id="q2u" value="Cấn">
+        <input id="q2l" value="Ly">
+    </div>
+    <div class="col">
+        <input id="q3u" value="Tốn">
+        <input id="q3l" value="Cấn">
+    </div>
 </div>
 
 <div id="preview" class="preview"></div>
@@ -92,86 +94,49 @@ button {
 
 <script>
 
-// ====== CONFIG ======
-const columns = ["Chính","Hỗ","Biến"]; // có thể đổi thành 5-7 cột
-const trigramMap = {
-    "Càn":"☰","Đoài":"☱","Ly":"☲","Chấn":"☳",
-    "Tốn":"☴","Khảm":"☵","Cấn":"☶","Khôn":"☷"
-};
+const ids = ['q1u','q1l','q2u','q2l','q3u','q3l'];
+ids.forEach(id => document.getElementById(id).addEventListener('input', update));
 
-// ====== INIT INPUT ======
-const grid = document.getElementById("grid");
-
-columns.forEach((col, i) => {
-    const div = document.createElement("div");
-    div.className = "col";
-
-    const inputU = document.createElement("input");
-    inputU.id = `q${i}u`;
-    inputU.value = ["Tốn","Cấn","Tốn"][i] || "";
-
-    const inputL = document.createElement("input");
-    inputL.id = `q${i}l`;
-    inputL.value = ["Chấn","Ly","Cấn"][i] || "";
-
-    div.appendChild(inputU);
-    div.appendChild(inputL);
-    grid.appendChild(div);
-});
-
-// ====== BUILD TABLE ======
 function buildTable(){
-    const showIcon = document.getElementById("iconToggle").checked;
+    const v = ids.map(id => document.getElementById(id).value || " ");
 
-    const upper = [];
-    const lower = [];
-
-    columns.forEach((_, i) => {
-        let u = document.getElementById(`q${i}u`).value.trim();
-        let l = document.getElementById(`q${i}l`).value.trim();
-
-        if(showIcon){
-            u = (trigramMap[u] || "") + " " + u;
-            l = (trigramMap[l] || "") + " " + l;
-        }
-
-        upper.push(u);
-        lower.push(l);
-    });
+    const headers = ["Chính","Hỗ","Biến"];
 
     const data = [
-        columns,
-        upper,
-        lower
+        headers,
+        [v[0], v[2], v[4]],
+        [v[1], v[3], v[5]]
     ];
 
     // auto width từng cột
-    const colWidths = columns.map((_, i) =>
+    const colWidths = headers.map((_, i) =>
         Math.max(...data.map(row => row[i].length))
     );
 
     const pad = (text, w) => text.padEnd(w, " ");
 
-    return data.map(row =>
-        row.map((cell, i) => pad(cell, colWidths[i])).join(" | ")
-    ).join("\n");
+    // dòng header
+    const headerRow = data[0].map((cell, i) => pad(cell, colWidths[i])).join(" | ");
+
+    // dòng phân cách
+    const separator = colWidths.map(w => "-".repeat(w)).join("-+-");
+
+    // dòng dữ liệu
+    const row1 = data[1].map((cell, i) => pad(cell, colWidths[i])).join(" | ");
+    const row2 = data[2].map((cell, i) => pad(cell, colWidths[i])).join(" | ");
+
+    return headerRow + "\n" + separator + "\n" + row1 + "\n" + row2;
 }
 
-// ====== UPDATE ======
 function update(){
     document.getElementById("preview").innerText = buildTable();
 }
 
-// ====== COPY ======
 function copyText(){
     const text = buildTable();
     navigator.clipboard.writeText(text);
     alert("Đã copy! Dán đâu cũng không lệch 👍");
 }
-
-// ====== EVENTS ======
-document.addEventListener("input", update);
-document.getElementById("iconToggle").addEventListener("change", update);
 
 update();
 
