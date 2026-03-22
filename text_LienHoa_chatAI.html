@@ -7,21 +7,22 @@
     <style>
         :root { --gold: #f1c40f; --dark: #121212; --card: #1e1e1e; }
         body { font-family: -apple-system, sans-serif; background: var(--dark); color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { width: 100%; max-width: 480px; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; }
+        .container { width: 100%; max-width: 500px; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .col { display: flex; flex-direction: column; gap: 10px; }
         input { padding: 12px; border: 1px solid #444; border-radius: 10px; background: #000; color: #fff; text-align: center; font-size: 1rem; width: 100%; box-sizing: border-box; }
         
         .preview-area { 
             background: #000; border: 1px solid #444; padding: 40px 10px; margin: 20px 0; border-radius: 12px;
-            font-size: 1.4rem; line-height: 1.6; white-space: pre; 
+            font-size: 1.4rem; line-height: 1.8; white-space: pre; 
             font-family: "Courier New", Courier, monospace;
             display: flex; justify-content: center; color: #ffffff;
+            text-align: center;
         }
 
         .btn-copy { 
             width: 100%; padding: 18px; background: var(--gold); color: #000; 
-            border: none; border-radius: 12px; font-weight: bold; cursor: pointer;
+            border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem;
         }
     </style>
 </head>
@@ -34,42 +35,38 @@
         <div class="col"><input type="text" id="q3u" value="Tốn"><input type="text" id="q3l" value="Cấn"></div>
     </div>
     <div id="preview" class="preview-area"></div>
-    <button class="btn-copy" onclick="copyResult()">SAO CHÉP HỆ QUẺ CÓ TRỤC</button>
+    <button class="btn-copy" onclick="copyResult()">SAO CHÉP HỆ QUẺ XUYÊN TÂM</button>
 </div>
 
 <script>
     const ids = ['q1u', 'q1l', 'q2u', 'q2l', 'q3u', 'q3l'];
     ids.forEach(id => document.getElementById(id).addEventListener('input', updatePreview));
 
-    function axisCenter(str, width) {
+    // Hàm căn tâm sử dụng Ideographic Space để ép độ rộng cố định
+    function perfectCenter(str) {
         let text = str.trim();
-        let diff = width - text.length;
-        if (diff <= 0) return text;
-
-        let left = Math.floor(diff / 2);
-        let right = diff - left;
-        
-        // Thêm một dấu chấm nhỏ hoặc khoảng trắng đặc biệt để giữ chỗ
-        return " ".repeat(left) + text + " ".repeat(right);
+        // Cấu trúc: [Khoảng trắng rộng] [Chữ] [Khoảng trắng rộng]
+        // Ký tự \u3000 là khoảng trắng có độ rộng bằng 1 chữ Kanji/Hán tự, rất ổn định
+        return "\u3000" + text + "\u3000";
     }
 
     function updatePreview() {
         const v = ids.map(id => document.getElementById(id).value || " ");
-        const W = 11; 
-        const GAP = "   "; // Tăng khoảng cách giữa các cột
-
-        // Tạo cấu trúc có dấu | ở giữa để neo thị giác
-        const row0 = axisCenter("Chính", W) + GAP + axisCenter("Hỗ", W) + GAP + axisCenter("Biến", W);
-        const rowAxis = axisCenter("|", W) + GAP + axisCenter("|", W) + GAP + axisCenter("|", W);
-        const row1 = axisCenter(v[0], W) + GAP + axisCenter(v[2], W) + GAP + axisCenter(v[4], W);
-        const row2 = axisCenter(v[1], W) + GAP + axisCenter(v[3], W) + GAP + axisCenter(v[5], W);
+        
+        // Căn lề từng chữ một cách thủ công để tạo trục thẳng đứng
+        const row0 = perfectCenter("Chính") + " " + perfectCenter("Hỗ") + " " + perfectCenter("Biến");
+        const rowAxis = perfectCenter("|") + " " + perfectCenter("|") + " " + perfectCenter("|");
+        const row1 = perfectCenter(v[0]) + " " + perfectCenter(v[2]) + " " + perfectCenter(v[4]);
+        const row2 = perfectCenter(v[1]) + " " + perfectCenter(v[3]) + " " + perfectCenter(v[5]);
 
         document.getElementById('preview').innerText = row0 + "\n" + rowAxis + "\n" + row1 + "\n" + row2;
     }
 
     function copyResult() {
         const text = document.getElementById('preview').innerText;
-        navigator.clipboard.writeText(text).then(() => alert("Đã sao chép hệ quẻ có trục neo!"));
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Đã sao chép! Trục sẽ thẳng hàng dù dán vào bất kỳ đâu.");
+        });
     }
     updatePreview();
 </script>
