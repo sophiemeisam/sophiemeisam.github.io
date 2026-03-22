@@ -3,39 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Biểu Thị Quẻ Tượng - Sophie Meisam</title>
+    <title>Mô Phỏng Quẻ Tượng - Sophie Meisam</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f7f6; }
-        body { font-family: -apple-system, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        h2 { color: var(--primary); text-align: center; font-size: 1.2rem; margin-bottom: 20px; }
+        :root { --gold: #f1c40f; --dark: #1a1a1a; --gray: #333; --text: #eee; }
+        body { font-family: -apple-system, sans-serif; background: var(--dark); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        .container { width: 100%; max-width: 500px; background: #262626; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #444; }
+        h2 { color: var(--gold); text-align: center; margin-bottom: 20px; font-size: 1.3rem; }
         
-        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; text-align: center; }
-        input:focus { border-color: var(--accent); outline: none; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .col { display: flex; flex-direction: column; gap: 10px; }
+        input { padding: 12px; border: 1px solid #555; border-radius: 8px; background: #1a1a1a; color: white; text-align: center; font-size: 1rem; width: 100%; box-sizing: border-box; }
+        input:focus { border-color: var(--gold); outline: none; }
         
-        .preview-box { 
-            background: #fff; 
-            border: 2px dashed #bbb; 
-            padding: 20px; 
+        .label-sm { font-size: 0.75rem; color: var(--gold); text-align: center; font-weight: bold; }
+
+        .preview-area { 
+            background: #000; 
+            border: 1px solid var(--gold); 
+            padding: 25px; 
             margin: 20px 0; 
-            min-height: 80px;
+            border-radius: 10px;
+            font-size: 1.4rem;
+            line-height: 1.5;
+            white-space: pre; 
+            font-family: "Courier New", Courier, monospace;
             display: flex;
             justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            line-height: 1.4;
-            white-space: pre; /* Quan trọng để giữ khoảng trắng */
-            font-family: "Courier New", Courier, monospace; /* Font đơn cách giúp căn chỉnh chuẩn */
+            text-align: center;
+            color: #fff;
         }
 
-        button { 
-            width: 100%; padding: 15px; border: none; border-radius: 10px; 
-            font-weight: bold; cursor: pointer; transition: 0.3s;
+        .btn-copy { 
+            width: 100%; padding: 15px; background: var(--gold); color: #000; 
+            border: none; border-radius: 10px; font-weight: bold; font-size: 1rem;
+            cursor: pointer; transition: 0.2s;
         }
-        .btn-calc { background: var(--primary); color: white; margin-bottom: 10px; }
-        .btn-copy { background: #27ae60; color: white; display: none; }
-        button:active { transform: scale(0.98); }
+        .btn-copy:hover { background: #d4af37; }
+        .btn-copy:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -43,61 +47,73 @@
 <div class="container">
     <h2>Mô Phỏng Quẻ Tượng</h2>
     
-    <div class="input-group">
-        <input type="text" id="q1_u" placeholder="Chấn (T)" value="Chấn">
-        <input type="text" id="q1_l" placeholder="Tốn (H)" value="Tốn">
-        <input type="text" id="q2_u" placeholder="Đoài (T)" value="Đoài">
-        <input type="text" id="q2_l" placeholder="Kiền (H)" value="Kiền">
-        <input type="text" id="q3_u" placeholder="Ly (T)" value="Ly">
-        <input type="text" id="q3_l" placeholder="Tốn (H)" value="Tốn">
+    <div class="grid-inputs">
+        <div class="col">
+            <span class="label-sm">Ký hiệu: C</span>
+            <input type="text" id="q1u" placeholder="Trên" value="Chấn">
+            <input type="text" id="q1l" placeholder="Dưới" value="Tốn">
+        </div>
+        <div class="col">
+            <span class="label-sm">Ký hiệu: H</span>
+            <input type="text" id="q2u" placeholder="Trên" value="Đoài">
+            <input type="text" id="q2l" placeholder="Dưới" value="Kiền">
+        </div>
+        <div class="col">
+            <span class="label-sm">Ký hiệu: B</span>
+            <input type="text" id="q3u" placeholder="Trên" value="Ly">
+            <input type="text" id="q3l" placeholder="Dưới" value="Tốn">
+        </div>
     </div>
 
-    <button class="btn-calc" onclick="generateVisual()">Hiển thị mô phỏng</button>
+    <div id="preview" class="preview-area"></div>
 
-    <div id="preview" class="preview-box">Nhập tên quẻ và nhấn nút</div>
-
-    <button id="copyBtn" class="btn-copy" onclick="copyText()">Sao chép để thảo luận với AI</button>
+    <button class="btn-copy" onclick="copyResult()">SAO CHÉP ĐỊNH DẠNG AI</button>
 </div>
 
 <script>
-    function generateVisual() {
-        // Lấy giá trị từ các ô input
-        const names = [
-            document.getElementById('q1_u').value || " ",
-            document.getElementById('q1_l').value || " ",
-            document.getElementById('q2_u').value || " ",
-            document.getElementById('q2_l').value || " ",
-            document.getElementById('q3_u').value || " ",
-            document.getElementById('q3_l').value || " "
-        ];
+    const inputs = document.querySelectorAll('input');
+    
+    inputs.forEach(input => {
+        input.addEventListener('input', updatePreview);
+    });
 
-        // Hàm căn chỉnh độ dài chuỗi để các cột thẳng hàng
-        function padCenter(str, length) {
-            const padLen = length - str.length;
-            if (padLen <= 0) return str;
-            const padLeft = Math.floor(padLen / 2);
-            const padRight = padLen - padLeft;
-            return " ".repeat(padLeft) + str + " ".repeat(padRight);
-        }
-
-        const colLen = 8; // Độ rộng mỗi cột
-
-        // Tạo dòng trên và dòng dưới
-        const lineTop = padCenter(names[0], colLen) + padCenter(names[2], colLen) + padCenter(names[4], colLen);
-        const lineBottom = padCenter(names[1], colLen) + padCenter(names[3], colLen) + padCenter(names[5], colLen);
-
-        const result = `${lineTop}\n${lineBottom}`;
-        
-        document.getElementById('preview').innerText = result;
-        document.getElementById('copyBtn').style.display = 'block';
+    function format(str) {
+        // Độ rộng cột là 10 ký tự để đảm bảo các tên quẻ dài không bị lệch
+        const targetLen = 10; 
+        const spaces = targetLen - str.length;
+        if (spaces <= 0) return str;
+        const left = Math.floor(spaces / 2);
+        const right = spaces - left;
+        return " ".repeat(left) + str + " ".repeat(right);
     }
 
-    function copyText() {
+    function updatePreview() {
+        const q1u = document.getElementById('q1u').value || " ";
+        const q1l = document.getElementById('q1l').value || " ";
+        const q2u = document.getElementById('q2u').value || " ";
+        const q2l = document.getElementById('q2l').value || " ";
+        const q3u = document.getElementById('q3u').value || " ";
+        const q3l = document.getElementById('q3l').value || " ";
+
+        // Dòng ký hiệu viết tắt
+        const row0 = format("C") + format("H") + format("B");
+        // Dòng quẻ Thượng
+        const row1 = format(q1u) + format(q2u) + format(q3u);
+        // Dòng quẻ Hạ
+        const row2 = format(q1l) + format(q2l) + format(q3l);
+
+        document.getElementById('preview').innerText = row0 + "\n" + row1 + "\n" + row2;
+    }
+
+    function copyResult() {
         const text = document.getElementById('preview').innerText;
         navigator.clipboard.writeText(text).then(() => {
-            alert("Đã sao chép định dạng mô phỏng!");
+            alert("Đã sao chép định dạng 3 tầng!");
         });
     }
+
+    // Khởi tạo lần đầu
+    updatePreview();
 </script>
 
 </body>
