@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bảng Quẻ Chuẩn Text</title>
+<title>Quẻ Liên Hoa - 1 Input</title>
 
 <style>
 :root { --gold:#f1c40f; --dark:#121212; --card:#1e1e1e; }
@@ -25,25 +25,15 @@ body {
     border-radius: 16px;
 }
 
-.grid-inputs {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 10px;
-}
-
-.col {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
 input {
-    padding: 10px;
-    text-align: center;
-    border-radius: 8px;
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
     border: 1px solid #444;
     background: #000;
     color: #fff;
+    text-align: center;
+    font-size: 16px;
 }
 
 .preview {
@@ -71,20 +61,7 @@ button {
 
 <div class="container">
 
-<div class="grid-inputs">
-    <div class="col">
-        <input id="q1u" value="Tốn">
-        <input id="q1l" value="Chấn">
-    </div>
-    <div class="col">
-        <input id="q2u" value="Cấn">
-        <input id="q2l" value="Ly">
-    </div>
-    <div class="col">
-        <input id="q3u" value="Tốn">
-        <input id="q3l" value="Cấn">
-    </div>
-</div>
+<input id="input" placeholder="VD: Tốn, Chấn, Cấn, Ly, Tốn, Cấn">
 
 <div id="preview" class="preview"></div>
 
@@ -94,48 +71,50 @@ button {
 
 <script>
 
-const ids = ['q1u','q1l','q2u','q2l','q3u','q3l'];
-ids.forEach(id => document.getElementById(id).addEventListener('input', update));
+const headers = ["Chính","Hỗ","Biến"];
 
-function buildTable(){
-    const v = ids.map(id => document.getElementById(id).value || " ");
+document.getElementById("input").addEventListener("input", update);
 
-    const headers = ["Chính","Hỗ","Biến"];
+function parseInput(str){
+    return str.split(",").map(s => s.trim()).filter(s => s);
+}
+
+function buildTable(arr){
+
+    // đảm bảo đủ 6 phần tử
+    while(arr.length < 6) arr.push("");
 
     const data = [
         headers,
-        [v[0], v[2], v[4]],
-        [v[1], v[3], v[5]]
+        [arr[0], arr[2], arr[4]],
+        [arr[1], arr[3], arr[5]]
     ];
 
-    // auto width từng cột
+    // auto width
     const colWidths = headers.map((_, i) =>
         Math.max(...data.map(row => row[i].length))
     );
 
     const pad = (text, w) => text.padEnd(w, " ");
 
-    // dòng header
-    const headerRow = data[0].map((cell, i) => pad(cell, colWidths[i])).join(" | ");
-
-    // dòng phân cách
+    const headerRow = data[0].map((c,i)=>pad(c,colWidths[i])).join(" | ");
     const separator = colWidths.map(w => "-".repeat(w)).join("-+-");
-
-    // dòng dữ liệu
-    const row1 = data[1].map((cell, i) => pad(cell, colWidths[i])).join(" | ");
-    const row2 = data[2].map((cell, i) => pad(cell, colWidths[i])).join(" | ");
+    const row1 = data[1].map((c,i)=>pad(c,colWidths[i])).join(" | ");
+    const row2 = data[2].map((c,i)=>pad(c,colWidths[i])).join(" | ");
 
     return headerRow + "\n" + separator + "\n" + row1 + "\n" + row2;
 }
 
 function update(){
-    document.getElementById("preview").innerText = buildTable();
+    const input = document.getElementById("input").value;
+    const arr = parseInput(input);
+    document.getElementById("preview").innerText = buildTable(arr);
 }
 
 function copyText(){
-    const text = buildTable();
+    const text = document.getElementById("preview").innerText;
     navigator.clipboard.writeText(text);
-    alert("Đã copy! Dán đâu cũng không lệch 👍");
+    alert("Đã copy! 👍");
 }
 
 update();
