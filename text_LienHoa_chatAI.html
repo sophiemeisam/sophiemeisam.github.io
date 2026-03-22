@@ -3,25 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô Phỏng Quẻ Tượng Căn Tâm - Sophie Meisam</title>
+    <title>Mô Phỏng Quẻ Tượng Chính Hỗ Biến</title>
     <style>
         :root { --gold: #f1c40f; --dark: #121212; --card: #1e1e1e; }
         body { font-family: -apple-system, sans-serif; background: var(--dark); color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
         .container { width: 100%; max-width: 480px; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border: 1px solid #333; }
         h2 { color: var(--gold); text-align: center; margin-bottom: 25px; font-weight: 300; }
         
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .col { display: flex; flex-direction: column; gap: 8px; }
+        .label-sm { font-size: 0.8rem; color: var(--gold); text-align: center; font-weight: bold; margin-bottom: 4px; }
         input { padding: 12px; border: 1px solid #444; border-radius: 10px; background: #111; color: #fff; text-align: center; font-size: 1rem; width: 100%; box-sizing: border-box; }
-        input:focus { border-color: var(--gold); outline: none; }
         
         .preview-area { 
             background: #000; 
             border: 1px solid #444; 
-            padding: 40px 10px; 
+            padding: 35px 10px; 
             margin: 20px 0; 
             border-radius: 12px;
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             line-height: 1.8;
             white-space: pre; 
             font-family: "Courier New", Courier, monospace;
@@ -33,9 +33,9 @@
         .btn-copy { 
             width: 100%; padding: 18px; background: var(--gold); color: #000; 
             border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem;
-            cursor: pointer; transition: 0.3s;
+            cursor: pointer; transition: 0.2s;
         }
-        .btn-copy.success { background: #27ae60; color: #fff; }
+        .btn-copy:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -45,14 +45,17 @@
     
     <div class="grid-inputs">
         <div class="col">
+            <span class="label-sm">CHÍNH</span>
             <input type="text" id="q1u" value="Tốn">
             <input type="text" id="q1l" value="Chấn">
         </div>
         <div class="col">
+            <span class="label-sm">HỖ</span>
             <input type="text" id="q2u" value="Cấn">
             <input type="text" id="q2l" value="Ly">
         </div>
         <div class="col">
+            <span class="label-sm">BIẾN</span>
             <input type="text" id="q3u" value="Tốn">
             <input type="text" id="q3l" value="Cấn">
         </div>
@@ -60,50 +63,43 @@
 
     <div id="preview" class="preview-area"></div>
 
-    <button id="btnCopy" class="btn-copy" onclick="copyResult()">SAO CHÉP (CĂN TÂM TUYỆT ĐỐI)</button>
+    <button id="btnCopy" class="btn-copy" onclick="copyResult()">SAO CHÉP ĐỊNH DẠNG</button>
 </div>
 
 <script>
     const ids = ['q1u', 'q1l', 'q2u', 'q2l', 'q3u', 'q3l'];
     ids.forEach(id => document.getElementById(id).addEventListener('input', updatePreview));
 
-    // Hàm căn tâm sử dụng kỹ thuật bù khoảng trắng đồng nhất
-    function strictCenter(str, width) {
+    function formatAlignCenter(str, targetLen) {
         let text = str.trim();
-        let spaceNeeded = width - text.length;
-        if (spaceNeeded <= 0) return text;
-
-        let left = Math.floor(spaceNeeded / 2);
-        let right = spaceNeeded - left;
-
-        // Sử dụng ký tự " " (En Space - U+2002) thay cho phím cách thường để ổn định hơn
+        let diff = targetLen - text.length;
+        if (diff <= 0) return text;
+        
+        let left = Math.floor(diff / 2);
+        let right = diff - left;
+        
+        // Sử dụng khoảng trắng tiêu chuẩn nhưng tăng độ rộng cột lên để giảm sai số font
         return " ".repeat(left) + text + " ".repeat(right);
     }
 
     function updatePreview() {
         const v = ids.map(id => document.getElementById(id).value || " ");
         
-        // Độ rộng mỗi cột cố định là 9 ký tự (số lẻ giúp ký tự 1 chữ nằm chính giữa hơn)
-        const W = 9; 
-        // Khoảng cách giữa các cột
-        const GAP = "   "; 
+        // Tăng độ rộng cột lên 12 ký tự để các từ "Chính", "Biến" nằm thoải mái ở giữa
+        const COL_W = 12; 
+        const GAP = "  "; // Khoảng cách 2 dấu cách giữa các cột
 
-        const row0 = strictCenter("C", W) + GAP + strictCenter("H", W) + GAP + strictCenter("B", W);
-        const row1 = strictCenter(v[0], W) + GAP + strictCenter(v[2], W) + GAP + strictCenter(v[4], W);
-        const row2 = strictCenter(v[1], W) + GAP + strictCenter(v[3], W) + GAP + strictCenter(v[5], W);
+        const row0 = formatAlignCenter("Chính", COL_W) + GAP + formatAlignCenter("Hỗ", COL_W) + GAP + formatAlignCenter("Biến", COL_W);
+        const row1 = formatAlignCenter(v[0], COL_W) + GAP + formatAlignCenter(v[2], COL_W) + GAP + formatAlignCenter(v[4], COL_W);
+        const row2 = formatAlignCenter(v[1], COL_W) + GAP + formatAlignCenter(v[3], COL_W) + GAP + formatAlignCenter(v[5], COL_W);
 
         document.getElementById('preview').innerText = row0 + "\n" + row1 + "\n" + row2;
     }
 
     function copyResult() {
         const text = document.getElementById('preview').innerText;
-        const btn = document.getElementById('btnCopy');
-
         navigator.clipboard.writeText(text).then(() => {
-            const old = btn.innerText;
-            btn.innerText = "ĐÃ SAO CHÉP!";
-            btn.classList.add('success');
-            setTimeout(() => { btn.innerText = old; btn.classList.remove('success'); }, 1500);
+            alert("Đã sao chép hệ quẻ Chính - Hỗ - Biến!");
         });
     }
 
