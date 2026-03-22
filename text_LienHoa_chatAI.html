@@ -3,41 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô Phỏng Quẻ Tượng Chuẩn - Sophie Meisam</title>
+    <title>Mô Phỏng Quẻ Tượng 3 Tầng</title>
     <style>
-        :root { --gold: #f1c40f; --dark: #1a1a1a; --text: #eee; }
-        body { font-family: -apple-system, sans-serif; background: var(--dark); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
-        .container { width: 100%; max-width: 500px; background: #262626; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid #444; }
-        h2 { color: var(--gold); text-align: center; margin-bottom: 20px; font-size: 1.3rem; }
+        :root { --gold: #f1c40f; --dark: #121212; --card: #1e1e1e; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: var(--dark); color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 480px; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border: 1px solid #333; }
+        h2 { color: var(--gold); text-align: center; margin-bottom: 25px; font-weight: 300; letter-spacing: 1px; }
         
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .col { display: flex; flex-direction: column; gap: 8px; }
-        input { padding: 10px; border: 1px solid #555; border-radius: 8px; background: #1a1a1a; color: white; text-align: center; font-size: 0.95rem; width: 100%; box-sizing: border-box; }
-        input:focus { border-color: var(--gold); outline: none; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .col { display: flex; flex-direction: column; gap: 10px; }
+        .label-sm { font-size: 0.75rem; color: var(--gold); text-align: center; font-weight: bold; opacity: 0.8; }
+        input { padding: 12px; border: 1px solid #444; border-radius: 10px; background: #111; color: #fff; text-align: center; font-size: 1rem; width: 100%; box-sizing: border-box; transition: 0.3s; }
+        input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 8px rgba(241, 196, 15, 0.2); }
         
-        .label-sm { font-size: 0.8rem; color: var(--gold); text-align: center; font-weight: bold; margin-bottom: 2px; }
-
         .preview-area { 
             background: #000; 
-            border: 1px solid var(--gold); 
-            padding: 30px 10px; 
-            margin: 20px 0; 
-            border-radius: 10px;
-            font-size: 1.5rem;
-            line-height: 1.6;
+            border: 1px solid #444; 
+            padding: 35px 15px; 
+            margin: 25px 0; 
+            border-radius: 12px;
+            font-size: 1.6rem;
+            line-height: 1.8;
             white-space: pre; 
-            font-family: "Courier New", Courier, monospace; /* Font đơn cách bắt buộc để căn lề */
+            font-family: "Courier New", Courier, monospace;
             display: flex;
             justify-content: center;
-            color: #fff;
+            color: #ffffff;
+            overflow-x: auto;
         }
 
         .btn-copy { 
-            width: 100%; padding: 15px; background: var(--gold); color: #000; 
-            border: none; border-radius: 10px; font-weight: bold; font-size: 1rem;
-            cursor: pointer; transition: 0.2s;
+            width: 100%; padding: 18px; background: var(--gold); color: #000; 
+            border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.3);
         }
-        .btn-copy:hover { background: #d4af37; }
+        .btn-copy:hover { background: #e2b80d; transform: translateY(-2px); }
+        .btn-copy:active { transform: translateY(0); }
     </style>
 </head>
 <body>
@@ -47,34 +48,35 @@
     
     <div class="grid-inputs">
         <div class="col">
-            <span class="label-sm">Mục C</span>
-            <input type="text" id="q1u" value="Tốn">
-            <input type="text" id="q1l" value="Ly">
+            <span class="label-sm">MỤC C</span>
+            <input type="text" id="q1u" value="Tốn" autocomplete="off">
+            <input type="text" id="q1l" value="Ly" autocomplete="off">
         </div>
         <div class="col">
-            <span class="label-sm">Mục H</span>
-            <input type="text" id="q2u" value="Ly">
-            <input type="text" id="q2l" value="Khảm">
+            <span class="label-sm">MỤC H</span>
+            <input type="text" id="q2u" value="Ly" autocomplete="off">
+            <input type="text" id="q2l" value="Khảm" autocomplete="off">
         </div>
         <div class="col">
-            <span class="label-sm">Mục B</span>
-            <input type="text" id="q3u" value="Tốn">
-            <input type="text" id="q3l" value="Kiền">
+            <span class="label-sm">MỤC B</span>
+            <input type="text" id="q3u" value="Tốn" autocomplete="off">
+            <input type="text" id="q3l" value="Kiền" autocomplete="off">
         </div>
     </div>
 
     <div id="preview" class="preview-area"></div>
 
-    <button class="btn-copy" onclick="copyResult()">SAO CHÉP ĐỊNH DẠNG CĂN GIỮA</button>
+    <button class="btn-copy" onclick="copyResult()">SAO CHÉP ĐỊNH DẠNG</button>
 </div>
 
 <script>
-    const inputs = document.querySelectorAll('input');
-    inputs.forEach(input => input.addEventListener('input', updatePreview));
+    const ids = ['q1u', 'q1l', 'q2u', 'q2l', 'q3u', 'q3l'];
+    ids.forEach(id => document.getElementById(id).addEventListener('input', updatePreview));
 
     function formatAlignCenter(str, targetLen) {
         let text = str.trim();
-        if (text.length >= targetLen) return text;
+        // Nếu độ dài thực tế của chữ lớn hơn target, ta vẫn phải giữ nguyên để không mất chữ
+        if (text.length >= targetLen) return " " + text + " ";
         
         let totalSpaces = targetLen - text.length;
         let leftSpaces = Math.floor(totalSpaces / 2);
@@ -84,33 +86,36 @@
     }
 
     function updatePreview() {
-        const q1u = document.getElementById('q1u').value || " ";
-        const q1l = document.getElementById('q1l').value || " ";
-        const q2u = document.getElementById('q2u').value || " ";
-        const q2l = document.getElementById('q2l').value || " ";
-        const q3u = document.getElementById('q3u').value || " ";
-        const q3l = document.getElementById('q3l').value || " ";
+        const vals = ids.map(id => document.getElementById(id).value || " ");
 
-        const COL_W = 12; // Độ rộng cố định cho mỗi cột để đảm bảo căn giữa chính xác
+        // Độ rộng cột (COL_W) nên là số chẵn để căn giữa các ký tự đơn (C,H,B) đẹp hơn
+        const COL_W = 14; 
 
-        // Dòng 1: Ký hiệu C - H - B
-        const row0 = formatAlignCenter("C", COL_W) + formatAlignCenter("H", COL_W) + formatAlignCenter("B", COL_W);
-        // Dòng 2: Quẻ trên
-        const row1 = formatAlignCenter(q1u, COL_W) + formatAlignCenter(q2u, COL_W) + formatAlignCenter(q3u, COL_W);
-        // Dòng 3: Quẻ dưới
-        const row2 = formatAlignCenter(q1l, COL_W) + formatAlignCenter(q2l, COL_W) + formatAlignCenter(q3l, COL_W);
+        const rowSymbols = formatAlignCenter("C", COL_W) + formatAlignCenter("H", COL_W) + formatAlignCenter("B", COL_W);
+        const rowUpper = formatAlignCenter(vals[0], COL_W) + formatAlignCenter(vals[2], COL_W) + formatAlignCenter(vals[4], COL_W);
+        const rowLower = formatAlignCenter(vals[1], COL_W) + formatAlignCenter(vals[3], COL_W) + formatAlignCenter(vals[5], COL_W);
 
-        document.getElementById('preview').innerText = row0 + "\n" + row1 + "\n" + row2;
+        document.getElementById('preview').innerText = rowSymbols + "\n" + rowUpper + "\n" + rowLower;
     }
 
     function copyResult() {
         const text = document.getElementById('preview').innerText;
         navigator.clipboard.writeText(text).then(() => {
-            alert("Đã sao chép! Các mục đã được căn giữa trục dọc.");
+            const btn = document.querySelector('.btn-copy');
+            const originalText = btn.innerText;
+            btn.innerText = "ĐÃ SAO CHÉP!";
+            btn.style.background = "#27ae60";
+            btn.style.color = "#fff";
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.style.background = "var(--gold)";
+                btn.style.color = "#000";
+            }, 1500);
         });
     }
 
-    updatePreview(); // Khởi tạo
+    updatePreview();
 </script>
 
 </body>
