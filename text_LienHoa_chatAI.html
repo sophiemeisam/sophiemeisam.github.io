@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biểu Thị Quẻ Tượng - Sophie Meisam</title>
+    <style>
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f7f6; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h2 { color: var(--primary); text-align: center; font-size: 1.2rem; margin-bottom: 20px; }
+        
+        .input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; text-align: center; }
+        input:focus { border-color: var(--accent); outline: none; }
+        
+        .preview-box { 
+            background: #fff; 
+            border: 2px dashed #bbb; 
+            padding: 20px; 
+            margin: 20px 0; 
+            min-height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            line-height: 1.4;
+            white-space: pre; /* Quan trọng để giữ khoảng trắng */
+            font-family: "Courier New", Courier, monospace; /* Font đơn cách giúp căn chỉnh chuẩn */
+        }
+
+        button { 
+            width: 100%; padding: 15px; border: none; border-radius: 10px; 
+            font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn-calc { background: var(--primary); color: white; margin-bottom: 10px; }
+        .btn-copy { background: #27ae60; color: white; display: none; }
+        button:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Mô Phỏng Quẻ Tượng</h2>
+    
+    <div class="input-group">
+        <input type="text" id="q1_u" placeholder="Chấn (T)" value="Chấn">
+        <input type="text" id="q1_l" placeholder="Tốn (H)" value="Tốn">
+        <input type="text" id="q2_u" placeholder="Đoài (T)" value="Đoài">
+        <input type="text" id="q2_l" placeholder="Kiền (H)" value="Kiền">
+        <input type="text" id="q3_u" placeholder="Ly (T)" value="Ly">
+        <input type="text" id="q3_l" placeholder="Tốn (H)" value="Tốn">
+    </div>
+
+    <button class="btn-calc" onclick="generateVisual()">Hiển thị mô phỏng</button>
+
+    <div id="preview" class="preview-box">Nhập tên quẻ và nhấn nút</div>
+
+    <button id="copyBtn" class="btn-copy" onclick="copyText()">Sao chép để thảo luận với AI</button>
+</div>
+
+<script>
+    function generateVisual() {
+        // Lấy giá trị từ các ô input
+        const names = [
+            document.getElementById('q1_u').value || " ",
+            document.getElementById('q1_l').value || " ",
+            document.getElementById('q2_u').value || " ",
+            document.getElementById('q2_l').value || " ",
+            document.getElementById('q3_u').value || " ",
+            document.getElementById('q3_l').value || " "
+        ];
+
+        // Hàm căn chỉnh độ dài chuỗi để các cột thẳng hàng
+        function padCenter(str, length) {
+            const padLen = length - str.length;
+            if (padLen <= 0) return str;
+            const padLeft = Math.floor(padLen / 2);
+            const padRight = padLen - padLeft;
+            return " ".repeat(padLeft) + str + " ".repeat(padRight);
+        }
+
+        const colLen = 8; // Độ rộng mỗi cột
+
+        // Tạo dòng trên và dòng dưới
+        const lineTop = padCenter(names[0], colLen) + padCenter(names[2], colLen) + padCenter(names[4], colLen);
+        const lineBottom = padCenter(names[1], colLen) + padCenter(names[3], colLen) + padCenter(names[5], colLen);
+
+        const result = `${lineTop}\n${lineBottom}`;
+        
+        document.getElementById('preview').innerText = result;
+        document.getElementById('copyBtn').style.display = 'block';
+    }
+
+    function copyText() {
+        const text = document.getElementById('preview').innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Đã sao chép định dạng mô phỏng!");
+        });
+    }
+</script>
+
+</body>
+</html>
