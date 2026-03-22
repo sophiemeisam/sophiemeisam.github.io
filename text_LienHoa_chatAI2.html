@@ -106,25 +106,22 @@ function center(text, width, useFigure=false){
     return space.repeat(left) + text + space.repeat(right);
 }
 
-function buildTable(useFigure=false){
+function function buildTable(){
     const v = ids.map(id => document.getElementById(id).value || " ");
 
-    const W = 8;
-    const GAP = "   ";
+    const pad = (txt, len=5) => txt.padEnd(len, " ");
 
-    const header = [
-        center("Chính",W,useFigure),
-        center("Hỗ",W,useFigure),
-        center("Biến",W,useFigure)
-    ].join(GAP);
+    const header = 
+        pad("Chính") + "|" + pad("Hỗ") + "|" + pad("Biến");
 
-    const row1 = [
-        center(v[0],W,useFigure),
-        center(v[2],W,useFigure),
-        center(v[4],W,useFigure)
-    ].join(GAP);
+    const row1 = 
+        pad(v[0]) + "|" + pad(v[2]) + "|" + pad(v[4]);
 
-    const row2 = [
+    const row2 = 
+        pad(v[1]) + "|" + pad(v[3]) + "|" + pad(v[5]);
+
+    return header + "\n" + row1 + "\n" + row2;
+}
         center(v[1],W,useFigure),
         center(v[3],W,useFigure),
         center(v[5],W,useFigure)
