@@ -3,106 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mô Phỏng Quẻ Tượng Chính Hỗ Biến</title>
+    <title>Quẻ Tượng Xuyên Tâm - Sophie Meisam</title>
     <style>
         :root { --gold: #f1c40f; --dark: #121212; --card: #1e1e1e; }
         body { font-family: -apple-system, sans-serif; background: var(--dark); color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { width: 100%; max-width: 480px; background: var(--card); padding: 25px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); border: 1px solid #333; }
-        h2 { color: var(--gold); text-align: center; margin-bottom: 25px; font-weight: 300; }
-        
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-        .col { display: flex; flex-direction: column; gap: 8px; }
-        .label-sm { font-size: 0.8rem; color: var(--gold); text-align: center; font-weight: bold; margin-bottom: 4px; }
-        input { padding: 12px; border: 1px solid #444; border-radius: 10px; background: #111; color: #fff; text-align: center; font-size: 1rem; width: 100%; box-sizing: border-box; }
+        .container { width: 100%; max-width: 500px; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .col { display: flex; flex-direction: column; gap: 10px; }
+        input { padding: 12px; border: 1px solid #444; border-radius: 10px; background: #000; color: #fff; text-align: center; font-size: 1rem; width: 100%; box-sizing: border-box; }
         
         .preview-area { 
-            background: #000; 
-            border: 1px solid #444; 
-            padding: 35px 10px; 
-            margin: 20px 0; 
-            border-radius: 12px;
-            font-size: 1.4rem;
-            line-height: 1.8;
-            white-space: pre; 
+            background: #000; border: 1px solid #444; padding: 40px 10px; margin: 20px 0; border-radius: 12px;
+            font-size: 1.5rem; line-height: 1.8; white-space: pre; 
             font-family: "Courier New", Courier, monospace;
-            display: flex;
-            justify-content: center;
-            color: #ffffff;
+            display: flex; justify-content: center; color: #ffffff;
         }
 
         .btn-copy { 
             width: 100%; padding: 18px; background: var(--gold); color: #000; 
-            border: none; border-radius: 12px; font-weight: bold; font-size: 1.1rem;
-            cursor: pointer; transition: 0.2s;
+            border: none; border-radius: 12px; font-weight: bold; cursor: pointer;
         }
-        .btn-copy:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Mô Phỏng Quẻ Tượng</h2>
-    
     <div class="grid-inputs">
-        <div class="col">
-            <span class="label-sm">CHÍNH</span>
-            <input type="text" id="q1u" value="Tốn">
-            <input type="text" id="q1l" value="Chấn">
-        </div>
-        <div class="col">
-            <span class="label-sm">HỖ</span>
-            <input type="text" id="q2u" value="Cấn">
-            <input type="text" id="q2l" value="Ly">
-        </div>
-        <div class="col">
-            <span class="label-sm">BIẾN</span>
-            <input type="text" id="q3u" value="Tốn">
-            <input type="text" id="q3l" value="Cấn">
-        </div>
+        <div class="col"><input type="text" id="q1u" value="Tốn"><input type="text" id="q1l" value="Chấn"></div>
+        <div class="col"><input type="text" id="q2u" value="Cấn"><input type="text" id="q2l" value="Ly"></div>
+        <div class="col"><input type="text" id="q3u" value="Tốn"><input type="text" id="q3l" value="Cấn"></div>
     </div>
-
     <div id="preview" class="preview-area"></div>
-
-    <button id="btnCopy" class="btn-copy" onclick="copyResult()">SAO CHÉP ĐỊNH DẠNG</button>
+    <button class="btn-copy" onclick="copyResult()">SAO CHÉP HỆ QUẺ</button>
 </div>
 
 <script>
     const ids = ['q1u', 'q1l', 'q2u', 'q2l', 'q3u', 'q3l'];
     ids.forEach(id => document.getElementById(id).addEventListener('input', updatePreview));
 
-    function formatAlignCenter(str, targetLen) {
+    function smartCenter(str, width) {
         let text = str.trim();
-        let diff = targetLen - text.length;
+        let diff = width - text.length;
         if (diff <= 0) return text;
-        
+
         let left = Math.floor(diff / 2);
         let right = diff - left;
         
-        // Sử dụng khoảng trắng tiêu chuẩn nhưng tăng độ rộng cột lên để giảm sai số font
-        return " ".repeat(left) + text + " ".repeat(right);
+        // Sử dụng En Space (\u2002) để có độ rộng ổn định hơn phím cách thường khi dán vào Note
+        return "\u2002".repeat(left) + text + "\u2002".repeat(right);
     }
 
     function updatePreview() {
         const v = ids.map(id => document.getElementById(id).value || " ");
-        
-        // Tăng độ rộng cột lên 12 ký tự để các từ "Chính", "Biến" nằm thoải mái ở giữa
-        const COL_W = 12; 
-        const GAP = "  "; // Khoảng cách 2 dấu cách giữa các cột
+        const W = 11; // Độ rộng cột tối ưu cho các từ 4-5 ký tự
+        const GAP = "  "; 
 
-        const row0 = formatAlignCenter("Chính", COL_W) + GAP + formatAlignCenter("Hỗ", COL_W) + GAP + formatAlignCenter("Biến", COL_W);
-        const row1 = formatAlignCenter(v[0], COL_W) + GAP + formatAlignCenter(v[2], COL_W) + GAP + formatAlignCenter(v[4], COL_W);
-        const row2 = formatAlignCenter(v[1], COL_W) + GAP + formatAlignCenter(v[3], COL_W) + GAP + formatAlignCenter(v[5], COL_W);
+        const row0 = smartCenter("Chính", W) + GAP + smartCenter("Hỗ", W) + GAP + smartCenter("Biến", W);
+        const row1 = smartCenter(v[0], W) + GAP + smartCenter(v[2], W) + GAP + smartCenter(v[4], W);
+        const row2 = smartCenter(v[1], W) + GAP + smartCenter(v[3], W) + GAP + smartCenter(v[5], W);
 
         document.getElementById('preview').innerText = row0 + "\n" + row1 + "\n" + row2;
     }
 
     function copyResult() {
         const text = document.getElementById('preview').innerText;
-        navigator.clipboard.writeText(text).then(() => {
-            alert("Đã sao chép hệ quẻ Chính - Hỗ - Biến!");
-        });
+        navigator.clipboard.writeText(text).then(() => alert("Đã sao chép hệ quẻ xuyên tâm!"));
     }
-
     updatePreview();
 </script>
 </body>
