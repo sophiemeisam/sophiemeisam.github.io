@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quẻ Liên Hoa - Chuẩn Text Không Lệch</title>
+<title>Liên Hoa Quẻ - Chuẩn Text Pro</title>
 
 <style>
 :root { --gold:#f1c40f; --dark:#121212; --card:#1e1e1e; }
@@ -19,7 +19,7 @@ body {
 
 .container {
     width: 100%;
-    max-width: 600px;
+    max-width: 700px;
     background: var(--card);
     padding: 20px;
     border-radius: 16px;
@@ -29,6 +29,12 @@ body {
     display: grid;
     grid-template-columns: repeat(3,1fr);
     gap: 10px;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 input {
@@ -58,6 +64,11 @@ button {
     background: var(--gold);
     font-weight: bold;
 }
+
+.toggle {
+    margin-top: 10px;
+    text-align: center;
+}
 </style>
 </head>
 
@@ -65,19 +76,12 @@ button {
 
 <div class="container">
 
-<div class="grid-inputs">
-    <div>
-        <input id="q1u" value="Tốn">
-        <input id="q1l" value="Chấn">
-    </div>
-    <div>
-        <input id="q2u" value="Cấn">
-        <input id="q2l" value="Ly">
-    </div>
-    <div>
-        <input id="q3u" value="Tốn">
-        <input id="q3l" value="Cấn">
-    </div>
+<div class="grid-inputs" id="grid"></div>
+
+<div class="toggle">
+    <label>
+        <input type="checkbox" id="iconToggle"> Hiển thị quái ☴ ☳ ☶ ☲
+    </label>
 </div>
 
 <div id="preview" class="preview"></div>
@@ -88,43 +92,86 @@ button {
 
 <script>
 
-const ids = ['q1u','q1l','q2u','q2l','q3u','q3l'];
-ids.forEach(id => document.getElementById(id).addEventListener('input', update));
+// ====== CONFIG ======
+const columns = ["Chính","Hỗ","Biến"]; // có thể đổi thành 5-7 cột
+const trigramMap = {
+    "Càn":"☰","Đoài":"☱","Ly":"☲","Chấn":"☳",
+    "Tốn":"☴","Khảm":"☵","Cấn":"☶","Khôn":"☷"
+};
 
+// ====== INIT INPUT ======
+const grid = document.getElementById("grid");
+
+columns.forEach((col, i) => {
+    const div = document.createElement("div");
+    div.className = "col";
+
+    const inputU = document.createElement("input");
+    inputU.id = `q${i}u`;
+    inputU.value = ["Tốn","Cấn","Tốn"][i] || "";
+
+    const inputL = document.createElement("input");
+    inputL.id = `q${i}l`;
+    inputL.value = ["Chấn","Ly","Cấn"][i] || "";
+
+    div.appendChild(inputU);
+    div.appendChild(inputL);
+    grid.appendChild(div);
+});
+
+// ====== BUILD TABLE ======
 function buildTable(){
-    const v = ids.map(id => document.getElementById(id).value || " ");
+    const showIcon = document.getElementById("iconToggle").checked;
 
-    const headers = ["Chính","Hỗ","Biến"];
+    const upper = [];
+    const lower = [];
+
+    columns.forEach((_, i) => {
+        let u = document.getElementById(`q${i}u`).value.trim();
+        let l = document.getElementById(`q${i}l`).value.trim();
+
+        if(showIcon){
+            u = (trigramMap[u] || "") + " " + u;
+            l = (trigramMap[l] || "") + " " + l;
+        }
+
+        upper.push(u);
+        lower.push(l);
+    });
 
     const data = [
-        headers,
-        [v[0], v[2], v[4]],
-        [v[1], v[3], v[5]]
+        columns,
+        upper,
+        lower
     ];
 
-    // Tính độ rộng max từng cột (auto fit)
-    const colWidths = headers.map((_, colIndex) =>
-        Math.max(...data.map(row => row[colIndex].length))
+    // auto width từng cột
+    const colWidths = columns.map((_, i) =>
+        Math.max(...data.map(row => row[i].length))
     );
 
-    // Hàm pad
-    const pad = (text, width) => text.padEnd(width, " ");
+    const pad = (text, w) => text.padEnd(w, " ");
 
-    // Build bảng
     return data.map(row =>
         row.map((cell, i) => pad(cell, colWidths[i])).join(" | ")
     ).join("\n");
 }
 
+// ====== UPDATE ======
 function update(){
     document.getElementById("preview").innerText = buildTable();
 }
 
+// ====== COPY ======
 function copyText(){
     const text = buildTable();
     navigator.clipboard.writeText(text);
     alert("Đã copy! Dán đâu cũng không lệch 👍");
 }
+
+// ====== EVENTS ======
+document.addEventListener("input", update);
+document.getElementById("iconToggle").addEventListener("change", update);
 
 update();
 
