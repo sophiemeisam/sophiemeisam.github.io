@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quẻ Liên Hoa - Chuẩn Text</title>
+
+<style>
+:root { --gold:#f1c40f; --dark:#121212; --card:#1e1e1e; }
+
+body {
+    font-family: -apple-system, sans-serif;
+    background: var(--dark);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px;
+    background: var(--card);
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.grid-inputs {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 10px;
+}
+
+input {
+    padding: 10px;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #000;
+    color: #fff;
+}
+
+.preview {
+    margin-top: 20px;
+    padding: 20px;
+    background: #000;
+    border-radius: 10px;
+    font-family: monospace;
+    white-space: pre;
+}
+
+button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--gold);
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="grid-inputs">
+    <div>
+        <input id="q1u" value="Tốn">
+        <input id="q1l" value="Chấn">
+    </div>
+    <div>
+        <input id="q2u" value="Cấn">
+        <input id="q2l" value="Ly">
+    </div>
+    <div>
+        <input id="q3u" value="Tốn">
+        <input id="q3l" value="Cấn">
+    </div>
+</div>
+
+<div id="preview" class="preview"></div>
+
+<button onclick="copyText()">Copy chuẩn</button>
+
+</div>
+
+<script>
+
+const ids = ['q1u','q1l','q2u','q2l','q3u','q3l'];
+ids.forEach(id => document.getElementById(id).addEventListener('input', update));
+
+const FIGURE_SPACE = "\u2007"; // khoảng trắng KHÔNG lệch
+
+function center(text, width, useFigure=false){
+    text = text.trim();
+    let space = useFigure ? FIGURE_SPACE : " ";
+    let diff = width - text.length;
+
+    if(diff <= 0) return text;
+
+    let left = Math.floor(diff/2);
+    let right = diff - left;
+
+    return space.repeat(left) + text + space.repeat(right);
+}
+
+function buildTable(useFigure=false){
+    const v = ids.map(id => document.getElementById(id).value || " ");
+
+    const W = 8;
+    const GAP = "   ";
+
+    const header = [
+        center("Chính",W,useFigure),
+        center("Hỗ",W,useFigure),
+        center("Biến",W,useFigure)
+    ].join(GAP);
+
+    const row1 = [
+        center(v[0],W,useFigure),
+        center(v[2],W,useFigure),
+        center(v[4],W,useFigure)
+    ].join(GAP);
+
+    const row2 = [
+        center(v[1],W,useFigure),
+        center(v[3],W,useFigure),
+        center(v[5],W,useFigure)
+    ].join(GAP);
+
+    return header + "\n" + row1 + "\n" + row2;
+}
+
+function update(){
+    document.getElementById("preview").innerText = buildTable(false);
+}
+
+function copyText(){
+    const text = buildTable(true); // dùng figure space khi copy
+    navigator.clipboard.writeText(text);
+    alert("Đã copy chuẩn không lệch!");
+}
+
+update();
+
+</script>
+
+</body>
+</html>
