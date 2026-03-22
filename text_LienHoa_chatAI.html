@@ -7,14 +7,14 @@
     <style>
         :root { --gold: #f1c40f; --dark: #121212; --card: #1e1e1e; }
         body { font-family: -apple-system, sans-serif; background: var(--dark); color: #fff; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-        .container { width: 100%; max-width: 500px; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; }
+        .container { width: 100%; max-width: 480px; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .col { display: flex; flex-direction: column; gap: 10px; }
         input { padding: 12px; border: 1px solid #444; border-radius: 10px; background: #000; color: #fff; text-align: center; font-size: 1rem; width: 100%; box-sizing: border-box; }
         
         .preview-area { 
             background: #000; border: 1px solid #444; padding: 40px 10px; margin: 20px 0; border-radius: 12px;
-            font-size: 1.5rem; line-height: 1.8; white-space: pre; 
+            font-size: 1.4rem; line-height: 1.6; white-space: pre; 
             font-family: "Courier New", Courier, monospace;
             display: flex; justify-content: center; color: #ffffff;
         }
@@ -34,14 +34,14 @@
         <div class="col"><input type="text" id="q3u" value="Tốn"><input type="text" id="q3l" value="Cấn"></div>
     </div>
     <div id="preview" class="preview-area"></div>
-    <button class="btn-copy" onclick="copyResult()">SAO CHÉP HỆ QUẺ</button>
+    <button class="btn-copy" onclick="copyResult()">SAO CHÉP HỆ QUẺ CÓ TRỤC</button>
 </div>
 
 <script>
     const ids = ['q1u', 'q1l', 'q2u', 'q2l', 'q3u', 'q3l'];
     ids.forEach(id => document.getElementById(id).addEventListener('input', updatePreview));
 
-    function smartCenter(str, width) {
+    function axisCenter(str, width) {
         let text = str.trim();
         let diff = width - text.length;
         if (diff <= 0) return text;
@@ -49,25 +49,27 @@
         let left = Math.floor(diff / 2);
         let right = diff - left;
         
-        // Sử dụng En Space (\u2002) để có độ rộng ổn định hơn phím cách thường khi dán vào Note
-        return "\u2002".repeat(left) + text + "\u2002".repeat(right);
+        // Thêm một dấu chấm nhỏ hoặc khoảng trắng đặc biệt để giữ chỗ
+        return " ".repeat(left) + text + " ".repeat(right);
     }
 
     function updatePreview() {
         const v = ids.map(id => document.getElementById(id).value || " ");
-        const W = 11; // Độ rộng cột tối ưu cho các từ 4-5 ký tự
-        const GAP = "  "; 
+        const W = 11; 
+        const GAP = "   "; // Tăng khoảng cách giữa các cột
 
-        const row0 = smartCenter("Chính", W) + GAP + smartCenter("Hỗ", W) + GAP + smartCenter("Biến", W);
-        const row1 = smartCenter(v[0], W) + GAP + smartCenter(v[2], W) + GAP + smartCenter(v[4], W);
-        const row2 = smartCenter(v[1], W) + GAP + smartCenter(v[3], W) + GAP + smartCenter(v[5], W);
+        // Tạo cấu trúc có dấu | ở giữa để neo thị giác
+        const row0 = axisCenter("Chính", W) + GAP + axisCenter("Hỗ", W) + GAP + axisCenter("Biến", W);
+        const rowAxis = axisCenter("|", W) + GAP + axisCenter("|", W) + GAP + axisCenter("|", W);
+        const row1 = axisCenter(v[0], W) + GAP + axisCenter(v[2], W) + GAP + axisCenter(v[4], W);
+        const row2 = axisCenter(v[1], W) + GAP + axisCenter(v[3], W) + GAP + axisCenter(v[5], W);
 
-        document.getElementById('preview').innerText = row0 + "\n" + row1 + "\n" + row2;
+        document.getElementById('preview').innerText = row0 + "\n" + rowAxis + "\n" + row1 + "\n" + row2;
     }
 
     function copyResult() {
         const text = document.getElementById('preview').innerText;
-        navigator.clipboard.writeText(text).then(() => alert("Đã sao chép hệ quẻ xuyên tâm!"));
+        navigator.clipboard.writeText(text).then(() => alert("Đã sao chép hệ quẻ có trục neo!"));
     }
     updatePreview();
 </script>
