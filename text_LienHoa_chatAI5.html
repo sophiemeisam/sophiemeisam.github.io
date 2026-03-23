@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Liên Hoa 12 Không Thời</title>
+
+<style>
+:root { --gold:#f1c40f; --dark:#121212; --card:#1e1e1e; }
+
+body {
+    font-family: -apple-system, sans-serif;
+    background: var(--dark);
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 700px;
+    background: var(--card);
+    padding: 20px;
+    border-radius: 16px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    border: 1px solid #444;
+    background: #000;
+    color: #fff;
+}
+
+input.error {
+    border: 1px solid red;
+}
+
+.preview {
+    margin-top: 20px;
+    padding: 15px;
+    background: #000;
+    border-radius: 10px;
+    white-space: pre;
+    font-size: 14px;
+}
+
+button {
+    margin-top: 10px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--gold);
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- 🔽 Gợi ý -->
+<datalist id="goiY">
+    <option value="K">
+    <option value="Kh">
+    <option value="Km">
+    <option value="Ch">
+    <option value="C">
+    <option value="T">
+    <option value="L">
+    <option value="Đ">
+</datalist>
+
+<div id="inputs"></div>
+
+<div id="preview" class="preview"></div>
+
+<button onclick="copyAll()">Sao chép toàn bộ</button>
+
+</div>
+
+<script>
+
+const headers = ["Chính","Hỗ","Biến"];
+
+// 🔥 MAP chuẩn
+const trigramMap = {
+    "km": "Khảm",
+    "kh": "Khôn",
+    "ch": "Chấn",
+    "k": "Kiền",
+    "đ": "Đoài",
+    "l": "Ly",
+    "c": "Cấn",
+    "t": "Tốn"
+};
+
+// chuẩn hóa token
+function normalizeToken(token){
+    let raw = token.trim();
+    let key = raw.toLowerCase();
+
+    if(trigramMap[key]) return trigramMap[key];
+
+    // nếu user đã gõ full tên
+    const fullNames = Object.values(trigramMap);
+    if(fullNames.includes(raw)) return raw;
+
+    return null; // sai
+}
+
+// tạo 12 input
+const inputsDiv = document.getElementById("inputs");
+
+for(let i=1;i<=12;i++){
+    const input = document.createElement("input");
+    input.placeholder = `${i} VD: ${i} k, ch, t, c, km, ch`;
+    input.id = "input"+i;
+    input.setAttribute("list","goiY");
+    input.addEventListener("input", update);
+    inputsDiv.appendChild(input);
+}
+
+// parse
+function parseLine(str, inputEl){
+
+    let parts = str.trim().split(/\s+/);
+    if(parts.length < 2) return null;
+
+    let index = parts[0];
+    let rest = str.substring(index.length).trim();
+
+    let rawArr = rest.split(/,|\s+/).map(s=>s.trim()).filter(s=>s);
+
+    if(rawArr.length < 6) return null;
+
+    let arr = [];
+    let hasError = false;
+
+    for(let i=0;i<6;i++){
+        let val = normalizeToken(rawArr[i]);
+        if(!val){
+            hasError = true;
+            val = rawArr[i];
+        }
+        arr.push(val);
+    }
+
+    // 🔥 highlight lỗi
+    if(hasError){
+        inputEl.classList.add("error");
+    }else{
+        inputEl.classList.remove("error");
+    }
+
+    return {
+        index: index,
+        data: arr
+    };
+}
+
+// build bảng
+function buildTable(obj){
+
+    const arr = obj.data;
+
+    const data = [
+        headers,
+        [arr[0], arr[2], arr[4]],
+        [arr[1], arr[3], arr[5]]
+    ];
+
+    const colWidths = headers.map((_, i) =>
+        Math.max(...data.map(row => row[i].length))
+    );
+
+    const pad = (t,w)=>t.padEnd(w," ");
+
+    const headerRow = data[0].map((c,i)=>pad(c,colWidths[i])).join(" | ");
+    const separator = colWidths.map(w=>"-".repeat(w)).join("-+-");
+    const row1 = data[1].map((c,i)=>pad(c,colWidths[i])).join(" | ");
+    const row2 = data[2].map((c,i)=>pad(c,colWidths[i])).join(" | ");
+
+    return obj.index + "\n" + headerRow + "\n" + separator + "\n" + row1 + "\n" + row2;
+}
+
+// update
+function update(){
+
+    let result = [];
+
+    for(let i=1;i<=12;i++){
+        let inputEl = document.getElementById("input"+i);
+        let val = inputEl.value;
+
+        if(!val.trim()) {
+            inputEl.classList.remove("error");
+            continue;
+        }
+
+        let parsed = parseLine(val, inputEl);
+        if(parsed){
+            result.push(buildTable(parsed));
+        }
+    }
+
+    document.getElementById("preview").innerText = result.join("\n\n");
+}
+
+// copy
+function copyAll(){
+    const text = document.getElementById("preview").innerText.trim();
+    navigator.clipboard.writeText(text);
+    alert("Đã copy toàn bộ 👍");
+}
+
+update();
+
+</script>
+
+</body>
+</html>
