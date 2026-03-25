@@ -20,7 +20,7 @@
     .btn-sub { background: #636e72; color: white; border: none; padding: 10px; border-radius: 10px; width: 100%; font-weight: 600; cursor: pointer; }  
 
     .result-panel { padding: 0 20px 20px 20px; display: none; }  
-    .card { background: white; border: 1px solid #eee; border-radius: 15px; padding: 15px; margin-bottom: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: relative; }  
+    .card { background: white; border: 1px solid #eee; border-radius: 15px; padding: 15px; margin-bottom: 15px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }  
     .card-label { font-size: 0.75rem; font-weight: bold; color: #888; text-transform: uppercase; display: block; margin-bottom: 10px; }  
     .que-name { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin: 5px 0; }  
 
@@ -30,17 +30,18 @@
     .line.broken::before, .line.broken::after { content: ""; width: 42%; height: 100%; background-color: var(--primary); border-radius: 2px; }  
 
     .binary-tag { font-family: monospace; font-size: 0.8rem; background: #eee; padding: 3px 10px; border-radius: 10px; color: #555; }  
-    .dong-info { color: #d63031; font-weight: bold; margin-top: 10px; font-size: 0.9rem; background: #fff0f0; padding: 8px; border-radius: 10px; border: 1px solid #fab1a0; }
+    .dong-tag { display: block; margin-top: 10px; color: #e74c3c; font-weight: bold; font-size: 0.9rem; }
 
     .export-section { margin-top: 10px; border-top: 1px dashed #ccc; padding-top: 15px; }  
     textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-family: inherit; font-size: 14px; box-sizing: border-box; resize: none; }  
     .btn-download { background: var(--secondary); color: white; width: 100%; padding: 12px; border: none; border-radius: 50px; font-weight: bold; margin-top: 10px; cursor: pointer; }  
     canvas#hiddenCanvas { display: none; }  
 
-    .ai-buttons-container { width: 100%; max-width: 500px; display: flex; gap: 10px; margin-bottom: 30px; }
-    .btn-ai { flex: 1; padding: 18px; border: none; border-radius: 15px; font-weight: 800; font-size: 1.3rem; cursor: pointer; text-decoration: none; text-align: center; color: white; }
+    .ai-buttons-container { width: 100%; max-width: 500px; display: flex; gap: 10px; margin-top: 10px; }
+    .btn-ai { flex: 1; padding: 18px; border: none; border-radius: 15px; font-weight: 800; font-size: 1.3rem; cursor: pointer; text-decoration: none; text-align: center; color: white; transition: opacity 0.3s; }
     .btn-ai-1 { background: #2c3e50; }
     .btn-ai-2 { background: #8e44ad; }
+    .btn-ai:hover { opacity: 0.9; }
 </style>
 
 </head>  
@@ -67,7 +68,7 @@
             <div id="nameChu" class="que-name">---</div>  
             <div id="visualChu" class="hexagram"></div>  
             <div id="codeChu" class="binary-tag">---</div>  
-            <div id="dongInfo" class="dong-info"></div>
+            <div id="txtDong" class="dong-tag"></div>
         </div>  
         <div class="card">  
             <span class="card-label">Quẻ Biến</span>  
@@ -83,8 +84,8 @@
 </div>  
 
 <div class="ai-buttons-container">
-    <a href="link-ai-1" target="_blank" class="btn-ai btn-ai-1">AI 1</a>
-    <a href="link-ai-2" target="_blank" class="btn-ai btn-ai-2">AI 2</a>
+    <a href="https://example.com/ai1" target="_blank" class="btn-ai btn-ai-1">AI 1</a>
+    <a href="https://chatgpt.com/share/69c36e54-d6a0-839f-8271-bfd6c1921fcd" target="_blank" class="btn-ai btn-ai-2">AI 2</a>
 </div>
 
 <canvas id="hiddenCanvas"></canvas>  <script>  
@@ -94,7 +95,7 @@
         5: { name: "Tốn",   code: "110" }, 6: { name: "Khảm",  code: "010" },  
         7: { name: "Cấn",   code: "100" }, 8: { name: "Khôn",  code: "000" }  
     };  
-  
+
     const data64Que = {  
         "111111": "Thuần Càn", "000000": "Thuần Khôn", "010001": "Thủy Lôi Truân", "100010": "Sơn Thủy Mông",  
         "010111": "Thủy Thiên Nhu", "111010": "Thiên Thủy Tụng", "000010": "Địa Thủy Sư", "010000": "Thủy Địa Tỷ",  
@@ -113,18 +114,18 @@
         "110110": "Thuần Tốn", "011011": "Thuần Đoài", "110010": "Phong Thủy Hoán", "010011": "Thủy Trạch Tiết",  
         "110011": "Phong Trạch Trung Phu", "001100": "Lôi Sơn Tiểu Quá", "010101": "Thủy Hỏa Ký Tế", "101010": "Hỏa Thủy Vị Tế"  
     };  
-  
+
     const manHH = document.getElementById('manHH');  
     const manMM = document.getElementById('manMM');  
     for(let i=0; i<24; i++) manHH.innerHTML += `<option value="${i.toString().padStart(2,'0')}">${i.toString().padStart(2,'0')}</option>`;  
     for(let i=0; i<60; i++) manMM.innerHTML += `<option value="${i.toString().padStart(2,'0')}">${i.toString().padStart(2,'0')}</option>`;  
-  
+
     function convertToQuaiNumber(val) {  
         let n = parseInt(val);  
         if (isNaN(n) || n === 0) return 8;  
         return n % 8 === 0 ? 8 : n % 8;  
     }  
-  
+
     function drawHex(containerId, code) {  
         const container = document.getElementById(containerId);  
         container.innerHTML = "";  
@@ -135,7 +136,7 @@
             container.appendChild(line);  
         }  
     }  
-  
+
     function updateClock() {  
         const now = new Date();  
         document.getElementById('currentTime').innerText = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');  
@@ -143,9 +144,9 @@
     }  
     setInterval(updateClock, 1000);  
     updateClock();  
-  
+
     let saveMeta = {};  
-  
+
     function lapQue(isRealTime) {  
         let hh, mm;  
         if (isRealTime) {  
@@ -156,92 +157,104 @@
             hh = manHH.value;  
             mm = manMM.value;  
         }  
-  
+
         const X = hh[0], Xp = hh[1], Y = mm[0], Yp = mm[1];  
         const chuT = convertToQuaiNumber(X), chuH = convertToQuaiNumber(Y);  
         const bienT = convertToQuaiNumber(Xp), bienH = convertToQuaiNumber(Yp);  
-  
-        const codeChu = batQuai[chuH].code + batQuai[chuT].code; // Hạ + Thượng
-        const codeBien = batQuai[bienH].code + batQuai[bienT].code; 
-  
+
+        // LOGIC CHUẨN: batQuai[Thượng].code + batQuai[Hạ].code
+        const codeChu = batQuai[chuT].code + batQuai[chuH].code;  
+        const codeBien = batQuai[bienT].code + batQuai[bienH].code;  
+
         document.getElementById('resultPanel').style.display = 'block';  
         document.getElementById('nameChu').innerText = data64Que[codeChu];  
         document.getElementById('codeChu').innerText = `${batQuai[chuT].name}/${batQuai[chuH].name}`;  
         drawHex('visualChu', codeChu);  
-  
+
         document.getElementById('nameBien').innerText = data64Que[codeBien];  
         document.getElementById('codeBien').innerText = `${batQuai[bienT].name}/${batQuai[bienH].name}`;  
         drawHex('visualBien', codeBien);  
 
-        // LOGIC TÌM HÀO ĐỘNG
-        let dongList = [];
+        // Tính Hào Động bằng cách so sánh từng vị trí
+        // codeChu[0] là Hào 6, codeChu[5] là Hào 1
+        let dong = [];
         for(let i=0; i<6; i++) {
             if(codeChu[i] !== codeBien[i]) {
-                dongList.push(i + 1); // Cộng 1 để ra đúng vị trí Hào 1 -> Hào 6
+                dong.push(6 - i); // Chuyển index sang số hiệu hào (6,5,4,3,2,1)
             }
         }
-        document.getElementById('dongInfo').innerText = "Hào Động: " + (dongList.length > 0 ? dongList.join(", ") : "Không có");
-  
-        saveMeta = { time: `${hh}:${mm}`, q1: data64Que[codeChu], q2: data64Que[codeBien], cChu: codeChu, cBien: codeBien, date: document.getElementById('currentDate').innerText, dong: dongList.join(", ") };  
+        dong.sort((a,b) => a-b);
+        const dongTxt = dong.length > 0 ? "Hào Động: " + dong.join(", ") : "Không có hào động";
+        document.getElementById('txtDong').innerText = dongTxt;
+
+        saveMeta = { 
+            time: `${hh}:${mm}`, 
+            q1: data64Que[codeChu], 
+            q2: data64Que[codeBien], 
+            cChu: codeChu, 
+            cBien: codeBien, 
+            date: document.getElementById('currentDate').innerText,
+            dong: dongTxt
+        };  
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });  
     }  
-  
+
     function exportImage() {  
         const canvas = document.getElementById('hiddenCanvas');  
         const ctx = canvas.getContext('2d');  
         const qTxt = document.getElementById('qTxt').value || "Không có câu hỏi";  
-  
+
         canvas.width = 600; canvas.height = 750;  
         ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 600, 750);  
-  
+
         // Header  
         ctx.fillStyle = "#993300"; ctx.fillRect(0, 0, 600, 100);  
         ctx.fillStyle = "#ffffff"; ctx.font = "bold 28px Arial"; ctx.textAlign = "center";  
         ctx.fillText("KẾT QUẢ DỊCH LÝ THỜI GIAN", 300, 60);  
-  
+
         // Time & Date  
         ctx.fillStyle = "#333"; ctx.font = "bold 22px Arial";  
         ctx.fillText(`Thời gian lập: ${saveMeta.time}`, 300, 140);  
         ctx.font = "16px Arial"; ctx.fillText(saveMeta.date, 300, 165);  
-  
+
         // Vẽ Quẻ  
         function drawCanvasHex(x, y, code, name, isChu) {  
             ctx.fillStyle = "#993300"; ctx.font = "bold 24px Arial";  
             ctx.fillText(name, x + 65, y - 30);  
             ctx.font = "bold 14px Arial"; ctx.fillStyle = "#888";  
             ctx.fillText(isChu ? "QUẺ CHỦ" : "QUẺ BIẾN", x + 65, y - 60);  
-  
+
             for (let i = 0; i < 6; i++) {  
                 const isBroken = code[i] === '0';  
                 ctx.fillStyle = "#993300";  
-  
+
                 if (isBroken) {  
-                    ctx.fillRect(x, y + (5-i) * 20, 55, 12);  
-                    ctx.fillRect(x + 75, y + (5-i) * 20, 55, 12);  
+                    ctx.fillRect(x, y + (i * 20), 55, 12);  
+                    ctx.fillRect(x + 75, y + (i * 20), 55, 12);  
                 } else {  
-                    ctx.fillRect(x, y + (5-i) * 20, 130, 12);  
+                    ctx.fillRect(x, y + (i * 20), 130, 12);  
                 }  
             }  
         }  
-  
+
         drawCanvasHex(80, 280, saveMeta.cChu, saveMeta.q1, true);  
         drawCanvasHex(390, 280, saveMeta.cBien, saveMeta.q2, false);  
 
-        // Hiển thị Hào Động trên ảnh
-        ctx.fillStyle = "#d63031"; ctx.font = "bold 18px Arial"; ctx.textAlign = "center";
-        ctx.fillText("Hào Động: " + saveMeta.dong, 300, 450);
-  
+        // Hào Động
+        ctx.fillStyle = "#e74c3c"; ctx.font = "bold 18px Arial"; ctx.textAlign = "center";
+        ctx.fillText(saveMeta.dong, 300, 450);
+
         // Câu hỏi  
         ctx.fillStyle = "#f8f9fa"; ctx.fillRect(40, 480, 520, 120);  
         ctx.fillStyle = "#007aff"; ctx.font = "bold 20px Arial";  
         ctx.textAlign = "left";  
         const lines = qTxt.match(/.{1,45}(\s|$)/g) || [qTxt];  
         lines.forEach((l, i) => ctx.fillText(i === 0 ? "HỎI: " + l : l, 60, 530 + (i * 30)));  
-  
+
         // Footer  
         ctx.fillStyle = "#aaa"; ctx.font = "12px Arial"; ctx.textAlign = "center";  
         ctx.fillText("Ứng dụng lập quẻ Thời Gian - 2026", 300, 720);  
-  
+
         const link = document.createElement('a');  
         link.download = `ThoiGian_${saveMeta.time}.png`;  
         link.href = canvas.toDataURL();  
