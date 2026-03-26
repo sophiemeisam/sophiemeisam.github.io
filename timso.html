@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Ứng dụng Tìm Dãy Số A & B</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
+        h2 { color: #333; text-align: center; }
+        .row-config { display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; }
+        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #eee; border-radius: 5px; }
+        .section-title { font-weight: bold; margin-bottom: 10px; color: #2c3e50; border-left: 4px solid #3498db; padding-left: 10px; }
+        .inputs-group { display: flex; flex-wrap: wrap; gap: 10px; }
+        input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 60px; text-align: center; }
+        input[readonly] { background-color: #e8f4fd; font-weight: bold; color: #2980b9; border: 1px solid #3498db; }
+        label { font-size: 0.9em; color: #666; }
+        .config-item { display: flex; flex-direction: column; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>TÌM DÃY SỐ TỰ ĐỘNG</h2>
+
+    <!-- Dãy A -->
+    <div class="section" id="group-A">
+        <div class="section-title">DÃY SỐ A</div>
+        <div class="row-config">
+            <div class="config-item">
+                <label>Số lượng (3-7)</label>
+                <input type="number" id="count-A" value="3" min="3" max="7" onchange="initInputs('A')">
+            </div>
+            <div class="config-item">
+                <label>Tổng mục tiêu</label>
+                <input type="number" id="target-A" value="12" oninput="calculateLast('A')">
+            </div>
+        </div>
+        <div id="inputs-A" class="inputs-group"></div>
+    </div>
+
+    <!-- Dãy B -->
+    <div class="section" id="group-B">
+        <div class="section-title">DÃY SỐ B</div>
+        <div class="row-config">
+            <div class="config-item">
+                <label>Số lượng (3-7)</label>
+                <input type="number" id="count-B" value="3" min="3" max="7" onchange="initInputs('B')">
+            </div>
+            <div class="config-item">
+                <label>Tổng mục tiêu</label>
+                <input type="number" id="target-B" value="14" oninput="calculateLast('B')">
+            </div>
+        </div>
+        <div id="inputs-B" class="inputs-group"></div>
+    </div>
+</div>
+
+<script>
+    function initInputs(type) {
+        const count = parseInt(document.getElementById(`count-${type}`).value);
+        const container = document.getElementById(`inputs-${type}`);
+        container.innerHTML = ''; // Xóa các ô cũ
+
+        for (let i = 0; i < count; i++) {
+            const input = document.createElement('input');
+            input.type = 'number';
+            input.placeholder = `Số ${i + 1}`;
+            input.className = `val-${type}`;
+            
+            // Nếu là ô cuối cùng thì khóa không cho nhập, chỉ để hiển thị kết quả
+            if (i === count - 1) {
+                input.readOnly = true;
+                input.id = `result-${type}`;
+            } else {
+                input.addEventListener('input', () => calculateLast(type));
+            }
+            
+            container.appendChild(input);
+        }
+        calculateLast(type);
+    }
+
+    function calculateLast(type) {
+        const target = parseFloat(document.getElementById(`target-${type}`).value) || 0;
+        const inputs = document.querySelectorAll(`.val-${type}`);
+        const resultInput = document.getElementById(`result-${type}`);
+        
+        let currentSum = 0;
+        let filledCount = 0;
+
+        // Tính tổng các ô đã nhập (trừ ô cuối)
+        for (let i = 0; i < inputs.length - 1; i++) {
+            const val = parseFloat(inputs[i].value);
+            if (!isNaN(val)) {
+                currentSum += val;
+                filledCount++;
+            }
+        }
+
+        // Nếu đã nhập đủ tất cả các ô trừ ô cuối
+        if (filledCount === inputs.length - 1) {
+            const missingValue = target - currentSum;
+            // Làm đẹp số (lấy tối đa 2 chữ số thập phân nếu có)
+            resultInput.value = Math.round(missingValue * 100) / 100;
+        } else {
+            resultInput.value = '';
+        }
+    }
+
+    // Khởi tạo mặc định khi load trang
+    window.onload = () => {
+        initInputs('A');
+        initInputs('B');
+    };
+</script>
+
+</body>
+</html>
