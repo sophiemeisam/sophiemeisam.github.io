@@ -2,28 +2,92 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
+    <!-- Thẻ quan trọng để tự động zoom và fix tỷ lệ trên di động -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ứng dụng Tìm Dãy Số A & B</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
-        h2 { color: #333; text-align: center; }
-        .row-config { display: flex; gap: 10px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; }
-        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #eee; border-radius: 5px; }
-        .section-title { font-weight: bold; margin-bottom: 10px; color: #2c3e50; border-left: 4px solid #3498db; padding-left: 10px; }
-        .inputs-group { display: flex; flex-wrap: wrap; gap: 10px; }
-        input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 60px; text-align: center; }
-        input[readonly] { background-color: #e8f4fd; font-weight: bold; color: #2980b9; border: 1px solid #3498db; }
-        label { font-size: 0.9em; color: #666; }
-        .config-item { display: flex; flex-direction: column; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: #f0f2f5; 
+            margin: 0;
+            padding: 10px; 
+            display: flex; 
+            justify-content: center; 
+        }
+        .container { 
+            background: white; 
+            padding: 15px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+            width: 100%; 
+            max-width: 500px; 
+        }
+        h2 { color: #1a73e8; text-align: center; font-size: 1.4rem; margin-top: 10px; }
+        
+        .section { 
+            margin-bottom: 20px; 
+            padding: 15px; 
+            border: 1px solid #e0e0e0; 
+            border-radius: 10px; 
+            background: #fff;
+        }
+        .section-title { 
+            font-weight: bold; 
+            margin-bottom: 15px; 
+            color: #202124; 
+            border-left: 5px solid #1a73e8; 
+            padding-left: 10px;
+            font-size: 1.1rem;
+        }
+
+        .row-config { 
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px; 
+        }
+        .config-item { display: flex; flex-direction: column; gap: 5px; }
+        .config-item label { font-size: 0.85rem; color: #5f6368; font-weight: 500; }
+
+        .inputs-group { 
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 10px; 
+        }
+
+        /* Tối ưu ô nhập liệu cho ngón tay bấm */
+        input { 
+            padding: 12px 5px; 
+            border: 1px solid #dadce0; 
+            border-radius: 8px; 
+            font-size: 1rem; 
+            text-align: center;
+            outline: none;
+            transition: border 0.2s;
+        }
+        input:focus { border-color: #1a73e8; background: #f8fbff; }
+        
+        /* Ô kết quả cuối cùng */
+        input[readonly] { 
+            background-color: #e8f0fe; 
+            font-weight: bold; 
+            color: #1967d2; 
+            border: 2px solid #1a73e8; 
+        }
+
+        /* Responsive cho màn hình cực nhỏ */
+        @media (max-width: 360px) {
+            .inputs-group { grid-template-columns: repeat(3, 1fr); }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>TÌM DÃY SỐ TỰ ĐỘNG</h2>
+    <h2>TÌM DÃY SỐ THÔNG MINH</h2>
 
     <!-- Dãy A -->
-    <div class="section" id="group-A">
+    <div class="section">
         <div class="section-title">DÃY SỐ A</div>
         <div class="row-config">
             <div class="config-item">
@@ -32,14 +96,14 @@
             </div>
             <div class="config-item">
                 <label>Tổng mục tiêu</label>
-                <input type="number" id="target-A" value="12" oninput="calculateLast('A')">
+                <input type="number" id="target-A" value="12" inputmode="decimal" oninput="calculateLast('A')">
             </div>
         </div>
         <div id="inputs-A" class="inputs-group"></div>
     </div>
 
     <!-- Dãy B -->
-    <div class="section" id="group-B">
+    <div class="section">
         <div class="section-title">DÃY SỐ B</div>
         <div class="row-config">
             <div class="config-item">
@@ -48,7 +112,7 @@
             </div>
             <div class="config-item">
                 <label>Tổng mục tiêu</label>
-                <input type="number" id="target-B" value="14" oninput="calculateLast('B')">
+                <input type="number" id="target-B" value="14" inputmode="decimal" oninput="calculateLast('B')">
             </div>
         </div>
         <div id="inputs-B" class="inputs-group"></div>
@@ -59,19 +123,19 @@
     function initInputs(type) {
         const count = parseInt(document.getElementById(`count-${type}`).value);
         const container = document.getElementById(`inputs-${type}`);
-        container.innerHTML = ''; // Xóa các ô cũ
+        container.innerHTML = ''; 
 
         for (let i = 0; i < count; i++) {
             const input = document.createElement('input');
             input.type = 'number';
-            input.placeholder = `Số ${i + 1}`;
-            input.className = `val-${type}`;
+            input.inputMode = 'decimal'; // Hiện bàn phím số trên mobile
+            input.placeholder = `#${i + 1}`;
             
-            // Nếu là ô cuối cùng thì khóa không cho nhập, chỉ để hiển thị kết quả
             if (i === count - 1) {
                 input.readOnly = true;
                 input.id = `result-${type}`;
             } else {
+                input.className = `val-${type}`;
                 input.addEventListener('input', () => calculateLast(type));
             }
             
@@ -88,26 +152,23 @@
         let currentSum = 0;
         let filledCount = 0;
 
-        // Tính tổng các ô đã nhập (trừ ô cuối)
-        for (let i = 0; i < inputs.length - 1; i++) {
-            const val = parseFloat(inputs[i].value);
+        inputs.forEach(input => {
+            const val = parseFloat(input.value);
             if (!isNaN(val)) {
                 currentSum += val;
                 filledCount++;
             }
-        }
+        });
 
-        // Nếu đã nhập đủ tất cả các ô trừ ô cuối
-        if (filledCount === inputs.length - 1) {
+        // Chỉ hiện kết quả khi đã nhập đủ các ô trước đó
+        if (filledCount === (parseInt(document.getElementById(`count-${type}`).value) - 1)) {
             const missingValue = target - currentSum;
-            // Làm đẹp số (lấy tối đa 2 chữ số thập phân nếu có)
-            resultInput.value = Math.round(missingValue * 100) / 100;
+            resultInput.value = Number.isInteger(missingValue) ? missingValue : missingValue.toFixed(2);
         } else {
             resultInput.value = '';
         }
     }
 
-    // Khởi tạo mặc định khi load trang
     window.onload = () => {
         initInputs('A');
         initInputs('B');
