@@ -3,172 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tra Cứu 64 Quẻ - Nạp Giáp Thế Ứng</title>
+    <title>Dịch Lý Toàn Thư - 64 Quẻ Nạp Giáp</title>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #8e2e00; --gold: #d4af37; --bg: #fdfaf7; --text: #2d3436; }
+        :root { --primary: #8e2e00; --gold: #d4af37; --bg: #f8f5f2; --text: #2d3436; }
         body { font-family: 'Lexend', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { color: var(--primary); font-size: 1.4rem; margin-bottom: 5px; }
-        
-        /* Menu Section */
-        .selector-container { width: 100%; max-width: 500px; background: #fff; border-radius: 15px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; box-sizing: border-box; }
-        label { font-size: 0.8rem; font-weight: 600; color: #888; text-transform: uppercase; margin-bottom: 8px; display: block; }
-        select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; font-size: 1rem; margin-bottom: 15px; outline: none; background: #fff; }
+        .container { width: 100%; max-width: 500px; }
+        .header { text-align: center; margin-bottom: 20px; padding: 10px; border-bottom: 2px solid var(--primary); }
+        .header h1 { color: var(--primary); font-size: 1.3rem; margin: 0; text-transform: uppercase; }
 
-        /* Display Card */
-        .que-card { width: 100%; max-width: 500px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; display: none; border: 1px solid #eee; }
+        /* Selector Box */
+        .box { background: #fff; border-radius: 15px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        label { font-size: 0.75rem; font-weight: 600; color: #888; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; font-size: 1rem; margin-bottom: 15px; outline: none; background: #fff; cursor: pointer; }
+
+        /* Card Kết quả */
+        .que-card { background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; display: none; }
         .que-header { background: var(--primary); color: white; padding: 20px; text-align: center; }
-        .que-name { font-size: 1.8rem; font-weight: bold; margin: 0; }
-        .que-cung { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; letter-spacing: 1px; }
+        .que-name { font-size: 1.6rem; font-weight: bold; margin: 0; }
+        .que-cung { font-size: 0.85rem; opacity: 0.9; margin-top: 5px; letter-spacing: 1px; }
 
-        /* Hexagram Visual */
-        .hex-container { padding: 30px 20px; display: flex; flex-direction: column-reverse; gap: 12px; align-items: center; background: #fff; }
-        .hào-row { display: flex; align-items: center; width: 100%; justify-content: center; gap: 15px; }
-        
-        .line-box { width: 140px; height: 14px; position: relative; }
+        /* Hào Display */
+        .hex-container { padding: 30px 15px; display: flex; flex-direction: column-reverse; gap: 12px; }
+        .hao-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .nap-giap { width: 140px; font-size: 0.9rem; color: #444; font-weight: 500; text-align: left; }
+        .line-box { flex-grow: 1; height: 14px; min-width: 100px; }
         .line-yang { width: 100%; height: 100%; background: var(--primary); border-radius: 2px; }
         .line-yin { width: 100%; height: 100%; display: flex; justify-content: space-between; }
-        .line-yin::before, .line-yin::after { content: ""; width: 42%; height: 100%; background: var(--primary); border-radius: 2px; }
-
-        .nap-giap { width: 120px; font-size: 0.85rem; color: #444; font-weight: 500; }
-        .the-ung { width: 50px; font-size: 0.8rem; font-weight: bold; color: #d63031; }
-
-        .binary-info { background: #f1f2f6; padding: 10px; text-align: center; font-family: monospace; font-size: 0.8rem; color: #636e72; }
+        .line-yin::before, .line-yin::after { content: ""; width: 43%; height: 100%; background: var(--primary); border-radius: 2px; }
+        .the-ung { width: 45px; font-size: 0.85rem; font-weight: bold; color: #d63031; text-align: right; }
+        
+        .footer-info { background: #f1f2f6; padding: 12px; text-align: center; font-size: 0.75rem; color: #636e72; border-top: 1px solid #eee; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <h1>VẤN QUẺ DỊCH</h1>
-    <p style="font-size: 0.8rem; color: #666;">Hệ thống Nạp Giáp & Thế Ứng 64 Quẻ</p>
-</div>
-
-<div class="selector-container">
-    <label>1. Chọn Họ Quẻ (Cung)</label>
-    <select id="selectCung" onchange="updateQueList()">
-        <option value="">-- Chọn Họ Quẻ --</option>
-        <option value="Càn">Càn (Kim)</option>
-        <option value="Đoài">Đoài (Kim)</option>
-        <option value="Ly">Ly (Hỏa)</option>
-        <option value="Chấn">Chấn (Mộc)</option>
-        <option value="Tốn">Tốn (Mộc)</option>
-        <option value="Khảm">Khảm (Thủy)</option>
-        <option value="Cấn">Cấn (Thổ)</option>
-        <option value="Khôn">Khôn (Thổ)</option>
-    </select>
-
-    <label>2. Chọn Tên Quẻ</label>
-    <select id="selectQue" onchange="displayQue()">
-        <option value="">-- Chọn quẻ --</option>
-    </select>
-</div>
-
-<div id="queResult" class="que-card">
-    <div class="que-header">
-        <p id="resCung" class="que-cung">HỌ...</p>
-        <h2 id="resName" class="que-name">Tên Quẻ</h2>
-    </div>
-    
-    <div id="hexVisual" class="hex-container">
-        <!-- Hào sẽ được render tại đây -->
+<div class="container">
+    <div class="header">
+        <h1>VẤN QUẺ DỊCH LÝ</h1>
     </div>
 
-    <div class="binary-info" id="resBinary">
-        Mã nhị phân: 000000
+    <div class="box">
+        <label>Chọn Họ Quẻ (Cung)</label>
+        <select id="selectCung" onchange="updateQueList()">
+            <option value="">-- Chọn Cung --</option>
+            <option value="Can">Họ Kiền (Kim)</option>
+            <option value="Doai">Họ Đoài (Kim)</option>
+            <option value="Ly">Họ Ly (Hỏa)</option>
+            <option value="Chan">Họ Chấn (Mộc)</option>
+            <option value="Ton">Họ Tốn (Mộc)</option>
+            <option value="Kham">Họ Khảm (Thủy)</option>
+            <option value="Can2">Họ Cấn (Thổ)</option>
+            <option value="Khon">Họ Khôn (Thổ)</option>
+        </select>
+
+        <label>Chọn Tên Quẻ</label>
+        <select id="selectQue" onchange="displayQue()">
+            <option value="">-- Chọn quẻ --</option>
+        </select>
+    </div>
+
+    <div id="queResult" class="que-card">
+        <div class="que-header">
+            <p id="resCung" class="que-cung">HỌ...</p>
+            <h2 id="resName" class="que-name">Tên Quẻ</h2>
+        </div>
+        
+        <div id="hexVisual" class="hex-container"></div>
+
+        <div class="footer-info">
+            Thứ tự: Hào 6 (trên cùng) → Hào 1 (dưới cùng)
+        </div>
     </div>
 </div>
 
 <script>
-// Dữ liệu mẫu đại diện (Dựa trên Data B bạn cung cấp)
 const dataDich = {
-    "Càn": {
-        hanh: "Kim",
-        quẻ: {
-            "Càn Vi Thiên": { code: "111111", nap: ["Tử Tôn Tý Thủy", "Thê Tài Dần Mộc", "Phụ Mẫu Thìn Thổ (Ứng)", "Quan Quỷ Ngọ Hỏa", "Huynh Đệ Thân Kim", "Phụ Mẫu Tuất Thổ (Thế)"] },
-            "Thiên Phong Cấu": { code: "111110", nap: ["Phụ Mẫu Sửu Thổ (Thế)", "Tử Tôn Hợi Thủy", "Huynh Đệ Dậu Kim", "Quan Quỷ Ngọ Hỏa (Ứng)", "Huynh Đệ Thân Kim", "Phụ Mẫu Tuất Thổ"] },
-            "Thiên Sơn Độn": { code: "111100", nap: ["Phụ Mẫu Thìn Thổ", "Quan Quỷ Ngọ Hỏa (Thế)", "Huynh Đệ Thân Kim", "Quan Quỷ Ngọ Hỏa", "Huynh Đệ Thân Kim (Ứng)", "Phụ Mẫu Tuất Thổ"] },
-            "Thiên Địa Bĩ": { code: "111000", nap: ["Phụ Mẫu Mùi Thổ", "Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc (Thế)", "Quan Quỷ Ngọ Hỏa", "Huynh Đệ Thân Kim", "Phụ Mẫu Tuất Thổ (Ứng)"] },
-            "Phong Địa Quán": { code: "110000", nap: ["Phụ Mẫu Mùi Thổ (Ứng)", "Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc", "Phụ Mẫu Mùi Thổ (Thế)", "Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc"] },
-            "Sơn Địa Bác": { code: "100000", nap: ["Phụ Mẫu Mùi Thổ", "Quan Quỷ Tỵ Hỏa (Ứng)", "Thê Tài Mão Mộc", "Phụ Mẫu Tuất Thổ", "Tử Tôn Tý Thủy (Thế)", "Thê Tài Dần Mộc"] },
-            "Hỏa Địa Tấn": { code: "101000", nap: ["Phụ Mẫu Mùi Thổ (Ứng)", "Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc", "Huynh Đệ Dậu Kim (Thế)", "Phụ Mẫu Mùi Thổ", "Quan Quỷ Tỵ Hỏa"] },
-            "Hỏa Thiên Đại Hữu": { code: "101111", nap: ["Tử Tôn Tý Thủy", "Thê Tài Dần Mộc", "Phụ Mẫu Thìn Thổ (Thế)", "Huynh Đệ Dậu Kim", "Phụ Mẫu Mùi Thổ", "Quan Quỷ Tỵ Hỏa (Ứng)"] }
-        }
-    },
-    "Đoài": {
-        hanh: "Kim",
-        quẻ: {
-            "Đoài Vi Trạch": { code: "011011", nap: ["Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc", "Phụ Mẫu Sửu Thổ (Ứng)", "Tử Tôn Hợi Thủy", "Huynh Đệ Dậu Kim", "Phụ Mẫu Mùi Thổ (Thế)"] },
-            "Trạch Thủy Khốn": { code: "011010", nap: ["Thê Tài Dần Mộc (Thế)", "Phụ Mẫu Thìn Thổ", "Quan Quỷ Ngọ Hỏa", "Tử Tôn Hợi Thủy (Ứng)", "Huynh Đệ Dậu Kim", "Phụ Mẫu Mùi Thổ"] }
-            // Các quẻ khác thêm tương tự...
-        }
-    }
-    // Các Cung khác Ly, Chấn, Tốn, Khảm, Cấn, Khôn sẽ được thêm đầy đủ...
+    "Can": { hanh: "Kim", name: "Càn", quẻ: {
+        "Càn Vi Thiên": { c: "111111", n: ["Tử Tôn Tý Thủy","Thê Tài Dần Mộc","Phụ Mẫu Thìn Thổ (Ứng)","Quan Quỷ Ngọ Hỏa","Huynh Đệ Thân Kim","Phụ Mẫu Tuất Thổ (Thế)"] },
+        "Thiên Phong Cấu": { c: "111110", n: ["Phụ Mẫu Sửu Thổ (Thế)","Tử Tôn Hợi Thủy","Huynh Đệ Dậu Kim","Quan Quỷ Ngọ Hỏa (Ứng)","Huynh Đệ Thân Kim","Phụ Mẫu Tuất Thổ"] },
+        "Thiên Sơn Độn": { c: "111100", n: ["Phụ Mẫu Thìn Thổ","Quan Quỷ Ngọ Hỏa (Thế)","Huynh Đệ Thân Kim","Quan Quỷ Ngọ Hỏa","Huynh Đệ Thân Kim (Ứng)","Phụ Mẫu Tuất Thổ"] },
+        "Thiên Địa Bĩ": { c: "111000", n: ["Phụ Mẫu Mùi Thổ","Quan Quỷ Tỵ Hỏa","Thê Tài Mão Mộc (Thế)","Quan Quỷ Ngọ Hỏa","Huynh Đệ Thân Kim","Phụ Mẫu Tuất Thổ (Ứng)"] },
+        "Phong Địa Quan": { c: "110000", n: ["Phụ Mẫu Mùi Thổ (Ứng)","Quan Quỷ Tỵ Hỏa","Thê Tài Mão Mộc","Phụ Mẫu Mùi Thổ (Thế)","Quan Quỷ Tỵ Hỏa","Thê Tài Mão Mộc"] },
+        "Sơn Địa Bác": { c: "100000", n: ["Phụ Mẫu Mùi Thổ","Quan Quỷ Tỵ Hỏa (Ứng)","Thê Tài Mão Mộc","Phụ Mẫu Tuất Thổ","Tử Tôn Tý Thủy (Thế)","Thê Tài Dần Mộc"] },
+        "Hỏa Địa Tấn": { c: "101000", n: ["Phụ Mẫu Mùi Thổ (Ứng)","Quan Quỷ Tỵ Hỏa","Thê Tài Mão Mộc","Huynh Đệ Dậu Kim (Thế)","Phụ Mẫu Mùi Thổ","Quan Quỷ Tỵ Hỏa"] },
+        "Hỏa Thiên Đại Hữu": { c: "101111", n: ["Tử Tôn Tý Thủy","Thê Tài Dần Mộc","Phụ Mẫu Thìn Thổ (Thế)","Huynh Đệ Dậu Kim","Phụ Mẫu Mùi Thổ","Quan Quỷ Tỵ Hỏa (Ứng)"] }
+    }},
+    "Doai": { hanh: "Kim", name: "Đoài", quẻ: {
+        "Đoài Vi Trạch": { c: "011011", n: ["Quan Quỷ Tỵ Hỏa","Thê Tài Mão Mộc","Phụ Mẫu Sửu Thổ (Ứng)","Tử Tôn Hợi Thủy","Huynh Đệ Dậu Kim","Phụ Mẫu Mùi Thổ (Thế)"] },
+        "Trạch Thủy Khốn": { c: "011010", n: ["Thê Tài Dần Mộc (Thế)","Phụ Mẫu Thìn Thổ","Quan Quỷ Ngọ Hỏa","Tử Tôn Hợi Thủy (Ứng)","Huynh Đệ Dậu Kim","Phụ Mẫu Mùi Thổ"] },
+        "Trạch Địa Tuỵ": { c: "011000", n: ["Phụ Mẫu Mùi Thổ","Quan Quỷ Tỵ Hỏa (Thế)","Thê Tài Mão Mộc","Huynh Đệ Hợi Thủy","Huynh Đệ Dậu Kim (Ứng)","Phụ Mẫu Mùi Thổ"] },
+        "Trạch Sơn Hàm": { c: "011100", n: ["Phụ Mẫu Thìn Thổ","Quan Quỷ Ngọ Hỏa","Huynh Đệ Thân Kim (Thế)","Tử Tôn Hợi Thủy","Huynh Đệ Dậu Kim","Phụ Mẫu Mùi Thổ (Ứng)"] },
+        "Thủy Sơn Kiển": { c: "010100", n: ["Phụ Mẫu Thìn Thổ (Ứng)","Quan Quỷ Ngọ Hỏa","Huynh Đệ Thân Kim","Huynh Đệ Thân Kim (Thế)","Phụ Mẫu Tuất Thổ","Tử Tôn Tý Thủy"] },
+        "Địa Sơn Khiêm": { c: "000100", n: ["Phụ Mẫu Thìn Thổ","Quan Quỷ Ngọ Hỏa (Ứng)","Huynh Đệ Thân Kim","Phụ Mẫu Sửu Thổ","Tử Tôn Hợi Thủy (Thế)","Huynh Đệ Dậu Kim"] },
+        "Lôi Sơn Tiểu Quá": { c: "001100", n: ["Phụ Mẫu Thìn Thổ (Ứng)","Quan Quỷ Ngọ Hỏa","Huynh Đệ Thân Kim","Quan Quỷ Ngọ Hỏa (Thế)","Huynh Đệ Thân Kim","Phụ Mẫu Tuất Thổ"] },
+        "Lôi Trạch Quy Muội": { c: "001011", n: ["Quan Quỷ Tỵ Hỏa","Thê Tài Mão Mộc","Phụ Mẫu Sửu Thổ (Thế)","Quan Quỷ Ngọ Hỏa","Huynh Đệ Thân Kim","Phụ Mẫu Tuất Thổ (Ứng)"] }
+    }},
+    "Ly": { hanh: "Hỏa", name: "Ly", quẻ: {
+        "Ly Vi Hỏa": { c: "101101", n: ["Phụ Mẫu Mão Mộc","Tử Tôn Sửu Thổ","Quan Quỷ Hợi Thủy (Ứng)","Thê Tài Dậu Kim","Tử Tôn Mùi Thổ","Huynh Đệ Tỵ Hỏa (Thế)"] },
+        "Hỏa Sơn Lữ": { c: "101100", n: ["Tử Tôn Thìn Thổ (Thế)","Huynh Đệ Ngọ Hỏa","Thê Tài Thân Kim","Thê Tài Dậu Kim (Ứng)","Tử Tôn Mùi Thổ","Huynh Đệ Tỵ Hỏa"] },
+        "Hỏa Phong Đỉnh": { c: "101110", n: ["Tử Tôn Sửu Thổ","Quan Quỷ Hợi Thủy (Thế)","Thê Tài Dậu Kim","Thê Tài Dậu Kim","Tử Tôn Mùi Thổ (Ứng)","Huynh Đệ Tỵ Hỏa"] },
+        "Hỏa Thủy Vị Tế": { c: "101010", n: ["Phụ Mẫu Dần Mộc","Tử Tôn Thìn Thổ","Huynh Đệ Ngọ Hỏa (Thế)","Thê Tài Dậu Kim","Tử Tôn Mùi Thổ","Huynh Đệ Tỵ Hỏa (Ứng)"] },
+        "Sơn Thủy Mông": { c: "100010", n: ["Phụ Mẫu Dần Mộc (Ứng)","Tử Tôn Thìn Thổ","Huynh Đệ Ngọ Hỏa","Tử Tôn Tuất Thổ (Thế)","Quan Quỷ Tý Thủy","Phụ Mẫu Dần Mộc"] },
+        "Phong Thủy Hoán": { c: "110010", n: ["Phụ Mẫu Dần Mộc","Tử Tôn Thìn Thổ (Ứng)","Huynh Đệ Ngọ Hỏa","Tử Tôn Mùi Thổ","Huynh Đệ Tỵ Hỏa (Thế)","Phụ Mẫu Mão Mộc"] },
+        "Thiên Thủy Tụng": { c: "111010", n: ["Phụ Mẫu Dần Mộc (Ứng)","Tử Tôn Thìn Thổ","Huynh Đệ Ngọ Hỏa","Huynh Đệ Ngọ Hỏa (Thế)","Thê Tài Thân Kim","Tử Tôn Tuất Thổ"] },
+        "Thiên Hỏa Đồng Nhân": { c: "111101", n: ["Phụ Mẫu Mão Mộc","Tử Tôn Sửu Thổ","Quan Quỷ Hợi Thủy (Thế)","Huynh Đệ Ngọ Hỏa","Thê Tài Thân Kim","Tử Tôn Tuất Thổ (Ứng)"] }
+    }},
+    "Chan": { hanh: "Mộc", name: "Chấn", quẻ: {
+        "Chấn Vi Lôi": { c: "001001", n: ["Phụ Mẫu Tý Thủy","Huynh Đệ Dần Mộc","Thê Tài Thìn Thổ (Ứng)","Tử Tôn Ngọ Hỏa","Quan Quỷ Thân Kim","Thê Tài Tuất Thổ (Thế)"] },
+        "Lôi Địa Dự": { c: "001000", n: ["Thê Tài Mùi Thổ (Thế)","Tử Tôn Tỵ Hỏa","Huynh Đệ Mão Mộc","Tử Tôn Ngọ Hỏa (Ứng)","Quan Quỷ Thân Kim","Thê Tài Tuất Thổ"] },
+        "Lôi Thủy Giải": { c: "001010", n: ["Huynh Đệ Dần Mộc","Thê Tài Thìn Thổ (Thế)","Tử Tôn Ngọ Hỏa","Tử Tôn Ngọ Hỏa","Quan Quỷ Thân Kim (Ứng)","Thê Tài Tuất Thổ"] },
+        "Lôi Phong Hằng": { c: "001110", n: ["Thê Tài Sửu Thổ","Phụ Mẫu Hợi Thủy","Quan Quỷ Dậu Kim (Thế)","Tử Tôn Ngọ Hỏa","Quan Quỷ Thân Kim","Thê Tài Tuất Thổ (Ứng)"] },
+        "Địa Phong Thăng": { c: "000110", n: ["Thê Tài Sửu Thổ (Ứng)","Phụ Mẫu Hợi Thủy","Quan Quỷ Dậu Kim","Thê Tài Sửu Thổ (Thế)","Phụ Mẫu Hợi Thủy","Quan Quỷ Dậu Kim"] },
+        "Thủy Phong Tỉnh": { c: "010110", n: ["Thê Tài Sửu Thổ","Phụ Mẫu Hợi Thủy (Ứng)","Quan Quỷ Dậu Kim","Quan Quỷ Thân Kim","Thê Tài Tuất Thổ (Thế)","Phụ Mẫu Tý Thủy"] },
+        "Trạch Phong Đại Quá": { c: "011110", n: ["Thê Tài Sửu Thổ (Ứng)","Phụ Mẫu Hợi Thủy","Quan Quỷ Dậu Kim","Phụ Mẫu Hợi Thủy (Thế)","Quan Quỷ Dậu Kim","Thê Tài Mùi Thổ"] },
+        "Trạch Lôi Tùy": { c: "011001", n: ["Phụ Mẫu Tý Thủy","Huynh Đệ Dần Mộc","Thê Tài Thìn Thổ (Thế)","Phụ Mẫu Hợi Thủy","Quan Quỷ Dậu Kim","Thê Tài Mùi Thổ (Ứng)"] }
+    }},
+    "Ton": { hanh: "Mộc", name: "Tốn", quẻ: {
+        "Tốn Vi Phong": { c: "110110", n: ["Thê Tài Sửu Thổ","Phụ Mẫu Hợi Thủy","Quan Quỷ Dậu Kim (Ứng)","Thê Tài Mùi Thổ","Tử Tôn Tỵ Hỏa","Huynh Đệ Mão Mộc (Thế)"] },
+        "Phong Thiên Tiểu Súc": { c: "110111", n: ["Phụ Mẫu Tý Thủy (Thế)","Huynh Đệ Dần Mộc","Thê Tài Thìn Thổ","Thê Tài Mùi Thổ (Ứng)","Tử Tôn Tỵ Hỏa","Huynh Đệ Mão Mộc"] },
+        "Phong Hỏa Gia Nhân": { c: "110101", n: ["Huynh Đệ Mão Mộc","Thê Tài Sửu Thổ (Thế)","Phụ Mẫu Hợi Thủy","Thê Tài Mùi Thổ","Tử Tôn Tỵ Hỏa (Ứng)","Huynh Đệ Mão Mộc"] },
+        "Phong Lôi Ích": { c: "110001", n: ["Phụ Mẫu Tý Thủy","Huynh Đệ Dần Mộc","Thê Tài Thìn Thổ (Thế)","Thê Tài Mùi Thổ","Tử Tôn Tỵ Hỏa","Huynh Đệ Mão Mộc (Ứng)"] },
+        "Thiên Lôi Vô Vọng": { c: "111001", n: ["Phụ Mẫu Tý Thủy (Ứng)","Huynh Đệ Dần Mộc","Thê Tài Thìn Thổ","Tử Tôn Ngọ Hỏa (Thế)","Quan Quỷ Thân Kim","Thê Tài Tuất Thổ"] },
+        "Hỏa Lôi Phệ Hạp": { c: "101001", n: ["Phụ Mẫu Tý Thủy","Huynh Đệ Dần Mộc (Ứng)","Thê Tài Thìn Thổ","Quan Quỷ Dậu Kim","Thê Tài Mùi Thổ (Thế)","Tử Tôn Tỵ Hỏa"] },
+        "Sơn Lôi Di": { c: "100001", n: ["Phụ Mẫu Tý Thủy (Ứng)","Huynh Đệ Dần Mộc","Thê Tài Thìn Thổ","Thê Tài Tuất Thổ (Thế)","Phụ Mẫu Tý Thủy","Huynh Đệ Dần Mộc"] },
+        "Sơn Phong Cổ": { c: "100110", n: ["Thê Tài Sửu Thổ","Phụ Mẫu Hợi Thủy","Quan Quỷ Dậu Kim (Thế)","Thê Tài Tuất Thổ","Phụ Mẫu Tý Thủy","Huynh Đệ Dần Mộc (Ứng)"] }
+    }},
+    "Kham": { hanh: "Thủy", name: "Khảm", quẻ: {
+        "Khảm Vi Thủy": { c: "010010", n: ["Tử Tôn Dần Mộc","Quan Quỷ Thìn Thổ","Thê Tài Ngọ Hỏa (Ứng)","Phụ Mẫu Thân Kim","Quan Quỷ Tuất Thổ","Huynh Đệ Tý Thủy (Thế)"] },
+        "Thủy Trạch Tiết": { c: "010011", n: ["Thê Tài Tỵ Hỏa (Thế)","Tử Tôn Mão Mộc","Quan Quỷ Sửu Thổ","Phụ Mẫu Thân Kim (Ứng)","Quan Quỷ Tuất Thổ","Huynh Đệ Tý Thủy"] },
+        "Thủy Lôi Truân": { c: "010001", n: ["Huynh Đệ Tý Thủy","Tử Tôn Dần Mộc (Thế)","Quan Quỷ Thìn Thổ","Phụ Mẫu Thân Kim","Quan Quỷ Tuất Thổ (Ứng)","Huynh Đệ Tý Thủy"] },
+        "Thủy Hoả Ký Tế": { c: "010101", n: ["Tử Tôn Mão Mộc","Quan Quỷ Sửu Thổ","Huynh Đệ Hợi Thủy (Thế)","Phụ Mẫu Thân Kim","Quan Quỷ Tuất Thổ","Huynh Đệ Tý Thủy (Ứng)"] },
+        "Trạch Hỏa Cách": { c: "011101", n: ["Tử Tôn Mão Mộc (Ứng)","Quan Quỷ Sửu Thổ","Huynh Đệ Hợi Thủy","Huynh Đệ Hợi Thủy (Thế)","Phụ Mẫu Dậu Kim","Quan Quỷ Mùi Thổ"] },
+        "Lôi Hỏa Phong": { c: "001101", n: ["Tử Tôn Mão Mộc","Quan Quỷ Sửu Thổ (Ứng)","Huynh Đệ Hợi Thủy","Thê Tài Ngọ Hỏa","Phụ Mẫu Thân Kim (Thế)","Quan Quỷ Tuất Thổ"] },
+        "Địa Hỏa Minh Di": { c: "000101", n: ["Tử Tôn Mão Mộc (Ứng)","Quan Quỷ Sửu Thổ","Huynh Đệ Hợi Thủy","Quan Quỷ Sửu Thổ (Thế)","Huynh Đệ Hợi Thủy","Phụ Mẫu Dậu Kim"] },
+        "Địa Thủy Sư": { c: "000010", n: ["Tử Tôn Thân Kim","Quan Quỷ Thìn Thổ","Thê Tài Ngọ Hỏa (Thế)","Quan Quỷ Sửu Thổ","Huynh Đệ Hợi Thủy","Phụ Mẫu Dậu Kim (Ứng)"] }
+    }},
+    "Can2": { hanh: "Thổ", name: "Cấn", quẻ: {
+        "Cấn Vi Sơn": { c: "100100", n: ["Huynh Đệ Thìn Thổ","Phụ Mẫu Ngọ Hỏa","Tử Tôn Thân Kim (Ứng)","Huynh Đệ Tuất Thổ","Thê Tài Tý Thủy","Quan Quỷ Dần Mộc (Thế)"] },
+        "Sơn Hoả Bí": { c: "100101", n: ["Quan Quỷ Mão Mộc (Thế)","Huynh Đệ Sửu Thổ","Thê Tài Hợi Thủy","Huynh Đệ Tuất Thổ (Ứng)","Thê Tài Tý Thủy","Quan Quỷ Dần Mộc"] },
+        "Sơn Thiên Đại Súc": { c: "100111", n: ["Thê Tài Tý Thủy","Quan Quỷ Dần Mộc (Thế)","Huynh Đệ Thìn Thổ","Huynh Đệ Tuất Thổ","Thê Tài Tý Thủy (Ứng)","Quan Quỷ Dần Mộc"] },
+        "Sơn Trạch Tổn": { c: "100011", n: ["Phụ Mẫu Tỵ Hỏa","Quan Quỷ Mão Mộc","Huynh Đệ Sửu Thổ (Thế)","Huynh Đệ Tuất Thổ","Thê Tài Tý Thủy","Quan Quỷ Dần Mộc (Ứng)"] },
+        "Hỏa Trạch Khuê": { c: "101011", n: ["Phụ Mẫu Tỵ Hỏa (Ứng)","Quan Quỷ Mão Mộc","Huynh Đệ Sửu Thổ","Tử Tôn Dậu Kim (Thế)","Huynh Đệ Mùi Thổ","Phụ Mẫu Tỵ Hoả"] },
+        "Thiên Trạch Lý": { c: "111011", n: ["Phụ Mẫu Tỵ Hỏa","Quan Quỷ Mão Mộc (Ứng)","Huynh Đệ Sửu Thổ","Phụ Mẫu Ngọ Hỏa","Tử Tôn Thân Kim (Thế)","Huynh Đệ Tuất Thổ"] },
+        "Phong Trạch Trung Phu": { c: "110011", n: ["Phụ Mẫu Tỵ Hỏa (Ứng)","Quan Quỷ Mão Mộc","Huynh Đệ Sửu Thổ","Huynh Đệ Mùi Thổ (Thế)","Phụ Mẫu Tỵ Hỏa","Quan Quỷ Mão Mộc"] },
+        "Phong Sơn Tiệm": { c: "110100", n: ["Huynh Đệ Thìn Thổ","Phụ Mẫu Ngọ Hỏa","Tử Tôn Thân Kim (Thế)","Huynh Đệ Mùi Thổ","Phụ Mẫu Tỵ Hỏa","Quan Quỷ Mão Mộc (Ứng)"] }
+    }},
+    "Khon": { hanh: "Thổ", name: "Khôn", quẻ: {
+        "Khôn Vi Địa": { c: "000000", n: ["Huynh Đệ Mùi Thổ","Phụ Mẫu Tỵ Hỏa","Quan Quỷ Mão Mộc (Ứng)","Huynh Đệ Sửu Thổ","Thê Tài Hợi Thủy","Tử Tôn Dậu Kim (Thế)"] },
+        "Địa Lôi Phục": { c: "000001", n: ["Thê Tài Tý Thủy (Thế)","Quan Quỷ Dần Mộc","Huynh Đệ Thìn Thổ","Huynh Đệ Sửu Thổ (Ứng)","Thê Tài Hợi Thủy","Tử Tôn Dậu Kim"] },
+        "Địa Trạch Lâm": { c: "000011", n: ["Phụ mẫu Tỵ Hỏa","Quan Quỷ Mão Mộc (Thế)","Huynh Đệ Sửu Thổ","Huynh Đệ Sửu Thổ","Thê Tài Hợi Thủy (Ứng)","Tử Tôn Dậu Kim"] },
+        "Địa Thiên Thái": { c: "000111", n: ["Thê Tài Tý Thủy","Quan Quỷ Dần Mộc","Huynh Đệ Thìn Thổ (Thế)","Huynh Đệ Sửu Thổ","Thê Tài Hợi Thủy","Tử Tôn Dậu Kim (Ứng)"] },
+        "Lôi Thiên Đại Tráng": { c: "001111", n: ["Thê Tài Tý Thủy (Ứng)","Quan Quỷ Dần Mộc","Huynh Đệ Thìn Thổ","Phụ Mẫu Ngọ Hỏa (Thế)","Tử Tôn Thân Kim","Huynh Đệ Tuất Thổ"] },
+        "Trạch Thiên Quải": { c: "011111", n: ["Thê Tài Tý Thủy","Quan Quỷ Dần Mộc (Ứng)","Huynh Đệ Thìn Thổ","Thê Tài Hợi Thủy","Tử Tôn Dậu Kim (Thế)","Huynh Đệ Mùi Thổ"] },
+        "Thủy Thiên Nhu": { c: "010111", n: ["Thê Tài Tý Thủy (Ứng)","Quan Quỷ Dần Mộc","Huynh Đệ Thìn Thổ","Tử Tôn Thân Kim (Thế)","Huynh Đệ Tuất Thổ","Thê Tài Tý Thủy"] },
+        "Thủy Địa Tỷ": { c: "010000", n: ["Huynh Đệ Mùi Thổ","Phụ Mẫu Tỵ Hỏa","Quan Quỷ Mão Mộc (Thế)","Tử Tôn Thân Kim","Huynh Đệ Tuất Thổ","Thê Tài Tý Thuỷ (Ứng)"] }
+    }}
 };
 
-// Hàm cập nhật danh sách Quẻ khi chọn Cung
 function updateQueList() {
     const cung = document.getElementById("selectCung").value;
     const queSelect = document.getElementById("selectQue");
     queSelect.innerHTML = '<option value="">-- Chọn quẻ --</option>';
-    
     if (cung && dataDich[cung]) {
         Object.keys(dataDich[cung].quẻ).forEach(qName => {
-            const option = document.createElement("option");
-            option.value = qName;
-            option.text = qName;
-            queSelect.appendChild(option);
+            let opt = document.createElement("option");
+            opt.value = qName; opt.text = qName;
+            queSelect.appendChild(opt);
         });
     }
 }
 
-// Hàm hiển thị chi tiết Quẻ
 function displayQue() {
-    const cung = document.getElementById("selectCung").value;
+    const cungKey = document.getElementById("selectCung").value;
     const qName = document.getElementById("selectQue").value;
     const resPanel = document.getElementById("queResult");
-    
-    if (!cung || !qName) {
-        resPanel.style.display = "none";
-        return;
-    }
+    if (!cungKey || !qName) { resPanel.style.display = "none"; return; }
 
-    const queData = dataDich[cung].quẻ[qName];
+    const cung = dataDich[cungKey];
+    const que = cung.quẻ[qName];
     document.getElementById("resName").innerText = qName;
-    document.getElementById("resCung").innerText = `HỌ ${cung.toUpperCase()} (${dataDich[cung].hanh})`;
-    document.getElementById("resBinary").innerText = `Mã nhị phân: ${queData.code}`;
+    document.getElementById("resCung").innerText = `HỌ ${cung.name.toUpperCase()} (${cung.hanh})`;
     
     const hexVisual = document.getElementById("hexVisual");
     hexVisual.innerHTML = "";
 
-    // Render 6 hào (từ dưới lên trên hào 1 -> hào 6)
-    // queData.nap đã được sắp xếp từ hào 1 (index 0) đến hào 6 (index 5)
+    // Render hào từ hào 1 (index 5 trong code nhị phân) lên hào 6 (index 0)
+    // Data n: [hào 1, hào 2, hào 3, hào 4, hào 5, hào 6]
     for (let i = 0; i < 6; i++) {
-        const isYang = queData.code[5 - i] === "1"; // Code đọc từ trên xuống, hào dưới là cuối chuỗi
-        const napInfo = queData.nap[i];
-        
-        // Tách Thế/Ứng từ chuỗi nạp giáp
-        let theUngLabel = "";
-        let cleanNap = napInfo;
-        if (napInfo.includes("(Thế)")) { theUngLabel = "Thế"; cleanNap = napInfo.replace("(Thế)", ""); }
-        if (napInfo.includes("(Ứng)")) { theUngLabel = "Ứng"; cleanNap = napInfo.replace("(Ứng)", ""); }
-
         const row = document.createElement("div");
-        row.className = "hào-row";
+        row.className = "hao-row";
+        
+        const isYang = que.c[5 - i] === "1";
+        const napText = que.n[i];
+        let label = ""; 
+        let cleanNap = napText;
+
+        if(napText.includes("(Thế)")) { label = "Thế"; cleanNap = napText.replace("(Thế)",""); }
+        else if(napText.includes("(Ứng)")) { label = "Ứng"; cleanNap = napText.replace("(Ứng)",""); }
+
         row.innerHTML = `
             <div class="nap-giap">${cleanNap}</div>
-            <div class="line-box">
-                ${isYang ? '<div class="line-yang"></div>' : '<div class="line-yin"></div>'}
-            </div>
-            <div class="the-ung">${theUngLabel}</div>
+            <div class="line-box">${isYang ? '<div class="line-yang"></div>' : '<div class="line-yin"></div>'}</div>
+            <div class="the-ung">${label}</div>
         `;
         hexVisual.appendChild(row);
     }
-
     resPanel.style.display = "block";
 }
 </script>
-
 </body>
 </html>
