@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tra Cứu 64 Quẻ - Nạp Giáp Thế Ứng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #8e2e00; --gold: #d4af37; --bg: #fdfaf7; --text: #2d3436; }
+        body { font-family: 'Lexend', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { color: var(--primary); font-size: 1.4rem; margin-bottom: 5px; }
+        
+        /* Menu Section */
+        .selector-container { width: 100%; max-width: 500px; background: #fff; border-radius: 15px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; box-sizing: border-box; }
+        label { font-size: 0.8rem; font-weight: 600; color: #888; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; font-family: inherit; font-size: 1rem; margin-bottom: 15px; outline: none; background: #fff; }
+
+        /* Display Card */
+        .que-card { width: 100%; max-width: 500px; background: white; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; display: none; border: 1px solid #eee; }
+        .que-header { background: var(--primary); color: white; padding: 20px; text-align: center; }
+        .que-name { font-size: 1.8rem; font-weight: bold; margin: 0; }
+        .que-cung { font-size: 0.9rem; opacity: 0.9; margin-top: 5px; letter-spacing: 1px; }
+
+        /* Hexagram Visual */
+        .hex-container { padding: 30px 20px; display: flex; flex-direction: column-reverse; gap: 12px; align-items: center; background: #fff; }
+        .hào-row { display: flex; align-items: center; width: 100%; justify-content: center; gap: 15px; }
+        
+        .line-box { width: 140px; height: 14px; position: relative; }
+        .line-yang { width: 100%; height: 100%; background: var(--primary); border-radius: 2px; }
+        .line-yin { width: 100%; height: 100%; display: flex; justify-content: space-between; }
+        .line-yin::before, .line-yin::after { content: ""; width: 42%; height: 100%; background: var(--primary); border-radius: 2px; }
+
+        .nap-giap { width: 120px; font-size: 0.85rem; color: #444; font-weight: 500; }
+        .the-ung { width: 50px; font-size: 0.8rem; font-weight: bold; color: #d63031; }
+
+        .binary-info { background: #f1f2f6; padding: 10px; text-align: center; font-family: monospace; font-size: 0.8rem; color: #636e72; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>VẤN QUẺ DỊCH</h1>
+    <p style="font-size: 0.8rem; color: #666;">Hệ thống Nạp Giáp & Thế Ứng 64 Quẻ</p>
+</div>
+
+<div class="selector-container">
+    <label>1. Chọn Họ Quẻ (Cung)</label>
+    <select id="selectCung" onchange="updateQueList()">
+        <option value="">-- Chọn Họ Quẻ --</option>
+        <option value="Càn">Càn (Kim)</option>
+        <option value="Đoài">Đoài (Kim)</option>
+        <option value="Ly">Ly (Hỏa)</option>
+        <option value="Chấn">Chấn (Mộc)</option>
+        <option value="Tốn">Tốn (Mộc)</option>
+        <option value="Khảm">Khảm (Thủy)</option>
+        <option value="Cấn">Cấn (Thổ)</option>
+        <option value="Khôn">Khôn (Thổ)</option>
+    </select>
+
+    <label>2. Chọn Tên Quẻ</label>
+    <select id="selectQue" onchange="displayQue()">
+        <option value="">-- Chọn quẻ --</option>
+    </select>
+</div>
+
+<div id="queResult" class="que-card">
+    <div class="que-header">
+        <p id="resCung" class="que-cung">HỌ...</p>
+        <h2 id="resName" class="que-name">Tên Quẻ</h2>
+    </div>
+    
+    <div id="hexVisual" class="hex-container">
+        <!-- Hào sẽ được render tại đây -->
+    </div>
+
+    <div class="binary-info" id="resBinary">
+        Mã nhị phân: 000000
+    </div>
+</div>
+
+<script>
+// Dữ liệu mẫu đại diện (Dựa trên Data B bạn cung cấp)
+const dataDich = {
+    "Càn": {
+        hanh: "Kim",
+        quẻ: {
+            "Càn Vi Thiên": { code: "111111", nap: ["Tử Tôn Tý Thủy", "Thê Tài Dần Mộc", "Phụ Mẫu Thìn Thổ (Ứng)", "Quan Quỷ Ngọ Hỏa", "Huynh Đệ Thân Kim", "Phụ Mẫu Tuất Thổ (Thế)"] },
+            "Thiên Phong Cấu": { code: "111110", nap: ["Phụ Mẫu Sửu Thổ (Thế)", "Tử Tôn Hợi Thủy", "Huynh Đệ Dậu Kim", "Quan Quỷ Ngọ Hỏa (Ứng)", "Huynh Đệ Thân Kim", "Phụ Mẫu Tuất Thổ"] },
+            "Thiên Sơn Độn": { code: "111100", nap: ["Phụ Mẫu Thìn Thổ", "Quan Quỷ Ngọ Hỏa (Thế)", "Huynh Đệ Thân Kim", "Quan Quỷ Ngọ Hỏa", "Huynh Đệ Thân Kim (Ứng)", "Phụ Mẫu Tuất Thổ"] },
+            "Thiên Địa Bĩ": { code: "111000", nap: ["Phụ Mẫu Mùi Thổ", "Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc (Thế)", "Quan Quỷ Ngọ Hỏa", "Huynh Đệ Thân Kim", "Phụ Mẫu Tuất Thổ (Ứng)"] },
+            "Phong Địa Quán": { code: "110000", nap: ["Phụ Mẫu Mùi Thổ (Ứng)", "Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc", "Phụ Mẫu Mùi Thổ (Thế)", "Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc"] },
+            "Sơn Địa Bác": { code: "100000", nap: ["Phụ Mẫu Mùi Thổ", "Quan Quỷ Tỵ Hỏa (Ứng)", "Thê Tài Mão Mộc", "Phụ Mẫu Tuất Thổ", "Tử Tôn Tý Thủy (Thế)", "Thê Tài Dần Mộc"] },
+            "Hỏa Địa Tấn": { code: "101000", nap: ["Phụ Mẫu Mùi Thổ (Ứng)", "Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc", "Huynh Đệ Dậu Kim (Thế)", "Phụ Mẫu Mùi Thổ", "Quan Quỷ Tỵ Hỏa"] },
+            "Hỏa Thiên Đại Hữu": { code: "101111", nap: ["Tử Tôn Tý Thủy", "Thê Tài Dần Mộc", "Phụ Mẫu Thìn Thổ (Thế)", "Huynh Đệ Dậu Kim", "Phụ Mẫu Mùi Thổ", "Quan Quỷ Tỵ Hỏa (Ứng)"] }
+        }
+    },
+    "Đoài": {
+        hanh: "Kim",
+        quẻ: {
+            "Đoài Vi Trạch": { code: "011011", nap: ["Quan Quỷ Tỵ Hỏa", "Thê Tài Mão Mộc", "Phụ Mẫu Sửu Thổ (Ứng)", "Tử Tôn Hợi Thủy", "Huynh Đệ Dậu Kim", "Phụ Mẫu Mùi Thổ (Thế)"] },
+            "Trạch Thủy Khốn": { code: "011010", nap: ["Thê Tài Dần Mộc (Thế)", "Phụ Mẫu Thìn Thổ", "Quan Quỷ Ngọ Hỏa", "Tử Tôn Hợi Thủy (Ứng)", "Huynh Đệ Dậu Kim", "Phụ Mẫu Mùi Thổ"] }
+            // Các quẻ khác thêm tương tự...
+        }
+    }
+    // Các Cung khác Ly, Chấn, Tốn, Khảm, Cấn, Khôn sẽ được thêm đầy đủ...
+};
+
+// Hàm cập nhật danh sách Quẻ khi chọn Cung
+function updateQueList() {
+    const cung = document.getElementById("selectCung").value;
+    const queSelect = document.getElementById("selectQue");
+    queSelect.innerHTML = '<option value="">-- Chọn quẻ --</option>';
+    
+    if (cung && dataDich[cung]) {
+        Object.keys(dataDich[cung].quẻ).forEach(qName => {
+            const option = document.createElement("option");
+            option.value = qName;
+            option.text = qName;
+            queSelect.appendChild(option);
+        });
+    }
+}
+
+// Hàm hiển thị chi tiết Quẻ
+function displayQue() {
+    const cung = document.getElementById("selectCung").value;
+    const qName = document.getElementById("selectQue").value;
+    const resPanel = document.getElementById("queResult");
+    
+    if (!cung || !qName) {
+        resPanel.style.display = "none";
+        return;
+    }
+
+    const queData = dataDich[cung].quẻ[qName];
+    document.getElementById("resName").innerText = qName;
+    document.getElementById("resCung").innerText = `HỌ ${cung.toUpperCase()} (${dataDich[cung].hanh})`;
+    document.getElementById("resBinary").innerText = `Mã nhị phân: ${queData.code}`;
+    
+    const hexVisual = document.getElementById("hexVisual");
+    hexVisual.innerHTML = "";
+
+    // Render 6 hào (từ dưới lên trên hào 1 -> hào 6)
+    // queData.nap đã được sắp xếp từ hào 1 (index 0) đến hào 6 (index 5)
+    for (let i = 0; i < 6; i++) {
+        const isYang = queData.code[5 - i] === "1"; // Code đọc từ trên xuống, hào dưới là cuối chuỗi
+        const napInfo = queData.nap[i];
+        
+        // Tách Thế/Ứng từ chuỗi nạp giáp
+        let theUngLabel = "";
+        let cleanNap = napInfo;
+        if (napInfo.includes("(Thế)")) { theUngLabel = "Thế"; cleanNap = napInfo.replace("(Thế)", ""); }
+        if (napInfo.includes("(Ứng)")) { theUngLabel = "Ứng"; cleanNap = napInfo.replace("(Ứng)", ""); }
+
+        const row = document.createElement("div");
+        row.className = "hào-row";
+        row.innerHTML = `
+            <div class="nap-giap">${cleanNap}</div>
+            <div class="line-box">
+                ${isYang ? '<div class="line-yang"></div>' : '<div class="line-yin"></div>'}
+            </div>
+            <div class="the-ung">${theUngLabel}</div>
+        `;
+        hexVisual.appendChild(row);
+    }
+
+    resPanel.style.display = "block";
+}
+</script>
+
+</body>
+</html>
