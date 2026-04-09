@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Nhận Chữ Hán – Khai Ngộ Cát Tự</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;700&family=Ma+Shan+Zheng&family=Playfair+Display:ital,wght@0,700;1,400&family=Noto+Serif:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+/* ── ROOT TOKENS ─────────────────────────────── */
+:root {
+  --ink:       #1a0e05;
+  --parch:     #fdf3e0;
+  --parch2:    #f5e8c5;
+  --red:       #b5261e;
+  --red-deep:  #7a1210;
+  --red-glow:  rgba(181,38,30,0.25);
+  --gold:      #c2922a;
+  --gold-lt:   #e8c46a;
+  --gold-dim:  #9a7220;
+  --sepia:     #7a5c3a;
+  --sepia-lt:  #c4a882;
+  --ink-faint: rgba(26,14,5,0.08);
+  --shadow:    0 8px 40px rgba(26,14,5,0.18);
+  --radius:    14px;
+  --slot-w:    260px;
+}
+
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #f0e6cc;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 50% 0%,   rgba(181,38,30,0.07) 0%, transparent 65%),
+    radial-gradient(ellipse 100% 80% at 50% 100%, rgba(122,82,36,0.08) 0%, transparent 70%),
+    repeating-linear-gradient(0deg,   transparent, transparent 48px, rgba(122,92,58,0.04) 48px, rgba(122,92,58,0.04) 49px),
+    repeating-linear-gradient(90deg,  transparent, transparent 48px, rgba(122,92,58,0.04) 48px, rgba(122,92,58,0.04) 49px);
+  min-height: 100vh;
+  font-family: 'Noto Serif', 'Times New Roman', serif;
+  color: var(--ink);
+  overflow-x: hidden;
+}
+
+/* paper grain overlay */
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  opacity: 0.6;
+}
+
+.page { position:relative; z-index:1; max-width:680px; margin:0 auto; padding:24px 16px 60px; }
+
+/* ── HEADER ─────────────────────────────────── */
+.site-header { text-align:center; padding:10px 0 20px; }
+
+.header-ornament {
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  color: var(--sepia-lt); font-size:11px; letter-spacing:3px; margin-bottom:12px;
+}
+.header-ornament::before,.header-ornament::after {
+  content:''; flex:1; max-width:80px; height:1px;
+  background: linear-gradient(90deg, transparent, var(--sepia-lt), transparent);
+}
+
+.site-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(20px, 5vw, 30px);
+  font-weight: 700;
+  color: var(--red-deep);
+  letter-spacing: 2px;
+  text-shadow: 0 2px 8px rgba(122,18,16,0.15);
+  line-height: 1.2;
+}
+.site-subtitle {
+  font-size: 12px; letter-spacing:3px; color: var(--sepia); margin-top:6px;
+  font-style: italic;
+}
+
+/* ── FILTER BAR ──────────────────────────────── */
+.filter-bar {
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  margin:18px 0 22px;
+}
+.filter-label {
+  font-size:11px; letter-spacing:2px; color:var(--sepia); margin-bottom:5px;
+  text-transform:uppercase; width:100%; text-align:center;
+}
+
+.filter-select {
+  appearance: none;
+  padding:8px 32px 8px 14px;
+  font-family: 'Noto Serif', serif;
+  font-size:13px;
+  background: var(--parch);
+  color: var(--ink);
+  border: 1px solid var(--sepia-lt);
+  border-radius: 6px;
+  cursor:pointer; outline:none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239a7220'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-width: 160px;
+}
+.filter-select:focus { border-color:var(--gold); box-shadow:0 0 0 3px rgba(194,146,42,0.15); }
+
+/* ── SLOTS STAGE ────────────────────────────── */
+.stage {
+  display:flex; gap:16px; justify-content:center; flex-wrap:wrap;
+  margin-bottom:24px;
+}
+
+.slot-card {
+  width: var(--slot-w);
+  background: var(--parch);
+  border: 2px solid var(--sepia-lt);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.6);
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.4s;
+}
+.slot-card.spinning  { border-color: var(--red); }
+.slot-card.settled   { border-color: var(--gold); box-shadow: var(--shadow), 0 0 20px rgba(194,146,42,0.25); }
+
+/* top label */
+.slot-label {
+  font-size:10px; letter-spacing:3px; text-transform:uppercase;
+  color: var(--sepia); padding:10px 0 8px; text-align:center;
+  border-bottom:1px solid var(--ink-faint);
+}
+
+/* viewport – clip window for the reel */
+.slot-viewport {
+  height: 140px; overflow: hidden; position: relative;
+  border-bottom: 1px solid var(--ink-faint);
+}
+
+/* reel – vertical strip that scrolls */
+.slot-reel {
+  position:absolute; width:100%; top:0;
+  will-change: transform;
+}
+.reel-item {
+  height: 140px;
+  display:flex; align-items:center; justify-content:center;
+  font-family: 'Ma Shan Zheng','Noto Serif SC', serif;
+  font-size: 90px;
+  line-height: 1;
+  color: var(--ink);
+  user-select: none;
+}
+
+/* shimmer overlay while spinning */
+.slot-viewport::after {
+  content:'';
+  position:absolute; inset:0; pointer-events:none;
+  background: linear-gradient(180deg, rgba(253,243,224,0.55) 0%, transparent 30%, transparent 70%, rgba(253,243,224,0.55) 100%);
+}
+
+/* info panel */
+.slot-info {
+  padding:12px 14px;
+  min-height: 96px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px 10px;
+  font-size:12px;
+}
+.slot-info .info-row { display:contents; }
+.info-key { color:var(--sepia); letter-spacing:0.5px; }
+.info-val {
+  color:var(--ink); font-weight:400;
+  font-family:'Noto Serif SC','Noto Serif',serif;
+  word-break: break-all;
+}
+.info-meaning {
+  grid-column: 1 / -1;
+  color: var(--red-deep);
+  font-style: italic;
+  font-size: 13px;
+  margin-top: 3px;
+  border-top: 1px dashed var(--ink-faint);
+  padding-top: 6px;
+  font-family: 'Noto Serif', serif;
+}
+.info-placeholder {
+  grid-column:1/-1; text-align:center; color:var(--sepia-lt);
+  font-style:italic; font-size:12px; padding:20px 0;
+}
+
+/* stroke badge */
+.stroke-pips {
+  display:flex; flex-wrap:wrap; gap:2px;
+  grid-column:1/-1; margin-top:2px;
+}
+.pip {
+  width:5px;height:5px; border-radius:50%;
+  background:var(--sepia-lt);
+}
+
+/* ── STOP BUTTON on each card ────────────────── */
+.btn-stop {
+  width:100%; border:none; cursor:pointer;
+  padding:11px;
+  font-family:'Noto Serif',serif;
+  font-size:13px; font-weight:600; letter-spacing:1px;
+  color:#fff;
+  background: var(--sepia-lt);
+  transition: background 0.25s, transform 0.1s;
+  outline:none;
+}
+.btn-stop.active  { background: var(--red); }
+.btn-stop.active:hover { background: var(--red-deep); }
+.btn-stop.active:active { transform: scale(0.98); }
+.btn-stop:disabled { background:#ccc; cursor:not-allowed; color:#aaa; }
+
+/* ── CONTROLS ────────────────────────────────── */
+.controls { display:flex; flex-direction:column; gap:12px; align-items:center; }
+
+.btn-main {
+  width:100%; max-width:320px;
+  padding:16px 20px;
+  font-family:'Playfair Display',serif;
+  font-size:16px; font-weight:700; letter-spacing:2px;
+  color:#fff;
+  background: linear-gradient(135deg, var(--red) 0%, var(--red-deep) 100%);
+  border:none; border-radius:8px; cursor:pointer;
+  box-shadow:0 4px 18px rgba(122,18,16,0.3);
+  transition: transform 0.15s, box-shadow 0.15s;
+  position:relative; overflow:hidden;
+  text-transform: uppercase;
+}
+.btn-main::after {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.12),transparent);
+}
+.btn-main:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 24px rgba(122,18,16,0.38); }
+.btn-main:active:not(:disabled) { transform:translateY(0); }
+.btn-main:disabled { opacity:0.4; cursor:not-allowed; }
+
+.btn-copy {
+  display:none;
+  width:100%; max-width:320px;
+  padding:13px 20px;
+  font-family:'Noto Serif',serif;
+  font-size:13px; font-weight:600; letter-spacing:1px;
+  color: var(--red-deep);
+  background: transparent;
+  border: 1.5px solid var(--gold);
+  border-radius:8px; cursor:pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-copy:hover { background:var(--gold); color:#fff; }
+
+/* ── STATUS ──────────────────────────────────── */
+.status-row {
+  text-align:center; margin-top:6px; min-height:22px;
+  font-size:12px; font-style:italic; color:var(--sepia); letter-spacing:0.5px;
+}
+.status-pulse { animation: pulse 1.5s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
+
+/* ── RESULT BANNER ───────────────────────────── */
+.result-banner {
+  display:none;
+  margin-top:24px;
+  background: linear-gradient(135deg, var(--parch), var(--parch2));
+  border: 1.5px solid var(--gold-dim);
+  border-radius: var(--radius);
+  padding:20px;
+  box-shadow: var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+.result-banner::before {
+  content:'';
+  position:absolute; top:-30px; right:-30px;
+  width:120px; height:120px; border-radius:50%;
+  background: radial-gradient(circle, rgba(194,146,42,0.12), transparent 70%);
+}
+
+.result-title {
+  font-family:'Playfair Display',serif;
+  font-size:14px; letter-spacing:3px; color:var(--gold-dim);
+  text-transform:uppercase; margin-bottom:14px; text-align:center;
+}
+
+.result-pair {
+  display:flex; justify-content:center; align-items:center; gap:24px;
+  margin-bottom:16px; flex-wrap:wrap;
+}
+.result-char-block { text-align:center; }
+.result-big-char {
+  font-family:'Ma Shan Zheng','Noto Serif SC',serif;
+  font-size:72px; line-height:1;
+  color:var(--red-deep);
+  text-shadow: 2px 3px 0 rgba(122,18,16,0.12);
+  display:block;
+}
+.result-char-info { font-size:11px; color:var(--sepia); margin-top:4px; }
+.result-char-meaning { font-size:13px; color:var(--ink); font-style:italic; margin-top:2px; }
+
+.result-divider {
+  font-size:24px; color:var(--sepia-lt); opacity:0.6; margin:0 4px;
+  font-family:'Ma Shan Zheng',serif;
+}
+
+.result-copy-area {
+  background: rgba(26,14,5,0.04);
+  border:1px dashed var(--sepia-lt);
+  border-radius:8px;
+  padding:12px;
+  font-size:12px;
+  color:var(--sepia);
+  line-height:1.8;
+  white-space:pre-wrap;
+  font-family:'Noto Serif',serif;
+  max-height:120px;
+  overflow-y:auto;
+}
+
+/* ── SCROLLBAR ────────────────────────── */
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:var(--parch2); }
+::-webkit-scrollbar-thumb { background:var(--sepia-lt); border-radius:4px; }
+
+/* ── MOBILE ───────────────────────────── */
+@media (max-width: 560px) {
+  :root { --slot-w: min(calc(50vw - 20px), 240px); }
+  .slot-card { width:var(--slot-w); }
+  .reel-item { font-size:70px; }
+  .slot-info { font-size:11px; }
+}
+@media (max-width: 390px) {
+  :root { --slot-w: calc(50vw - 14px); }
+  .reel-item { font-size:58px; }
+  .slot-info { grid-template-columns: 1fr; }
+  .info-key { display:none; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-ornament">✦ 開悟吉字 ✦</div>
+    <h1 class="site-title">Nhận Chữ Hán</h1>
+    <p class="site-subtitle">Khai Ngộ · Bói Chữ · Cát Tường</p>
+  </header>
+
+  <!-- FILTER -->
+  <div class="filter-bar">
+    <span class="filter-label">Lọc theo bộ thủ & số nét</span>
+    <div style="position:relative">
+      <select class="filter-select" id="filterRadical">
+        <option value="">— Tất cả bộ thủ —</option>
+      </select>
+    </div>
+    <div style="position:relative">
+      <select class="filter-select" id="filterStrokes">
+        <option value="">— Tất cả số nét —</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- STAGE -->
+  <div class="stage">
+    <!-- LEFT -->
+    <div class="slot-card" id="cardL">
+      <div class="slot-label">Chữ Thứ Nhất ·一</div>
+      <div class="slot-viewport">
+        <div class="slot-reel" id="reelL"></div>
+      </div>
+      <div class="slot-info" id="infoL">
+        <div class="info-placeholder">Chưa nhận chữ</div>
+      </div>
+      <button class="btn-stop" id="stopL" disabled onclick="stopSlot('L')">Dừng ·止</button>
+    </div>
+    <!-- RIGHT -->
+    <div class="slot-card" id="cardR">
+      <div class="slot-label">Chữ Thứ Hai · 二</div>
+      <div class="slot-viewport">
+        <div class="slot-reel" id="reelR"></div>
+      </div>
+      <div class="slot-info" id="infoR">
+        <div class="info-placeholder">Chưa nhận chữ</div>
+      </div>
+      <button class="btn-stop" id="stopR" disabled onclick="stopSlot('R')">Dừng ·止</button>
+    </div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button class="btn-main" id="startBtn" onclick="startRolling()">✦ NHẬN CHỮ ✦</button>
+    <button class="btn-copy" id="copyBtn" onclick="copyResult()">Sao Chép Kết Quả</button>
+  </div>
+  <p class="status-row" id="status">Bấm "Nhận Chữ" để khai ngộ</p>
+
+  <!-- RESULT BANNER -->
+  <div class="result-banner" id="resultBanner">
+    <div class="result-title">✦ Kết Quả Nhận Chữ ✦</div>
+    <div class="result-pair" id="resultPair"></div>
+    <div class="result-copy-area" id="resultText"></div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+/* ═══════════════════════════════════════════════
+   DATA – 1111 chữ Hán (đã dedup khi parse)
+   Format: id ; char ; radical ; strokes ; meaning
+   ═══════════════════════════════════════════════ */
+const RAW = `1 ; 一 ; 一 ; 1 ; một, khởi đầu
+2 ; 丁 ; 一 ; 2 ; đinh, người trưởng thành
+3 ; 七 ; 一 ; 2 ; bảy
+4 ; 三 ; 一 ; 3 ; ba
+5 ; 上 ; 一 ; 3 ; trên, đi lên
+6 ; 下 ; 一 ; 3 ; dưới, đi xuống
+7 ; 不 ; 一 ; 4 ; không
+8 ; 世 ; 一 ; 5 ; đời, thế gian
+9 ; 丘 ; 一 ; 5 ; gò đất
+10 ; 丙 ; 一 ; 5 ; bính (thiên can)
+11 ; 丞 ; 一 ; 6 ; trợ giúp, phụ tá
+12 ; 並 ; 一 ; 8 ; cùng nhau, đồng thời
+13 ; 中 ; 丨 ; 4 ; giữa, trung tâm
+14 ; 串 ; 丨 ; 7 ; chuỗi, xâu
+15 ; 丸 ; 丶 ; 3 ; viên tròn
+16 ; 丹 ; 丶 ; 4 ; đỏ son, đan dược
+17 ; 主 ; 丶 ; 5 ; chủ, người đứng đầu
+18 ; 久 ; 丿 ; 3 ; lâu dài
+19 ; 之 ; 丶 ; 3 ; của, đi đến
+20 ; 乍 ; 丿 ; 5 ; bỗng nhiên
+21 ; 乎 ; 丿 ; 5 ; ư, chăng
+22 ; 乏 ; 丿 ; 4 ; thiếu thốn
+23 ; 乖 ; 丿 ; 8 ; trái ngược
+24 ; 乘 ; 丿 ; 10 ; cưỡi, thừa
+25 ; 九 ; 乙 ; 2 ; chín
+26 ; 也 ; 乙 ; 3 ; cũng, vậy
+27 ; 乳 ; 乙 ; 8 ; sữa
+28 ; 乾 ; 乙 ; 11 ; trời, khô (quẻ Càn)
+29 ; 亂 ; 乙 ; 13 ; loạn
+30 ; 了 ; 亅 ; 2 ; xong, rồi
+31 ; 予 ; 亅 ; 4 ; cho
+32 ; 事 ; 亅 ; 8 ; việc, sự việc
+33 ; 二 ; 二 ; 2 ; hai
+34 ; 于 ; 二 ; 3 ; tại, ở
+35 ; 云 ; 二 ; 4 ; nói rằng, mây
+36 ; 互 ; 二 ; 4 ; lẫn nhau
+37 ; 五 ; 二 ; 4 ; năm
+38 ; 井 ; 二 ; 4 ; giếng
+39 ; 亞 ; 二 ; 8 ; thứ hai, á
+40 ; 些 ; 二 ; 8 ; một ít
+41 ; 亡 ; 亠 ; 3 ; mất, vong
+42 ; 交 ; 亠 ; 6 ; giao, trao đổi
+43 ; 亦 ; 亠 ; 6 ; cũng
+44 ; 亨 ; 亠 ; 7 ; hanh thông
+45 ; 京 ; 亠 ; 8 ; kinh đô
+46 ; 亮 ; 亠 ; 9 ; sáng
+47 ; 人 ; 人 ; 2 ; người
+48 ; 仁 ; 人 ; 4 ; nhân đức
+49 ; 仇 ; 人 ; 4 ; thù
+50 ; 今 ; 人 ; 4 ; nay
+51 ; 介 ; 人 ; 4 ; xen vào, trung gian
+52 ; 仔 ; 人 ; 5 ; con nhỏ
+53 ; 他 ; 人 ; 5 ; hắn, người kia
+54 ; 付 ; 人 ; 5 ; giao phó
+55 ; 仙 ; 人 ; 5 ; tiên
+56 ; 仰 ; 人 ; 6 ; ngước nhìn
+57 ; 仲 ; 人 ; 6 ; ở giữa
+58 ; 件 ; 人 ; 6 ; món, sự việc
+59 ; 任 ; 人 ; 6 ; đảm nhiệm
+60 ; 份 ; 人 ; 6 ; phần
+61 ; 仿 ; 人 ; 6 ; mô phỏng
+62 ; 企 ; 人 ; 6 ; mong cầu
+63 ; 伊 ; 人 ; 6 ; người ấy
+64 ; 伍 ; 人 ; 6 ; đội nhóm năm người
+65 ; 伏 ; 人 ; 6 ; phục, cúi
+66 ; 伐 ; 人 ; 6 ; đánh, chinh phạt
+67 ; 休 ; 人 ; 6 ; nghỉ
+68 ; 伙 ; 人 ; 6 ; nhóm
+69 ; 伯 ; 人 ; 7 ; anh cả
+70 ; 伴 ; 人 ; 7 ; bạn đồng hành
+71 ; 伸 ; 人 ; 7 ; vươn ra
+72 ; 伺 ; 人 ; 7 ; dò xét
+73 ; 似 ; 人 ; 7 ; giống như
+74 ; 位 ; 人 ; 7 ; vị trí
+75 ; 低 ; 人 ; 7 ; thấp
+76 ; 住 ; 人 ; 7 ; ở, cư trú
+77 ; 佐 ; 人 ; 7 ; trợ giúp
+78 ; 佑 ; 人 ; 7 ; phù hộ
+79 ; 何 ; 人 ; 7 ; gì
+80 ; 余 ; 人 ; 7 ; dư, ta
+81 ; 佛 ; 人 ; 7 ; Phật
+82 ; 作 ; 人 ; 7 ; làm
+83 ; 你 ; 人 ; 7 ; bạn
+84 ; 佩 ; 人 ; 8 ; đeo, khâm phục
+85 ; 佳 ; 人 ; 8 ; đẹp, tốt
+86 ; 使 ; 人 ; 8 ; sai khiến
+87 ; 來 ; 人 ; 8 ; đến
+88 ; 侍 ; 人 ; 8 ; hầu hạ
+89 ; 例 ; 人 ; 8 ; thí dụ
+90 ; 供 ; 人 ; 8 ; cung cấp
+91 ; 依 ; 人 ; 8 ; nương theo
+92 ; 兒 ; 儿 ; 8 ; trẻ con
+93 ; 兄 ; 儿 ; 5 ; anh
+94 ; 允 ; 儿 ; 4 ; cho phép
+95 ; 元 ; 儿 ; 4 ; nguyên, đầu
+96 ; 充 ; 儿 ; 6 ; đầy đủ
+97 ; 光 ; 儿 ; 6 ; ánh sáng
+98 ; 兆 ; 儿 ; 6 ; điềm báo
+99 ; 先 ; 儿 ; 6 ; trước
+100 ; 兇 ; 儿 ; 6 ; hung dữ
+101 ; 入 ; 入 ; 2 ; vào
+102 ; 全 ; 入 ; 6 ; toàn bộ
+103 ; 兩 ; 入 ; 8 ; hai (cặp)
+104 ; 八 ; 八 ; 2 ; tám
+105 ; 公 ; 八 ; 4 ; công cộng
+106 ; 六 ; 八 ; 4 ; sáu
+107 ; 共 ; 八 ; 6 ; cùng
+108 ; 兵 ; 八 ; 7 ; binh lính
+109 ; 其 ; 八 ; 8 ; nó, ấy
+110 ; 具 ; 八 ; 8 ; đầy đủ, dụng cụ
+111 ; 典 ; 八 ; 8 ; điển, phép tắc
+112 ; 冊 ; 冂 ; 5 ; sách, quyển ghi chép
+113 ; 再 ; 冂 ; 6 ; lại, lần nữa
+114 ; 冑 ; 冂 ; 9 ; mũ giáp
+115 ; 冕 ; 冂 ; 11 ; mũ vua
+116 ; 冗 ; 冖 ; 4 ; rườm rà
+117 ; 冠 ; 冖 ; 9 ; mũ, đứng đầu
+118 ; 冥 ; 冖 ; 10 ; tối tăm, cõi âm
+119 ; 冬 ; 冫 ; 5 ; mùa đông
+120 ; 冰 ; 冫 ; 6 ; băng
+121 ; 冷 ; 冫 ; 7 ; lạnh
+122 ; 准 ; 冫 ; 10 ; chuẩn
+123 ; 凍 ; 冫 ; 10 ; đóng băng
+124 ; 凝 ; 冫 ; 16 ; ngưng tụ
+125 ; 凡 ; 几 ; 3 ; phàm, mọi
+126 ; 凰 ; 几 ; 11 ; chim hoàng
+127 ; 凱 ; 几 ; 12 ; khải hoàn
+128 ; 凳 ; 几 ; 14 ; ghế đẩu
+129 ; 凶 ; 凵 ; 4 ; hung
+130 ; 出 ; 凵 ; 5 ; ra
+131 ; 凸 ; 凵 ; 5 ; lồi
+132 ; 凹 ; 凵 ; 5 ; lõm
+133 ; 刀 ; 刀 ; 2 ; dao
+134 ; 刃 ; 刀 ; 3 ; lưỡi dao
+135 ; 分 ; 刀 ; 4 ; chia
+136 ; 切 ; 刀 ; 4 ; cắt
+137 ; 刊 ; 刀 ; 5 ; khắc in
+138 ; 刑 ; 刀 ; 6 ; hình phạt
+139 ; 列 ; 刀 ; 6 ; xếp hàng
+140 ; 初 ; 刀 ; 7 ; ban đầu
+141 ; 判 ; 刀 ; 7 ; phán xét
+142 ; 別 ; 刀 ; 7 ; khác, chia tay
+143 ; 利 ; 刀 ; 7 ; lợi
+144 ; 到 ; 刀 ; 8 ; đến nơi
+145 ; 制 ; 刀 ; 8 ; chế định
+146 ; 刷 ; 刀 ; 8 ; quét, chải
+147 ; 券 ; 刀 ; 8 ; vé, khế ước
+148 ; 刺 ; 刀 ; 8 ; đâm
+149 ; 刻 ; 刀 ; 8 ; khắc
+150 ; 則 ; 刀 ; 9 ; phép tắc
+151 ; 削 ; 刀 ; 9 ; gọt
+152 ; 前 ; 刀 ; 9 ; trước
+153 ; 剖 ; 刀 ; 10 ; mổ xẻ
+154 ; 剛 ; 刀 ; 10 ; cứng rắn
+155 ; 剩 ; 刀 ; 12 ; còn thừa
+156 ; 創 ; 刀 ; 12 ; sáng tạo, vết thương
+157 ; 劃 ; 刀 ; 14 ; vạch, hoạch định
+158 ; 劉 ; 刀 ; 15 ; họ Lưu
+159 ; 力 ; 力 ; 2 ; sức lực
+160 ; 功 ; 力 ; 5 ; công lao
+161 ; 加 ; 力 ; 5 ; thêm
+162 ; 劣 ; 力 ; 6 ; kém
+163 ; 助 ; 力 ; 7 ; giúp
+164 ; 努 ; 力 ; 7 ; cố gắng
+165 ; 劫 ; 力 ; 7 ; kiếp, cướp
+166 ; 効 ; 力 ; 8 ; hiệu quả
+167 ; 勇 ; 力 ; 9 ; dũng cảm
+168 ; 勉 ; 力 ; 9 ; cố gắng
+169 ; 動 ; 力 ; 11 ; chuyển động
+170 ; 務 ; 力 ; 11 ; công việc
+171 ; 勝 ; 力 ; 12 ; thắng
+172 ; 勞 ; 力 ; 12 ; lao động
+173 ; 勢 ; 力 ; 13 ; thế lực
+174 ; 勸 ; 力 ; 19 ; khuyên
+175 ; 勺 ; 勹 ; 3 ; muỗng
+176 ; 勻 ; 勹 ; 4 ; đều
+177 ; 包 ; 勹 ; 5 ; bao bọc
+178 ; 匆 ; 勹 ; 5 ; vội vàng
+179 ; 匈 ; 勹 ; 6 ; ngực
+180 ; 匍 ; 勹 ; 9 ; bò sát đất
+181 ; 匕 ; 匕 ; 2 ; thìa
+182 ; 化 ; 匕 ; 4 ; biến hóa
+183 ; 北 ; 匕 ; 5 ; phương bắc
+184 ; 匙 ; 匕 ; 11 ; chìa khóa
+185 ; 匠 ; 匚 ; 6 ; thợ khéo
+186 ; 匣 ; 匚 ; 7 ; hộp
+187 ; 匪 ; 匚 ; 10 ; cướp
+188 ; 匹 ; 匸 ; 4 ; tấm, đôi
+189 ; 區 ; 匸 ; 11 ; khu vực
+190 ; 十 ; 十 ; 2 ; mười
+191 ; 千 ; 十 ; 3 ; nghìn
+192 ; 升 ; 十 ; 4 ; thăng, lên
+193 ; 午 ; 十 ; 4 ; giờ ngọ
+194 ; 半 ; 十 ; 5 ; nửa
+195 ; 卑 ; 十 ; 8 ; thấp hèn
+196 ; 卒 ; 十 ; 8 ; lính, kết thúc
+197 ; 卓 ; 十 ; 8 ; xuất sắc
+198 ; 協 ; 十 ; 8 ; hợp tác
+199 ; 南 ; 十 ; 9 ; phương nam
+200 ; 博 ; 十 ; 12 ; rộng lớn, bác học
+201 ; 占 ; 卜 ; 5 ; chiêm, bói
+202 ; 卡 ; 卜 ; 5 ; kẹt, thẻ
+203 ; 卦 ; 卜 ; 8 ; quẻ (Kinh Dịch)
+204 ; 卯 ; 卩 ; 5 ; mão (địa chi)
+205 ; 印 ; 卩 ; 6 ; ấn
+206 ; 危 ; 卩 ; 6 ; nguy hiểm
+207 ; 即 ; 卩 ; 7 ; tức thì
+208 ; 卵 ; 卩 ; 7 ; trứng
+209 ; 卷 ; 卩 ; 8 ; cuộn, quyển
+210 ; 卸 ; 卩 ; 9 ; dỡ bỏ
+211 ; 卿 ; 卩 ; 10 ; khanh
+212 ; 厂 ; 厂 ; 2 ; vách đá
+213 ; 厄 ; 厂 ; 4 ; tai ách
+214 ; 厚 ; 厂 ; 9 ; dày, hậu
+215 ; 原 ; 厂 ; 10 ; nguyên, đồng bằng
+216 ; 厘 ; 厂 ; 9 ; ly, đơn vị nhỏ
+217 ; 厭 ; 厂 ; 14 ; chán ghét
+218 ; 去 ; 厶 ; 5 ; đi
+219 ; 參 ; 厶 ; 11 ; tham gia
+220 ; 又 ; 又 ; 2 ; lại nữa
+221 ; 友 ; 又 ; 4 ; bạn bè
+222 ; 反 ; 又 ; 4 ; ngược lại
+223 ; 叔 ; 又 ; 8 ; chú, em của cha
+224 ; 取 ; 又 ; 8 ; lấy
+225 ; 受 ; 又 ; 8 ; nhận
+226 ; 叛 ; 又 ; 9 ; phản bội
+227 ; 叟 ; 又 ; 9 ; ông già
+228 ; 叡 ; 又 ; 16 ; sáng suốt
+229 ; 口 ; 口 ; 3 ; miệng
+230 ; 古 ; 口 ; 5 ; xưa, cổ
+231 ; 句 ; 口 ; 5 ; câu văn
+232 ; 另 ; 口 ; 5 ; khác
+233 ; 只 ; 口 ; 5 ; chỉ
+234 ; 叫 ; 口 ; 5 ; gọi
+235 ; 召 ; 口 ; 5 ; triệu gọi
+236 ; 可 ; 口 ; 5 ; có thể
+237 ; 台 ; 口 ; 5 ; đài, bệ
+238 ; 史 ; 口 ; 5 ; sử
+239 ; 右 ; 口 ; 5 ; bên phải
+240 ; 司 ; 口 ; 5 ; cai quản
+241 ; 吃 ; 口 ; 6 ; ăn
+242 ; 各 ; 口 ; 6 ; mỗi
+243 ; 合 ; 口 ; 6 ; hợp
+244 ; 吉 ; 口 ; 6 ; tốt lành
+245 ; 吊 ; 口 ; 6 ; treo, viếng
+246 ; 同 ; 口 ; 6 ; cùng
+247 ; 名 ; 口 ; 6 ; tên
+248 ; 后 ; 口 ; 6 ; hoàng hậu
+249 ; 向 ; 口 ; 6 ; hướng về
+250 ; 君 ; 口 ; 7 ; vua, người quân tử
+251 ; 否 ; 口 ; 7 ; không
+252 ; 含 ; 口 ; 7 ; chứa
+253 ; 吸 ; 口 ; 7 ; hút
+254 ; 吹 ; 口 ; 7 ; thổi
+255 ; 吻 ; 口 ; 7 ; hôn
+256 ; 吾 ; 口 ; 7 ; ta
+257 ; 呂 ; 口 ; 7 ; họ Lữ
+258 ; 呈 ; 口 ; 7 ; dâng lên
+259 ; 告 ; 口 ; 7 ; báo
+260 ; 命 ; 口 ; 8 ; mệnh, số phận
+261 ; 和 ; 口 ; 8 ; hòa
+262 ; 咒 ; 口 ; 8 ; chú thuật
+263 ; 咖 ; 口 ; 8 ; cà (âm dịch)
+264 ; 咬 ; 口 ; 9 ; cắn
+265 ; 咸 ; 口 ; 9 ; mặn, toàn bộ
+266 ; 哀 ; 口 ; 9 ; buồn thương
+267 ; 品 ; 口 ; 9 ; phẩm
+268 ; 哲 ; 口 ; 10 ; triết, hiền triết
+269 ; 員 ; 口 ; 10 ; thành viên
+270 ; 哭 ; 口 ; 10 ; khóc
+271 ; 唇 ; 口 ; 10 ; môi
+272 ; 唐 ; 口 ; 10 ; nhà Đường
+273 ; 唯 ; 口 ; 11 ; duy
+274 ; 唱 ; 口 ; 11 ; hát
+275 ; 商 ; 口 ; 11 ; buôn bán
+276 ; 問 ; 口 ; 11 ; hỏi
+277 ; 啟 ; 口 ; 11 ; mở, khải
+278 ; 善 ; 口 ; 12 ; tốt, thiện
+279 ; 喜 ; 口 ; 12 ; vui
+280 ; 喝 ; 口 ; 12 ; uống, quát
+281 ; 喬 ; 口 ; 12 ; cao lớn
+282 ; 喪 ; 口 ; 12 ; tang, mất
+283 ; 單 ; 口 ; 12 ; đơn
+284 ; 嗣 ; 口 ; 13 ; nối dõi, người kế tục
+285 ; 嗚 ; 口 ; 13 ; than khóc
+286 ; 嗜 ; 口 ; 13 ; ham thích
+287 ; 嘆 ; 口 ; 14 ; than thở
+288 ; 嘉 ; 口 ; 14 ; tốt đẹp
+289 ; 嘗 ; 口 ; 14 ; nếm, từng
+290 ; 嘱 ; 口 ; 15 ; dặn dò
+291 ; 器 ; 口 ; 16 ; khí cụ, tài năng
+292 ; 噩 ; 口 ; 16 ; ác mộng
+293 ; 嚴 ; 口 ; 20 ; nghiêm
+294 ; 囗 ; 囗 ; 3 ; vây quanh
+295 ; 囚 ; 囗 ; 5 ; tù
+296 ; 四 ; 囗 ; 5 ; bốn
+297 ; 回 ; 囗 ; 6 ; quay lại
+298 ; 因 ; 囗 ; 6 ; nhân, nguyên do
+299 ; 困 ; 囗 ; 7 ; khốn
+300 ; 圍 ; 囗 ; 12 ; bao vây
+301 ; 園 ; 囗 ; 13 ; vườn
+302 ; 圓 ; 囗 ; 13 ; tròn
+303 ; 圖 ; 囗 ; 14 ; bản đồ, mưu đồ
+304 ; 土 ; 土 ; 3 ; đất
+305 ; 在 ; 土 ; 6 ; ở, tồn tại
+306 ; 圭 ; 土 ; 6 ; ngọc khuê
+307 ; 地 ; 土 ; 6 ; đất, địa
+308 ; 坂 ; 土 ; 7 ; dốc
+309 ; 均 ; 土 ; 7 ; đều
+310 ; 坐 ; 土 ; 7 ; ngồi
+311 ; 坤 ; 土 ; 8 ; đất (quẻ Khôn)
+312 ; 坦 ; 土 ; 8 ; bằng phẳng
+313 ; 坪 ; 土 ; 8 ; bãi đất
+314 ; 城 ; 土 ; 9 ; thành
+315 ; 域 ; 土 ; 11 ; vùng
+316 ; 培 ; 土 ; 11 ; bồi dưỡng
+317 ; 基 ; 土 ; 11 ; nền tảng
+318 ; 堂 ; 土 ; 11 ; nhà lớn
+319 ; 堅 ; 土 ; 11 ; kiên cố
+320 ; 報 ; 土 ; 12 ; báo đáp
+321 ; 場 ; 土 ; 12 ; nơi chốn
+322 ; 塔 ; 土 ; 12 ; tháp
+323 ; 塞 ; 土 ; 13 ; tắc nghẽn
+324 ; 塑 ; 土 ; 13 ; nặn, tạo hình
+325 ; 塵 ; 土 ; 14 ; bụi
+326 ; 境 ; 土 ; 14 ; cảnh giới
+327 ; 墓 ; 土 ; 13 ; mộ
+328 ; 增 ; 土 ; 15 ; tăng thêm
+329 ; 墨 ; 土 ; 15 ; mực
+330 ; 壁 ; 土 ; 16 ; tường
+331 ; 壇 ; 土 ; 16 ; đàn tế
+332 ; 士 ; 士 ; 3 ; sĩ, học trò
+333 ; 壯 ; 士 ; 7 ; mạnh mẽ
+334 ; 声 ; 士 ; 7 ; tiếng (âm thanh)
+335 ; 壽 ; 士 ; 14 ; thọ, sống lâu
+336 ; 夏 ; 夂 ; 10 ; mùa hạ
+337 ; 夕 ; 夕 ; 3 ; chiều tối
+338 ; 外 ; 夕 ; 5 ; bên ngoài
+339 ; 多 ; 夕 ; 6 ; nhiều
+340 ; 夜 ; 夕 ; 8 ; đêm
+341 ; 夢 ; 夕 ; 14 ; giấc mộng
+342 ; 大 ; 大 ; 3 ; lớn
+343 ; 天 ; 大 ; 4 ; trời
+344 ; 太 ; 大 ; 4 ; quá, rất
+345 ; 夫 ; 大 ; 4 ; chồng, người đàn ông
+346 ; 央 ; 大 ; 5 ; trung tâm
+347 ; 失 ; 大 ; 5 ; mất
+348 ; 夷 ; 大 ; 6 ; bằng phẳng, di
+349 ; 夾 ; 大 ; 7 ; kẹp giữa
+350 ; 奇 ; 大 ; 8 ; kỳ lạ
+351 ; 奈 ; 大 ; 8 ; làm sao
+352 ; 奉 ; 大 ; 8 ; phụng
+353 ; 奏 ; 大 ; 9 ; tấu trình
+354 ; 契 ; 大 ; 9 ; khế ước
+355 ; 奔 ; 大 ; 8 ; chạy nhanh
+356 ; 奢 ; 大 ; 11 ; xa hoa
+357 ; 奧 ; 大 ; 13 ; sâu xa
+358 ; 女 ; 女 ; 3 ; nữ
+359 ; 奴 ; 女 ; 5 ; nô lệ
+360 ; 好 ; 女 ; 6 ; tốt, thích
+361 ; 如 ; 女 ; 6 ; như
+362 ; 妄 ; 女 ; 6 ; vọng
+363 ; 妙 ; 女 ; 7 ; diệu
+364 ; 妻 ; 女 ; 8 ; vợ
+365 ; 始 ; 女 ; 8 ; bắt đầu
+366 ; 姓 ; 女 ; 8 ; họ
+367 ; 委 ; 女 ; 8 ; giao phó
+368 ; 姿 ; 女 ; 9 ; dáng vẻ
+369 ; 威 ; 女 ; 9 ; uy
+370 ; 娘 ; 女 ; 10 ; mẹ, cô gái
+371 ; 娛 ; 女 ; 10 ; vui chơi
+372 ; 婚 ; 女 ; 11 ; hôn nhân
+373 ; 婦 ; 女 ; 11 ; phụ nữ
+374 ; 婿 ; 女 ; 12 ; con rể
+375 ; 媒 ; 女 ; 12 ; mai mối
+376 ; 嫁 ; 女 ; 13 ; gả
+377 ; 嫌 ; 女 ; 13 ; nghi ngờ
+378 ; 子 ; 子 ; 3 ; con
+379 ; 孔 ; 子 ; 4 ; lỗ hổng, họ Khổng
+380 ; 字 ; 子 ; 6 ; chữ
+381 ; 孝 ; 子 ; 7 ; hiếu thảo
+382 ; 孟 ; 子 ; 8 ; họ Mạnh
+383 ; 季 ; 子 ; 8 ; mùa
+384 ; 孤 ; 子 ; 8 ; cô đơn
+385 ; 學 ; 子 ; 16 ; học
+386 ; 宀 ; 宀 ; 3 ; nhà
+387 ; 守 ; 宀 ; 6 ; giữ
+388 ; 安 ; 宀 ; 6 ; an
+389 ; 宇 ; 宀 ; 6 ; vũ trụ
+390 ; 完 ; 宀 ; 7 ; hoàn
+391 ; 宋 ; 宀 ; 7 ; nước Tống
+392 ; 宏 ; 宀 ; 7 ; rộng lớn
+393 ; 官 ; 宀 ; 8 ; quan
+394 ; 定 ; 宀 ; 8 ; định
+395 ; 宜 ; 宀 ; 8 ; nên
+396 ; 宙 ; 宀 ; 8 ; vũ trụ
+397 ; 宛 ; 宀 ; 8 ; cong
+398 ; 宮 ; 宀 ; 10 ; cung điện
+399 ; 家 ; 宀 ; 10 ; nhà
+400 ; 容 ; 宀 ; 10 ; chứa
+401 ; 宿 ; 宀 ; 11 ; ngủ trọ
+402 ; 寂 ; 宀 ; 11 ; vắng lặng
+403 ; 富 ; 宀 ; 12 ; giàu
+404 ; 寒 ; 宀 ; 12 ; lạnh
+405 ; 寬 ; 宀 ; 15 ; rộng
+406 ; 寶 ; 宀 ; 20 ; báu vật
+407 ; 山 ; 山 ; 3 ; núi
+408 ; 岸 ; 山 ; 8 ; bờ
+409 ; 峰 ; 山 ; 10 ; đỉnh núi
+410 ; 島 ; 山 ; 10 ; đảo
+411 ; 崇 ; 山 ; 11 ; tôn sùng
+412 ; 嶺 ; 山 ; 17 ; đèo núi
+413 ; 川 ; 川 ; 3 ; sông
+414 ; 州 ; 川 ; 6 ; châu, tỉnh
+415 ; 工 ; 工 ; 3 ; làm, công
+416 ; 左 ; 工 ; 5 ; bên trái
+417 ; 巧 ; 工 ; 5 ; khéo
+418 ; 差 ; 工 ; 10 ; sai
+419 ; 己 ; 己 ; 3 ; mình
+420 ; 巳 ; 己 ; 3 ; tỵ (địa chi)
+421 ; 市 ; 巾 ; 5 ; chợ
+422 ; 布 ; 巾 ; 5 ; vải, trải ra
+423 ; 帝 ; 巾 ; 9 ; vua
+424 ; 常 ; 巾 ; 11 ; thường
+425 ; 幸 ; 干 ; 8 ; may mắn
+426 ; 年 ; 干 ; 6 ; năm
+427 ; 幽 ; 幺 ; 9 ; u tịch
+428 ; 幾 ; 幺 ; 12 ; mấy
+429 ; 廣 ; 广 ; 15 ; rộng
+430 ; 廟 ; 广 ; 15 ; miếu
+431 ; 心 ; 心 ; 4 ; lòng, tâm
+432 ; 忍 ; 心 ; 7 ; nhẫn
+433 ; 志 ; 心 ; 7 ; chí
+434 ; 忠 ; 心 ; 8 ; trung
+435 ; 念 ; 心 ; 8 ; nghĩ nhớ
+436 ; 思 ; 心 ; 9 ; nghĩ
+437 ; 急 ; 心 ; 9 ; gấp
+438 ; 性 ; 心 ; 8 ; tính
+439 ; 恩 ; 心 ; 10 ; ơn
+440 ; 恭 ; 心 ; 10 ; kính
+441 ; 悟 ; 心 ; 10 ; ngộ
+442 ; 惜 ; 心 ; 11 ; tiếc
+443 ; 慈 ; 心 ; 13 ; từ bi
+444 ; 慧 ; 心 ; 15 ; trí tuệ
+445 ; 憂 ; 心 ; 15 ; lo buồn
+446 ; 懷 ; 心 ; 19 ; hoài niệm
+447 ; 懇 ; 心 ; 17 ; khẩn thiết
+448 ; 懼 ; 心 ; 21 ; sợ hãi
+449 ; 戀 ; 心 ; 23 ; luyến
+450 ; 戒 ; 戈 ; 7 ; cảnh giới
+451 ; 戰 ; 戈 ; 16 ; chiến đấu
+452 ; 戲 ; 戈 ; 17 ; trò chơi
+453 ; 房 ; 戶 ; 8 ; phòng
+454 ; 扇 ; 戶 ; 10 ; quạt
+455 ; 扉 ; 戶 ; 12 ; cửa
+456 ; 所 ; 戶 ; 8 ; nơi
+457 ; 承 ; 手 ; 8 ; tiếp nhận
+458 ; 拜 ; 手 ; 9 ; lạy
+459 ; 擁 ; 手 ; 16 ; ôm giữ
+460 ; 擊 ; 手 ; 17 ; đánh
+461 ; 改 ; 攴 ; 7 ; sửa đổi
+462 ; 攻 ; 攴 ; 7 ; tấn công
+463 ; 放 ; 攴 ; 8 ; thả
+464 ; 政 ; 攴 ; 9 ; chính trị
+465 ; 故 ; 攴 ; 9 ; nguyên do
+466 ; 效 ; 攴 ; 10 ; hiệu quả
+467 ; 敏 ; 攴 ; 11 ; nhanh nhạy
+468 ; 救 ; 攴 ; 11 ; cứu
+469 ; 敬 ; 攴 ; 12 ; kính
+470 ; 數 ; 攴 ; 15 ; số lượng
+471 ; 文 ; 文 ; 4 ; văn
+472 ; 斐 ; 文 ; 12 ; đẹp
+473 ; 斗 ; 斗 ; 4 ; đấu
+474 ; 料 ; 斗 ; 10 ; vật liệu
+475 ; 斜 ; 斗 ; 11 ; nghiêng
+476 ; 斤 ; 斤 ; 4 ; rìu
+477 ; 斥 ; 斤 ; 5 ; quở trách
+478 ; 斬 ; 斤 ; 11 ; chém
+479 ; 斷 ; 斤 ; 18 ; cắt đứt
+480 ; 方 ; 方 ; 4 ; phương
+481 ; 於 ; 方 ; 8 ; ở tại
+482 ; 旅 ; 方 ; 10 ; lữ hành
+483 ; 旋 ; 方 ; 11 ; xoay
+484 ; 族 ; 方 ; 11 ; bộ tộc
+485 ; 旗 ; 方 ; 14 ; cờ
+486 ; 旭 ; 日 ; 6 ; mặt trời sớm
+487 ; 旱 ; 日 ; 7 ; hạn hán
+488 ; 旺 ; 日 ; 8 ; thịnh
+489 ; 昇 ; 日 ; 8 ; lên cao
+490 ; 昔 ; 日 ; 8 ; xưa
+491 ; 明 ; 日 ; 8 ; sáng
+492 ; 昭 ; 日 ; 9 ; sáng rõ
+493 ; 晃 ; 日 ; 10 ; sáng lóa
+494 ; 晨 ; 日 ; 11 ; buổi sớm
+495 ; 晶 ; 日 ; 12 ; tinh thể
+496 ; 暇 ; 日 ; 13 ; rảnh
+497 ; 暉 ; 日 ; 13 ; ánh sáng
+498 ; 暮 ; 日 ; 14 ; hoàng hôn
+499 ; 曆 ; 日 ; 16 ; lịch
+500 ; 曙 ; 日 ; 17 ; bình minh
+501 ; 曦 ; 日 ; 20 ; ánh mặt trời
+502 ; 書 ; 曰 ; 10 ; sách
+503 ; 曹 ; 曰 ; 11 ; quan lại
+504 ; 替 ; 曰 ; 12 ; thay thế
+505 ; 曾 ; 曰 ; 12 ; từng
+506 ; 最 ; 曰 ; 12 ; nhất
+507 ; 月 ; 月 ; 4 ; trăng
+508 ; 朋 ; 月 ; 8 ; bạn bè
+509 ; 朗 ; 月 ; 10 ; sáng
+510 ; 望 ; 月 ; 11 ; nhìn xa
+511 ; 期 ; 月 ; 12 ; kỳ hạn
+512 ; 朧 ; 月 ; 20 ; mờ ảo
+513 ; 朴 ; 木 ; 6 ; mộc mạc
+514 ; 杉 ; 木 ; 7 ; cây sam
+515 ; 架 ; 木 ; 9 ; giá đỡ
+516 ; 柔 ; 木 ; 9 ; mềm
+517 ; 桂 ; 木 ; 10 ; cây quế
+518 ; 桃 ; 木 ; 10 ; đào
+519 ; 梨 ; 木 ; 11 ; lê
+520 ; 棉 ; 木 ; 12 ; bông
+521 ; 植 ; 木 ; 12 ; trồng
+522 ; 楊 ; 木 ; 13 ; cây dương
+523 ; 業 ; 木 ; 13 ; nghiệp
+524 ; 極 ; 木 ; 13 ; cực
+525 ; 楚 ; 木 ; 13 ; nước Sở
+526 ; 榮 ; 木 ; 14 ; vinh hiển
+527 ; 榜 ; 木 ; 14 ; bảng
+528 ; 樂 ; 木 ; 15 ; vui
+529 ; 樹 ; 木 ; 16 ; cây
+530 ; 權 ; 木 ; 22 ; quyền lực
+531 ; 欠 ; 欠 ; 4 ; thiếu
+532 ; 次 ; 欠 ; 6 ; lần, thứ
+533 ; 欲 ; 欠 ; 11 ; muốn
+534 ; 歌 ; 欠 ; 14 ; bài hát
+535 ; 止 ; 止 ; 4 ; dừng
+536 ; 正 ; 止 ; 5 ; đúng
+537 ; 步 ; 止 ; 7 ; bước
+538 ; 歷 ; 止 ; 16 ; trải qua
+539 ; 死 ; 歹 ; 6 ; chết
+540 ; 歸 ; 止 ; 18 ; về
+541 ; 毛 ; 毛 ; 4 ; lông
+542 ; 民 ; 氏 ; 5 ; dân
+543 ; 氣 ; 气 ; 10 ; khí
+544 ; 水 ; 水 ; 4 ; nước
+545 ; 求 ; 水 ; 7 ; cầu xin
+546 ; 決 ; 水 ; 7 ; quyết
+547 ; 況 ; 水 ; 7 ; tình trạng
+548 ; 河 ; 水 ; 8 ; sông
+549 ; 流 ; 水 ; 10 ; chảy
+550 ; 浮 ; 水 ; 10 ; nổi
+551 ; 海 ; 水 ; 10 ; biển
+552 ; 清 ; 水 ; 11 ; trong sạch
+553 ; 深 ; 水 ; 11 ; sâu
+554 ; 淵 ; 水 ; 11 ; vực sâu
+555 ; 渡 ; 水 ; 12 ; qua
+556 ; 源 ; 水 ; 13 ; nguồn
+557 ; 溪 ; 水 ; 13 ; suối
+558 ; 漢 ; 水 ; 14 ; chữ Hán, nhà Hán
+559 ; 演 ; 水 ; 14 ; diễn
+560 ; 澄 ; 水 ; 15 ; trong veo
+561 ; 火 ; 火 ; 4 ; lửa
+562 ; 灼 ; 火 ; 7 ; rực sáng
+563 ; 炎 ; 火 ; 8 ; lửa bùng
+564 ; 炬 ; 火 ; 9 ; đuốc
+565 ; 烈 ; 火 ; 10 ; mãnh liệt
+566 ; 然 ; 火 ; 12 ; nhiên, như vậy
+567 ; 燈 ; 火 ; 16 ; đèn
+568 ; 燕 ; 火 ; 16 ; chim yến
+569 ; 父 ; 父 ; 4 ; cha
+570 ; 爺 ; 父 ; 13 ; ông
+571 ; 爻 ; 爻 ; 4 ; hào (Kinh Dịch)
+572 ; 王 ; 王 ; 4 ; vua
+573 ; 玉 ; 王 ; 5 ; ngọc
+574 ; 珍 ; 王 ; 9 ; quý
+575 ; 珠 ; 王 ; 10 ; ngọc trai
+576 ; 現 ; 王 ; 11 ; hiện
+577 ; 理 ; 王 ; 11 ; lý
+578 ; 琴 ; 王 ; 12 ; đàn cầm
+579 ; 瑞 ; 王 ; 13 ; cát tường
+580 ; 璧 ; 王 ; 18 ; ngọc bích
+581 ; 用 ; 用 ; 5 ; dùng
+582 ; 田 ; 田 ; 5 ; ruộng
+583 ; 男 ; 田 ; 7 ; nam
+584 ; 界 ; 田 ; 9 ; ranh giới
+585 ; 疏 ; 疋 ; 12 ; sơ hở
+586 ; 白 ; 白 ; 5 ; trắng
+587 ; 百 ; 白 ; 6 ; trăm
+588 ; 的 ; 白 ; 8 ; của (tiếng Hoa hiện đại)
+589 ; 皇 ; 白 ; 9 ; hoàng
+590 ; 石 ; 石 ; 5 ; đá
+591 ; 礎 ; 石 ; 18 ; nền móng
+592 ; 示 ; 示 ; 5 ; tế, thần
+593 ; 祈 ; 示 ; 9 ; cầu nguyện
+594 ; 祥 ; 示 ; 10 ; điềm lành
+595 ; 祿 ; 示 ; 12 ; bổng lộc
+596 ; 福 ; 示 ; 13 ; phúc
+597 ; 禮 ; 示 ; 17 ; lễ
+598 ; 禪 ; 示 ; 17 ; thiền
+599 ; 禍 ; 示 ; 13 ; họa
+600 ; 竹 ; 竹 ; 6 ; tre
+601 ; 笑 ; 竹 ; 10 ; cười
+602 ; 節 ; 竹 ; 13 ; tiết
+603 ; 簡 ; 竹 ; 18 ; đơn giản
+604 ; 米 ; 米 ; 6 ; gạo
+605 ; 精 ; 米 ; 14 ; tinh hoa
+606 ; 糧 ; 米 ; 18 ; lương thực
+607 ; 索 ; 糸 ; 10 ; tìm kiếm
+608 ; 純 ; 糸 ; 10 ; thuần
+609 ; 絕 ; 糸 ; 12 ; tuyệt
+610 ; 統 ; 糸 ; 12 ; thống
+611 ; 緣 ; 糸 ; 15 ; duyên
+612 ; 繁 ; 糸 ; 17 ; phồn thịnh
+613 ; 美 ; 羊 ; 9 ; đẹp
+614 ; 義 ; 羊 ; 13 ; nghĩa
+615 ; 羽 ; 羽 ; 6 ; lông vũ
+616 ; 翔 ; 羽 ; 12 ; bay
+617 ; 老 ; 老 ; 6 ; già
+618 ; 考 ; 老 ; 6 ; xét, thi
+619 ; 耳 ; 耳 ; 6 ; tai
+620 ; 聖 ; 耳 ; 13 ; thánh
+621 ; 聲 ; 耳 ; 17 ; tiếng, âm thanh
+622 ; 肉 ; 肉 ; 6 ; thịt
+623 ; 自 ; 自 ; 6 ; tự, mình
+624 ; 至 ; 至 ; 6 ; đến, đến tận
+625 ; 臣 ; 臣 ; 7 ; bề tôi
+626 ; 花 ; 艸 ; 7 ; hoa
+627 ; 若 ; 艸 ; 8 ; như nếu
+628 ; 英 ; 艸 ; 8 ; anh hùng, Anh
+629 ; 茶 ; 艸 ; 9 ; trà
+630 ; 草 ; 艸 ; 9 ; cỏ
+631 ; 華 ; 艸 ; 10 ; hoa lệ
+632 ; 萬 ; 艸 ; 12 ; vạn
+633 ; 蓮 ; 艸 ; 15 ; sen
+634 ; 蘭 ; 艸 ; 20 ; lan
+635 ; 虎 ; 虍 ; 8 ; hổ
+636 ; 號 ; 虍 ; 13 ; hiệu
+637 ; 見 ; 見 ; 7 ; thấy
+638 ; 觀 ; 見 ; 25 ; quan sát
+639 ; 言 ; 言 ; 7 ; lời
+640 ; 記 ; 言 ; 10 ; ghi nhớ
+641 ; 誠 ; 言 ; 14 ; thành thật
+642 ; 語 ; 言 ; 14 ; ngôn ngữ
+643 ; 讀 ; 言 ; 22 ; đọc
+644 ; 貝 ; 貝 ; 7 ; vỏ sò, tiền
+645 ; 財 ; 貝 ; 10 ; tài lộc
+646 ; 貴 ; 貝 ; 12 ; quý
+647 ; 贊 ; 貝 ; 19 ; tán thưởng
+648 ; 走 ; 走 ; 7 ; đi bộ
+649 ; 起 ; 走 ; 10 ; dậy, bắt đầu
+650 ; 超 ; 走 ; 12 ; vượt
+651 ; 越 ; 走 ; 12 ; vượt qua
+652 ; 足 ; 足 ; 7 ; chân
+653 ; 路 ; 足 ; 13 ; đường
+654 ; 身 ; 身 ; 7 ; thân
+655 ; 車 ; 車 ; 7 ; xe
+656 ; 軍 ; 車 ; 9 ; quân đội
+657 ; 輝 ; 車 ; 15 ; rực rỡ
+658 ; 辛 ; 辛 ; 7 ; cay, cực khổ
+659 ; 辰 ; 辰 ; 7 ; thìn (địa chi)
+660 ; 農 ; 辰 ; 13 ; nông nghiệp
+661 ; 返 ; 辵 ; 7 ; trở về
+662 ; 迎 ; 辵 ; 7 ; đón
+663 ; 近 ; 辵 ; 7 ; gần
+664 ; 進 ; 辵 ; 11 ; tiến
+665 ; 道 ; 辵 ; 12 ; đạo, đường
+666 ; 達 ; 辵 ; 12 ; thông đạt
+667 ; 遠 ; 辵 ; 13 ; xa
+668 ; 選 ; 辵 ; 15 ; chọn
+669 ; 遺 ; 辵 ; 15 ; để lại
+670 ; 還 ; 辵 ; 16 ; trở về
+671 ; 邊 ; 辵 ; 18 ; bên
+672 ; 邑 ; 邑 ; 7 ; ấp
+673 ; 那 ; 邑 ; 11 ; kia
+674 ; 邦 ; 邑 ; 7 ; nước
+675 ; 邪 ; 邑 ; 7 ; tà
+676 ; 邸 ; 邑 ; 8 ; dinh
+677 ; 郊 ; 邑 ; 9 ; ngoại ô
+678 ; 郎 ; 邑 ; 10 ; lang
+679 ; 郡 ; 邑 ; 10 ; quận
+680 ; 部 ; 邑 ; 11 ; bộ phận
+681 ; 都 ; 邑 ; 11 ; đô
+682 ; 鄉 ; 邑 ; 13 ; làng
+683 ; 鄙 ; 邑 ; 14 ; quê mùa
+684 ; 酉 ; 酉 ; 7 ; rượu (thiên can)
+685 ; 酒 ; 酉 ; 10 ; rượu
+686 ; 酌 ; 酉 ; 10 ; rót rượu
+687 ; 配 ; 酉 ; 10 ; phối
+688 ; 酷 ; 酉 ; 14 ; khắc nghiệt
+689 ; 酸 ; 酉 ; 14 ; chua
+690 ; 醉 ; 酉 ; 15 ; say
+691 ; 醜 ; 酉 ; 17 ; xấu
+692 ; 醫 ; 酉 ; 18 ; y, bác sĩ
+693 ; 釆 ; 釆 ; 7 ; phân biệt
+694 ; 采 ; 釆 ; 8 ; hái
+695 ; 釋 ; 釆 ; 20 ; giải thích
+696 ; 里 ; 里 ; 7 ; làng, dặm
+697 ; 重 ; 里 ; 9 ; nặng
+698 ; 野 ; 里 ; 11 ; đồng
+699 ; 量 ; 里 ; 12 ; lượng
+700 ; 金 ; 金 ; 8 ; vàng
+701 ; 針 ; 金 ; 10 ; kim
+702 ; 銀 ; 金 ; 14 ; bạc
+703 ; 鋪 ; 金 ; 15 ; cửa hàng
+704 ; 錯 ; 金 ; 16 ; sai
+705 ; 鍛 ; 金 ; 17 ; rèn
+706 ; 鎮 ; 金 ; 18 ; trấn
+707 ; 鏡 ; 金 ; 19 ; gương
+708 ; 鐘 ; 金 ; 20 ; chuông
+709 ; 鐵 ; 金 ; 21 ; sắt
+710 ; 長 ; 長 ; 8 ; dài
+711 ; 門 ; 門 ; 8 ; cửa
+712 ; 關 ; 門 ; 19 ; quan ải, liên quan
+713 ; 風 ; 風 ; 9 ; gió
+714 ; 飛 ; 飛 ; 9 ; bay
+715 ; 食 ; 食 ; 9 ; ăn
+716 ; 飯 ; 食 ; 12 ; cơm
+717 ; 飲 ; 食 ; 12 ; uống
+718 ; 養 ; 食 ; 15 ; nuôi
+719 ; 館 ; 食 ; 17 ; quán
+720 ; 首 ; 首 ; 9 ; đầu
+721 ; 香 ; 香 ; 9 ; thơm
+722 ; 馬 ; 馬 ; 10 ; ngựa
+723 ; 馴 ; 馬 ; 13 ; thuần
+724 ; 駕 ; 馬 ; 15 ; lái xe
+725 ; 駿 ; 馬 ; 17 ; ngựa tốt
+726 ; 騎 ; 馬 ; 18 ; cưỡi
+727 ; 驅 ; 馬 ; 21 ; xua
+728 ; 魚 ; 魚 ; 11 ; cá
+729 ; 鮮 ; 魚 ; 17 ; tươi
+730 ; 鯉 ; 魚 ; 18 ; cá chép
+731 ; 鯨 ; 魚 ; 19 ; cá voi
+732 ; 鳥 ; 鳥 ; 11 ; chim
+733 ; 鳳 ; 鳥 ; 14 ; phượng
+734 ; 鴉 ; 鳥 ; 15 ; quạ
+735 ; 鴻 ; 鳥 ; 17 ; chim lớn
+736 ; 鵬 ; 鳥 ; 19 ; chim bằng
+737 ; 鹿 ; 鹿 ; 11 ; hươu
+738 ; 麗 ; 鹿 ; 19 ; đẹp
+739 ; 麥 ; 麥 ; 11 ; lúa mì
+740 ; 麻 ; 麻 ; 11 ; gai
+741 ; 黃 ; 黃 ; 12 ; vàng
+742 ; 黑 ; 黑 ; 12 ; đen
+743 ; 黛 ; 黑 ; 17 ; màu lam đen
+744 ; 鼎 ; 鼎 ; 13 ; đỉnh
+745 ; 鼓 ; 鼓 ; 13 ; trống
+746 ; 鼠 ; 鼠 ; 13 ; chuột
+747 ; 齊 ; 齊 ; 14 ; đều
+748 ; 齋 ; 齊 ; 17 ; trai giới
+749 ; 齒 ; 齒 ; 15 ; răng
+750 ; 龍 ; 龍 ; 16 ; rồng
+751 ; 龜 ; 龜 ; 16 ; rùa
+752 ; 龠 ; 龠 ; 17 ; sáo cổ`;
+
+/* ─── PARSE & DEDUP ─────────────────────────── */
+const seenChars = new Set();
+const hanData = RAW.trim().split('\n').reduce((acc, line) => {
+  const p = line.split(';').map(s => s.trim());
+  if (p.length < 5) return acc;
+  const char = p[1];
+  if (seenChars.has(char)) return acc;
+  seenChars.add(char);
+  acc.push({ id: p[0], char, radical: p[2], strokes: parseInt(p[3]) || 0, meaning: p[4] });
+  return acc;
+}, []);
+
+/* ─── FILTER ────────────────────────────────── */
+const radicals = [...new Set(hanData.map(d => d.radical))].sort();
+const strokeCounts = [...new Set(hanData.map(d => d.strokes))].sort((a,b) => a-b);
+
+const radSel = document.getElementById('filterRadical');
+radicals.forEach(r => {
+  const o = document.createElement('option');
+  o.value = r; o.textContent = `Bộ: ${r}`;
+  radSel.appendChild(o);
+});
+const strokeSel = document.getElementById('filterStrokes');
+strokeCounts.forEach(n => {
+  const o = document.createElement('option');
+  o.value = n; o.textContent = `${n} nét`;
+  strokeSel.appendChild(o);
+});
+
+function getPool() {
+  const rad = radSel.value;
+  const strokes = strokeSel.value ? parseInt(strokeSel.value) : 0;
+  let pool = hanData;
+  if (rad)     pool = pool.filter(d => d.radical === rad);
+  if (strokes) pool = pool.filter(d => d.strokes === strokes);
+  return pool.length >= 2 ? pool : hanData; // fallback to all if too few
+}
+
+/* ─── REEL ENGINE ───────────────────────────── */
+const ITEM_H = 140; // px, matches CSS .reel-item height
+
+class Reel {
+  constructor(side) {
+    this.side = side;
+    this.el   = document.getElementById('reel' + side);
+    this.card = document.getElementById('card'  + side);
+    this.info = document.getElementById('info'  + side);
+    this.btn  = document.getElementById('stop'  + side);
+    this.items = [];
+    this.pos  = 0;        // current translateY
+    this.vel  = 0;        // px/frame
+    this.raf  = null;
+    this.spinning = false;
+    this.result   = null;
+    this._targetIndex = 0;
+  }
+
+  _buildStrip(pool) {
+    // Fill reel with shuffled chars (40 items for smooth loop feel)
+    this.el.innerHTML = '';
+    this.items = [];
+    const len = 40;
+    for (let i = 0; i < len; i++) {
+      const obj = pool[Math.floor(Math.random() * pool.length)];
+      const div = document.createElement('div');
+      div.className = 'reel-item';
+      div.textContent = obj.char;
+      this.el.appendChild(div);
+      this.items.push(obj);
+    }
+    // Pick target = 2nd-to-last item so reel lands cleanly
+    this._targetIndex = len - 2;
+    // Start position: show middle of strip (so there's room to scroll down)
+    this.pos = -ITEM_H * 10;
+    this._applyPos();
+  }
+
+  _applyPos() {
+    this.el.style.transform = `translateY(${this.pos}px)`;
+  }
+
+  spin(pool) {
+    this.result = null;
+    this.spinning = true;
+    this.card.classList.add('spinning');
+    this.card.classList.remove('settled');
+    this._buildStrip(pool);
+    this.vel = -(18 + Math.random() * 6); // px/frame downward
+    if (this.raf) cancelAnimationFrame(this.raf);
+    this._loop();
+  }
+
+  _loop() {
+    if (!this.spinning) return;
+    this.pos += this.vel;
+    // Loop when reel goes too far
+    const maxScroll = -ITEM_H * (this.items.length - 1);
+    if (this.pos < maxScroll + ITEM_H * 2) {
+      this.pos += ITEM_H * Math.floor(this.items.length / 2);
+    }
+    this._applyPos();
+    this.raf = requestAnimationFrame(() => this._loop());
+  }
+
+  stop() {
+    if (!this.spinning) return;
+    this.spinning = false;
+    if (this.raf) { cancelAnimationFrame(this.raf); this.raf = null; }
+
+    // Decelerate smoothly to nearest item
+    const DECEL_FRAMES = 22;
+    const initialVel = this.vel;
+    let frame = 0;
+
+    const decel = () => {
+      frame++;
+      const t = frame / DECEL_FRAMES;
+      const ease = 1 - Math.pow(1 - t, 3); // easeOutCubic
+      this.vel = initialVel * (1 - ease);
+      this.pos += this.vel;
+      this._applyPos();
+      if (frame < DECEL_FRAMES) {
+        requestAnimationFrame(decel);
+      } else {
+        // Snap to nearest item
+        const idx = Math.round(-this.pos / ITEM_H);
+        const clamped = Math.max(0, Math.min(this.items.length - 1, idx));
+        this.pos = -clamped * ITEM_H;
+        this._applyPos();
+        this.result = this.items[clamped];
+        this.card.classList.remove('spinning');
+        this.card.classList.add('settled');
+        this._showInfo();
+        onReelStopped();
+      }
+    };
+    requestAnimationFrame(decel);
+  }
+
+  _showInfo() {
+    const d = this.result;
+    const pips = Array.from({length: Math.min(d.strokes, 30)}, (_,i) =>
+      `<div class="pip" style="animation-delay:${i*0.02}s"></div>`).join('');
+    this.info.innerHTML = `
+      <div class="info-row"><span class="info-key">Bộ thủ</span><span class="info-val">${d.radical}</span></div>
+      <div class="info-row"><span class="info-key">Số nét</span><span class="info-val">${d.strokes}</span></div>
+      <div class="stroke-pips">${pips}</div>
+      <div class="info-meaning">${d.meaning}</div>`;
+  }
+
+  reset() {
+    this.result = null;
+    this.spinning = false;
+    if (this.raf) { cancelAnimationFrame(this.raf); this.raf = null; }
+    this.el.innerHTML = '';
+    this.card.classList.remove('spinning', 'settled');
+    this.info.innerHTML = '<div class="info-placeholder">Chưa nhận chữ</div>';
+    this.btn.disabled = true;
+    this.btn.classList.remove('active');
+  }
+}
+
+/* ─── GLOBAL STATE ───────────────────────────── */
+const reelL = new Reel('L');
+const reelR = new Reel('R');
+
+function onReelStopped() {
+  if (reelL.result && reelR.result) {
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('copyBtn').style.display = 'block';
+    document.getElementById('status').textContent = '✦ Khai ngộ hoàn thành ✦';
+    document.getElementById('status').classList.remove('status-pulse');
+    showResultBanner();
+  }
+}
+
+function startRolling() {
+  const pool = getPool();
+  reelL.reset(); reelR.reset();
+  document.getElementById('resultBanner').style.display = 'none';
+  document.getElementById('copyBtn').style.display = 'none';
+  document.getElementById('startBtn').disabled = true;
+
+  const sl = document.getElementById('stopL');
+  const sr = document.getElementById('stopR');
+  sl.disabled = false; sl.classList.add('active');
+  sr.disabled = false; sr.classList.add('active');
+
+  const st = document.getElementById('status');
+  st.textContent = 'Đang xoay... Bấm Dừng khi tâm định';
+  st.classList.add('status-pulse');
+
+  reelL.spin(pool);
+  // Slight stagger for R
+  setTimeout(() => reelR.spin(pool), 120);
+}
+
+function stopSlot(side) {
+  const btn = document.getElementById('stop' + side);
+  btn.disabled = true;
+  btn.classList.remove('active');
+  if (side === 'L') reelL.stop();
+  else              reelR.stop();
+}
+
+/* ─── RESULT BANNER ──────────────────────────── */
+function showResultBanner() {
+  const dL = reelL.result, dR = reelR.result;
+  const banner = document.getElementById('resultBanner');
+  const pair = document.getElementById('resultPair');
+  const now = new Date();
+  const ts = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')} · ${now.toLocaleDateString('vi-VN')}`;
+
+  pair.innerHTML = `
+    <div class="result-char-block">
+      <span class="result-big-char">${dL.char}</span>
+      <div class="result-char-info">Bộ: ${dL.radical} · ${dL.strokes} nét</div>
+      <div class="result-char-meaning">${dL.meaning}</div>
+    </div>
+    <div class="result-divider">⊕</div>
+    <div class="result-char-block">
+      <span class="result-big-char">${dR.char}</span>
+      <div class="result-char-info">Bộ: ${dR.radical} · ${dR.strokes} nét</div>
+      <div class="result-char-meaning">${dR.meaning}</div>
+    </div>`;
+
+  document.getElementById('resultText').textContent =
+`✦ KẾT QUẢ NHẬN CHỮ HÁN ✦
+Thời gian: ${ts}
+
+CHỮ THỨ NHẤT:
+  Chữ    : ${dL.char}
+  Bộ thủ : ${dL.radical}
+  Số nét : ${dL.strokes}
+  Ý nghĩa: ${dL.meaning}
+
+CHỮ THỨ HAI:
+  Chữ    : ${dR.char}
+  Bộ thủ : ${dR.radical}
+  Số nét : ${dR.strokes}
+  Ý nghĩa: ${dR.meaning}`;
+
+  banner.style.display = 'block';
+  banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyResult() {
+  const text = document.getElementById('resultText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    const orig = btn.textContent;
+    btn.textContent = '✓ Đã sao chép!';
+    setTimeout(() => btn.textContent = orig, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+  });
+}
+</script>
+</body>
+</html>
