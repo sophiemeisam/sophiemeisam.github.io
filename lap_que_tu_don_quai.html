@@ -96,7 +96,7 @@
     color: var(--sub-accent);
     margin-bottom: 6px;
   }
-  select {
+  select, input[type="number"] {
     width: 100%;
     padding: 10px 8px;
     font-family: 'Noto Serif', serif;
@@ -106,6 +106,8 @@
     background: white;
     color: var(--ink);
     outline: none;
+  }
+  select {
     cursor: pointer;
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b8860b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
@@ -113,7 +115,39 @@
     background-position: right 10px center;
     padding-right: 28px;
   }
-  select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(184,134,11,0.15); }
+  select:focus, input[type="number"]:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(184,134,11,0.15); }
+
+  /* ── 3 Forms Mới ── */
+  .extra-forms {
+    margin-top: 20px;
+    border-top: 1px dashed var(--border);
+    padding-top: 15px;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .res-box {
+    margin-top: 5px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--red);
+    min-height: 1.2em;
+  }
+  .calc-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--sub-accent);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-family: 'Cinzel', serif;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .calc-btn:hover { background: #3d2800; }
 
   /* ── Hào động checkboxes ── */
   .hao-section { margin-top: 12px; }
@@ -221,23 +255,16 @@
     justify-content: center;
     gap: 4px;
   }
-  /* Segment containers — fixed total width */
   .seg-wrap {
     display: flex;
     align-items: center;
-    width: 100px; /* fixed width for both yin and yang */
+    width: 100px;
     height: 10px;
   }
-  /* Yang (solid) */
   .seg-wrap.yang .seg { width: 100%; height: 100%; border-radius: 3px; background: var(--main-accent); }
-  /* Yin (broken) */
   .seg-wrap.yin { justify-content: space-between; }
   .seg-wrap.yin .seg { width: 46%; height: 100%; border-radius: 3px; background: var(--main-accent); }
-
-  /* Moving line → red */
   .hao-row.moving .seg { background: var(--red) !important; }
-
-  /* Bien card uses sub color */
   .que-card.bien .seg-wrap.yang .seg,
   .que-card.bien .seg-wrap.yin .seg { background: var(--sub-accent); }
   .que-card.bien .hao-row.moving .seg { background: var(--red) !important; }
@@ -253,7 +280,6 @@
     letter-spacing: 0.12em;
   }
 
-  /* ── Question box ── */
   .q-section { width: 100%; max-width: 480px; margin: 0 auto 20px; }
   .q-section label {
     display: block;
@@ -280,7 +306,6 @@
   }
   textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(184,134,11,0.15); }
 
-  /* ── Copy button ── */
   .copy-btn {
     display: block;
     width: 100%;
@@ -302,7 +327,6 @@
   .copy-btn:active { opacity: 0.85; transform: scale(0.98); }
   .copy-btn.ok { background: linear-gradient(135deg, #27ae60, #1e8449); }
 
-  /* ── Divider ornament ── */
   .ornament {
     text-align: center;
     color: var(--gold);
@@ -310,6 +334,11 @@
     letter-spacing: 0.3em;
     margin: 4px 0 16px;
     opacity: 0.55;
+  }
+  
+  /* Zoom fix for mobile input */
+  @media screen and (max-width: 480px) {
+    input[type="number"], select, textarea { font-size: 16px !important; }
   }
 </style>
 </head>
@@ -320,7 +349,6 @@
   <p>Quẻ Chủ • Hào Động • Quẻ Biến</p>
 </header>
 
-<!-- Input card -->
 <div class="card">
   <div class="row">
     <div class="field">
@@ -337,11 +365,31 @@
     <label class="title">Hào Động (chọn 1 hoặc nhiều)</label>
     <div class="hao-grid" id="haoCBs"></div>
   </div>
+
+  <div class="extra-forms">
+    <div class="form-grid">
+      <div class="field">
+        <label>Form 1 (/8)</label>
+        <input type="number" id="f1" placeholder="Số...">
+        <div class="res-box" id="r1"></div>
+      </div>
+      <div class="field">
+        <label>Form 2 (/8)</label>
+        <input type="number" id="f2" placeholder="Số...">
+        <div class="res-box" id="r2"></div>
+      </div>
+      <div class="field">
+        <label>Form 3 (/6)</label>
+        <input type="number" id="f3" placeholder="Số...">
+        <div class="res-box" id="r3"></div>
+      </div>
+    </div>
+    <button class="calc-btn" onclick="tinhSoDu()">⚡ TÍNH SỐ DƯ</button>
+  </div>
 </div>
 
 <div class="ornament">✦ ✦ ✦</div>
 
-<!-- Result pair -->
 <div class="result-pair">
   <div class="que-card main">
     <div class="que-label">Quẻ Chủ</div>
@@ -357,18 +405,40 @@
   </div>
 </div>
 
-<!-- Question textarea -->
 <div class="q-section">
   <label>Câu Hỏi / Ghi Chú</label>
   <textarea id="question" placeholder="Nhập câu hỏi hoặc ghi chú tại đây…"></textarea>
 </div>
 
-<!-- Download button -->
 <button class="copy-btn" id="copyBtn" onclick="downloadImg()">📥 Tải Ảnh Kết Quả</button>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
-// ── Data ──────────────────────────────────────────────
+// ── Logic tính số dư mới ──
+function tinhSoDu() {
+  const v1 = document.getElementById('f1').value;
+  const v2 = document.getElementById('f2').value;
+  const v3 = document.getElementById('f3').value;
+
+  if(v1 !== "") {
+    let du1 = parseInt(v1) % 8;
+    if(du1 === 0) du1 = 8; // Quy tắc dịch học: dư 0 coi là 8
+    document.getElementById('r1').innerText = "Dư: " + du1;
+  }
+  if(v2 !== "") {
+    let du2 = parseInt(v2) % 8;
+    if(du2 === 0) du2 = 8;
+    document.getElementById('r2').innerText = "Dư: " + du2;
+  }
+  if(v3 !== "") {
+    let du3 = parseInt(v3) % 6;
+    if(du3 === 0) du3 = 6; // Dư 0 của hào coi là 6
+    document.getElementById('r3').innerText = "Dư: " + du3;
+  }
+}
+
+// ── Data (GIỮ NGUYÊN 100%) ──────────────────────────────
 const BAT_QUAI = [
   { name:"Kiền",  code:"111", symbol:"Thiên (☰)" },
   { name:"Đoài",  code:"011", symbol:"Trạch (☱)" },
@@ -415,7 +485,6 @@ const QUE64 = {
   "010101":"Thủy Hỏa Ký Tế",  "101010":"Hỏa Thủy Vị Tế"
 };
 
-// ── Init selects ─────────────────────────────────────
 function init() {
   const up = document.getElementById('upper');
   const lo = document.getElementById('lower');
@@ -425,7 +494,6 @@ function init() {
     lo.innerHTML += o;
   });
 
-  // Hào checkboxes: hào 1 (dưới) → hào 6 (trên)
   const grid = document.getElementById('haoCBs');
   for (let i = 1; i <= 6; i++) {
     const lbl = document.createElement('label');
@@ -442,29 +510,22 @@ function init() {
   render();
 }
 
-// ── Flip one bit ─────────────────────────────────────
 function flipBit(c) { return c === '1' ? '0' : '1'; }
 
-// ── Render ───────────────────────────────────────────
 function render() {
   const upCode = document.getElementById('upper').value;
   const loCode = document.getElementById('lower').value;
-  // code6: positions 0-2 = upper (hào 6,5,4), positions 3-5 = lower (hào 3,2,1)
   const code6 = upCode + loCode;
 
-  // Which hào are moving? (1-indexed from bottom)
   const moving = [];
   for (let i = 1; i <= 6; i++) {
     if (document.getElementById('hao' + i).checked) moving.push(i);
   }
 
-  // Build biến code: flip moving lines
-  // hào i (1=bottom) maps to index (6-i) in code6
   const biArr = code6.split('');
   moving.forEach(i => { biArr[6 - i] = flipBit(biArr[6 - i]); });
   const bien6 = biArr.join('');
 
-  // Names
   const nameMain = QUE64[code6] || '(Chưa tra được)';
   const nameBien = QUE64[bien6] || '(Chưa tra được)';
 
@@ -477,88 +538,60 @@ function render() {
   drawHex('hexBien', bien6, moving, true);
 }
 
-// ── Draw hexagram ─────────────────────────────────────
-// lines drawn bottom to top (hào 1 first in DOM due to flex-direction:column-reverse)
 function drawHex(id, code6, moving, isBien) {
   const container = document.getElementById(id);
   container.innerHTML = '';
-
   for (let hao = 1; hao <= 6; hao++) {
-    // hào i from bottom → index 6-i in code6
     const bit = code6[6 - hao];
     const isMoving = moving.includes(hao);
-
     const row = document.createElement('div');
     row.className = 'hao-row' + (isMoving ? ' moving' : '');
-
     const wrap = document.createElement('div');
     wrap.className = 'seg-wrap ' + (bit === '1' ? 'yang' : 'yin');
-
     if (bit === '1') {
-      // Solid line
       const seg = document.createElement('div');
       seg.className = 'seg';
       wrap.appendChild(seg);
     } else {
-      // Broken line: two segments
       const s1 = document.createElement('div'); s1.className = 'seg';
       const s2 = document.createElement('div'); s2.className = 'seg';
       wrap.appendChild(s1);
       wrap.appendChild(s2);
     }
-
     row.appendChild(wrap);
     container.appendChild(row);
   }
 }
 
-// ── Download as image ────────────────────────────────
 async function downloadImg() {
   const btn = document.getElementById('copyBtn');
   btn.textContent = '⏳ Đang tạo ảnh…';
   btn.disabled = true;
 
-  // Build a snapshot div with all the info
-  const nameMain = document.getElementById('nameMain').textContent;
-  const nameBien = document.getElementById('nameBien').textContent;
-  const binMain  = document.getElementById('binMain').textContent;
-  const binBien  = document.getElementById('binBien').textContent;
   const question = document.getElementById('question').value.trim();
-
   const moving = [];
   for (let i = 1; i <= 6; i++) {
     if (document.getElementById('hao' + i).checked) moving.push('Hào ' + i);
   }
   const movingStr = moving.length ? moving.join(', ') : 'Không có hào động';
 
-  // Clone result + question area into a temp container for capture
   const snap = document.createElement('div');
-  snap.style.cssText = `
-    position:fixed; left:-9999px; top:0;
-    width:500px; background:#faf6ed;
-    padding:24px 20px 28px; font-family:'Noto Serif',serif;
-    color:#1a1209; box-sizing:border-box;
-  `;
-
-  // Title
+  snap.style.cssText = `position:fixed; left:-9999px; top:0; width:500px; background:#faf6ed; padding:24px 20px 28px; font-family:'Noto Serif',serif; color:#1a1209; box-sizing:border-box;`;
   snap.innerHTML = `
     <div style="text-align:center;margin-bottom:18px;">
       <div style="font-family:'Cinzel',serif;font-size:1.5rem;font-weight:800;color:#b8860b;letter-spacing:0.04em;">易 Dịch Học</div>
       <div style="height:2px;background:linear-gradient(90deg,transparent,#b8860b,transparent);margin:6px auto;width:80%;"></div>
     </div>`;
 
-  // Clone hexagrams side by side
   const pairClone = document.querySelector('.result-pair').cloneNode(true);
   pairClone.style.margin = '0 0 18px';
   snap.appendChild(pairClone);
 
-  // Moving lines info
   const movDiv = document.createElement('div');
   movDiv.style.cssText = 'background:#fff3cd;border:1px solid #c9b07a;border-radius:4px;padding:10px 14px;margin-bottom:14px;font-size:0.9rem;';
   movDiv.innerHTML = `<strong style="color:#5a3a00;">Hào Động:</strong> <span style="color:#c0392b;">${movingStr}</span>`;
   snap.appendChild(movDiv);
 
-  // Question if any
   if (question) {
     const qDiv = document.createElement('div');
     qDiv.style.cssText = 'background:white;border:1px solid #c9b07a;border-radius:4px;padding:10px 14px;font-size:0.9rem;';
@@ -567,32 +600,19 @@ async function downloadImg() {
   }
 
   document.body.appendChild(snap);
-
   try {
-    const canvas = await html2canvas(snap, {
-      backgroundColor: '#faf6ed',
-      scale: 2,
-      useCORS: true,
-      logging: false
-    });
+    const canvas = await html2canvas(snap, { backgroundColor: '#faf6ed', scale: 2, useCORS: true, logging: false });
     document.body.removeChild(snap);
-
     const link = document.createElement('a');
     link.download = 'dich-hoc-que.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
-
     btn.textContent = '✅ Đã Tải Ảnh!';
     btn.classList.add('ok');
-    setTimeout(() => {
-      btn.textContent = '📥 Tải Ảnh Kết Quả';
-      btn.classList.remove('ok');
-      btn.disabled = false;
-    }, 2500);
+    setTimeout(() => { btn.textContent = '📥 Tải Ảnh Kết Quả'; btn.classList.remove('ok'); btn.disabled = false; }, 2500);
   } catch(e) {
     document.body.removeChild(snap);
-    btn.textContent = '📥 Tải Ảnh Kết Quả';
-    btn.disabled = false;
+    btn.textContent = '📥 Tải Ảnh Kết Quả'; btn.disabled = false;
     alert('Lỗi khi tạo ảnh: ' + e.message);
   }
 }
