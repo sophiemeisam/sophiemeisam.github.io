@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Dịch Học – Quẻ Chủ & Quẻ Biến</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@600;800&display=swap');
+
+  :root {
+    --ink:     #1a1209;
+    --gold:    #b8860b;
+    --gold-lt: #e8c84a;
+    --red:     #c0392b;
+    --paper:   #f5efe0;
+    --cream:   #faf6ed;
+    --border:  #c9b07a;
+    --shadow:  rgba(90,60,10,0.18);
+    --main-accent: #2c4a7c;
+    --sub-accent:  #5a3a00;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Serif', serif;
+    background: var(--cream);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(180,150,80,0.07) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(180,150,80,0.07) 40px);
+    min-height: 100vh;
+    color: var(--ink);
+    padding: 24px 12px 60px;
+  }
+
+  /* ── Header ── */
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+    position: relative;
+  }
+  header::before, header::after {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 6px auto;
+    width: 80%;
+    max-width: 400px;
+  }
+  header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.3rem, 5vw, 1.9rem);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: var(--gold);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+  }
+  header p {
+    font-size: 0.82rem;
+    color: #7a6030;
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* ── Card shell ── */
+  .card {
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 16px 16px;
+    box-shadow: 0 3px 14px var(--shadow);
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 20px;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(184,134,11,0.2);
+    border-radius: 3px;
+    pointer-events: none;
+  }
+
+  /* ── Input section ── */
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px; align-items: start; }
+  .field { display: flex; flex-direction: column; }
+  .field label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sub-accent);
+    margin-bottom: 6px;
+  }
+  select {
+    width: 100%;
+    padding: 10px 8px;
+    font-family: 'Noto Serif', serif;
+    font-size: 0.95rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: white;
+    color: var(--ink);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b8860b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+  select:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(184,134,11,0.15); }
+
+  /* ── Hào động checkboxes ── */
+  .hao-section { margin-top: 12px; }
+  .hao-section label.title {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sub-accent);
+    margin-bottom: 8px;
+  }
+  .hao-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+  }
+  .hao-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .hao-btn span.num {
+    font-size: 0.72rem;
+    color: #7a6030;
+    margin-bottom: 3px;
+  }
+  .hao-btn input[type=checkbox] { display: none; }
+  .hao-box {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .hao-btn input:checked ~ .hao-box {
+    background: var(--red);
+    border-color: var(--red);
+    color: white;
+  }
+  .hao-btn .hao-box::after { content: '◉'; color: #ccc; font-size: 0.7rem; }
+  .hao-btn input:checked ~ .hao-box::after { content: '●'; color: white; }
+
+  /* ── Result section ── */
+  .result-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 20px;
+  }
+  .que-card {
+    background: var(--paper);
+    border: 1.5px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 10px 12px;
+    box-shadow: 0 3px 10px var(--shadow);
+    text-align: center;
+    position: relative;
+  }
+  .que-card.main { border-top: 4px solid var(--main-accent); }
+  .que-card.bien { border-top: 4px solid var(--sub-accent); }
+
+  .que-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .que-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(0.78rem, 3.5vw, 1rem);
+    font-weight: 600;
+    color: var(--main-accent);
+    line-height: 1.3;
+    min-height: 2.6em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px;
+  }
+  .que-card.bien .que-name { color: var(--sub-accent); }
+
+  /* ── Hexagram lines ── */
+  .hexagram {
+    display: flex;
+    flex-direction: column-reverse; /* hào 1 ở dưới */
+    gap: 7px;
+    align-items: center;
+    margin: 12px 0 8px;
+  }
+  .hao-row {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    gap: 4px;
+  }
+  /* Segment containers — fixed total width */
+  .seg-wrap {
+    display: flex;
+    align-items: center;
+    width: 100px; /* fixed width for both yin and yang */
+    height: 10px;
+  }
+  /* Yang (solid) */
+  .seg-wrap.yang .seg { width: 100%; height: 100%; border-radius: 3px; background: var(--main-accent); }
+  /* Yin (broken) */
+  .seg-wrap.yin { justify-content: space-between; }
+  .seg-wrap.yin .seg { width: 46%; height: 100%; border-radius: 3px; background: var(--main-accent); }
+
+  /* Moving line → red */
+  .hao-row.moving .seg { background: var(--red) !important; }
+
+  /* Bien card uses sub color */
+  .que-card.bien .seg-wrap.yang .seg,
+  .que-card.bien .seg-wrap.yin .seg { background: var(--sub-accent); }
+  .que-card.bien .hao-row.moving .seg { background: var(--red) !important; }
+
+  .binary-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-family: monospace;
+    background: rgba(0,0,0,0.06);
+    border-radius: 20px;
+    padding: 2px 10px;
+    color: #666;
+    letter-spacing: 0.12em;
+  }
+
+  /* ── Question box ── */
+  .q-section { width: 100%; max-width: 480px; margin: 0 auto 20px; }
+  .q-section label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--sub-accent);
+    margin-bottom: 6px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 10px 12px;
+    font-family: 'Noto Serif', serif;
+    font-size: 0.92rem;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: white;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    line-height: 1.5;
+  }
+  textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 2px rgba(184,134,11,0.15); }
+
+  /* ── Copy button ── */
+  .copy-btn {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto 12px;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, var(--gold), #8b6914);
+    color: white;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(90,60,0,0.25);
+    transition: opacity 0.15s, transform 0.12s;
+  }
+  .copy-btn:active { opacity: 0.85; transform: scale(0.98); }
+  .copy-btn.ok { background: linear-gradient(135deg, #27ae60, #1e8449); }
+
+  /* ── Divider ornament ── */
+  .ornament {
+    text-align: center;
+    color: var(--gold);
+    font-size: 1.1rem;
+    letter-spacing: 0.3em;
+    margin: 4px 0 16px;
+    opacity: 0.55;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>易 Dịch Học</h1>
+  <p>Quẻ Chủ • Hào Động • Quẻ Biến</p>
+</header>
+
+<!-- Input card -->
+<div class="card">
+  <div class="row">
+    <div class="field">
+      <label>Thượng Quái (Trên)</label>
+      <select id="upper"></select>
+    </div>
+    <div class="field">
+      <label>Hạ Quái (Dưới)</label>
+      <select id="lower"></select>
+    </div>
+  </div>
+
+  <div class="hao-section">
+    <label class="title">Hào Động (chọn 1 hoặc nhiều)</label>
+    <div class="hao-grid" id="haoCBs"></div>
+  </div>
+</div>
+
+<div class="ornament">✦ ✦ ✦</div>
+
+<!-- Result pair -->
+<div class="result-pair">
+  <div class="que-card main">
+    <div class="que-label">Quẻ Chủ</div>
+    <div class="que-name" id="nameMain">—</div>
+    <div class="hexagram" id="hexMain"></div>
+    <div class="binary-badge" id="binMain">—</div>
+  </div>
+  <div class="que-card bien">
+    <div class="que-label">Quẻ Biến</div>
+    <div class="que-name" id="nameBien">—</div>
+    <div class="hexagram" id="hexBien"></div>
+    <div class="binary-badge" id="binBien">—</div>
+  </div>
+</div>
+
+<!-- Question textarea -->
+<div class="q-section">
+  <label>Câu Hỏi / Ghi Chú</label>
+  <textarea id="question" placeholder="Nhập câu hỏi hoặc ghi chú tại đây…"></textarea>
+</div>
+
+<!-- Download button -->
+<button class="copy-btn" id="copyBtn" onclick="downloadImg()">📥 Tải Ảnh Kết Quả</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+// ── Data ──────────────────────────────────────────────
+const BAT_QUAI = [
+  { name:"Kiền",  code:"111", symbol:"Thiên (☰)" },
+  { name:"Đoài",  code:"011", symbol:"Trạch (☱)" },
+  { name:"Ly",    code:"101", symbol:"Hỏa (☲)"  },
+  { name:"Chấn",  code:"001", symbol:"Lôi (☳)"  },
+  { name:"Tốn",   code:"110", symbol:"Phong (☴)" },
+  { name:"Khảm",  code:"010", symbol:"Thủy (☵)" },
+  { name:"Cấn",   code:"100", symbol:"Sơn (☶)"  },
+  { name:"Khôn",  code:"000", symbol:"Địa (☷)"  }
+];
+
+const QUE64 = {
+  "111111":"Thuần Càn",       "000000":"Thuần Khôn",
+  "010001":"Thủy Lôi Truân",  "100010":"Sơn Thủy Mông",
+  "010111":"Thủy Thiên Nhu",  "111010":"Thiên Thủy Tụng",
+  "000010":"Địa Thủy Sư",     "010000":"Thủy Địa Tỷ",
+  "110111":"Phong Thiên Tiểu Súc","111011":"Thiên Trạch Lý",
+  "000111":"Địa Thiên Thái",  "111000":"Thiên Địa Bĩ",
+  "111101":"Thiên Hỏa Đồng Nhân","101111":"Hỏa Thiên Đại Hữu",
+  "000100":"Địa Sơn Khiêm",   "001000":"Lôi Địa Dự",
+  "011001":"Trạch Lôi Tùy",   "100110":"Sơn Phong Cổ",
+  "000011":"Địa Trạch Lâm",   "110000":"Phong Địa Quán",
+  "101001":"Hỏa Lôi Phệ Hạp", "100101":"Sơn Hỏa Bí",
+  "100000":"Sơn Địa Bác",     "000001":"Địa Lôi Phục",
+  "111001":"Thiên Lôi Vô Vọng","100111":"Sơn Thiên Đại Súc",
+  "100001":"Sơn Lôi Di",      "011110":"Trạch Phong Đại Quá",
+  "010010":"Thuần Khảm",      "101101":"Thuần Ly",
+  "011100":"Trạch Sơn Hàm",   "001110":"Lôi Phong Hằng",
+  "111100":"Thiên Sơn Độn",   "001111":"Lôi Thiên Đại Tráng",
+  "101000":"Hỏa Địa Tấn",     "000101":"Địa Hỏa Minh Di",
+  "110101":"Phong Hỏa Gia Nhân","101011":"Hỏa Trạch Khuê",
+  "010100":"Thủy Sơn Kiển",   "001010":"Lôi Thủy Giải",
+  "100011":"Sơn Trạch Tổn",   "110001":"Phong Lôi Ích",
+  "011111":"Trạch Thiên Quải","111110":"Thiên Phong Cấu",
+  "011000":"Trạch Địa Tụy",   "000110":"Địa Phong Thăng",
+  "011010":"Trạch Thủy Khốn", "010110":"Thủy Phong Tỉnh",
+  "011101":"Trạch Hỏa Cách",  "101110":"Hỏa Phong Đỉnh",
+  "001001":"Thuần Chấn",      "100100":"Thuần Cấn",
+  "110100":"Phong Sơn Tiệm",  "001011":"Lôi Trạch Quy Muội",
+  "001101":"Lôi Hỏa Phong",   "101100":"Hỏa Sơn Lữ",
+  "110110":"Thuần Tốn",       "011011":"Thuần Đoài",
+  "110010":"Phong Thủy Hoán", "010011":"Thủy Trạch Tiết",
+  "110011":"Phong Trạch Trung Phu","001100":"Lôi Sơn Tiểu Quá",
+  "010101":"Thủy Hỏa Ký Tế",  "101010":"Hỏa Thủy Vị Tế"
+};
+
+// ── Init selects ─────────────────────────────────────
+function init() {
+  const up = document.getElementById('upper');
+  const lo = document.getElementById('lower');
+  BAT_QUAI.forEach(q => {
+    const o = `<option value="${q.code}">${q.name} – ${q.symbol}</option>`;
+    up.innerHTML += o;
+    lo.innerHTML += o;
+  });
+
+  // Hào checkboxes: hào 1 (dưới) → hào 6 (trên)
+  const grid = document.getElementById('haoCBs');
+  for (let i = 1; i <= 6; i++) {
+    const lbl = document.createElement('label');
+    lbl.className = 'hao-btn';
+    lbl.innerHTML = `
+      <span class="num">Hào ${i}</span>
+      <input type="checkbox" id="hao${i}" onchange="render()">
+      <div class="hao-box"></div>`;
+    grid.appendChild(lbl);
+  }
+
+  up.addEventListener('change', render);
+  lo.addEventListener('change', render);
+  render();
+}
+
+// ── Flip one bit ─────────────────────────────────────
+function flipBit(c) { return c === '1' ? '0' : '1'; }
+
+// ── Render ───────────────────────────────────────────
+function render() {
+  const upCode = document.getElementById('upper').value;
+  const loCode = document.getElementById('lower').value;
+  // code6: positions 0-2 = upper (hào 6,5,4), positions 3-5 = lower (hào 3,2,1)
+  const code6 = upCode + loCode;
+
+  // Which hào are moving? (1-indexed from bottom)
+  const moving = [];
+  for (let i = 1; i <= 6; i++) {
+    if (document.getElementById('hao' + i).checked) moving.push(i);
+  }
+
+  // Build biến code: flip moving lines
+  // hào i (1=bottom) maps to index (6-i) in code6
+  const biArr = code6.split('');
+  moving.forEach(i => { biArr[6 - i] = flipBit(biArr[6 - i]); });
+  const bien6 = biArr.join('');
+
+  // Names
+  const nameMain = QUE64[code6] || '(Chưa tra được)';
+  const nameBien = QUE64[bien6] || '(Chưa tra được)';
+
+  document.getElementById('nameMain').textContent = nameMain;
+  document.getElementById('nameBien').textContent = nameBien;
+  document.getElementById('binMain').textContent = code6;
+  document.getElementById('binBien').textContent = bien6;
+
+  drawHex('hexMain', code6, moving, false);
+  drawHex('hexBien', bien6, moving, true);
+}
+
+// ── Draw hexagram ─────────────────────────────────────
+// lines drawn bottom to top (hào 1 first in DOM due to flex-direction:column-reverse)
+function drawHex(id, code6, moving, isBien) {
+  const container = document.getElementById(id);
+  container.innerHTML = '';
+
+  for (let hao = 1; hao <= 6; hao++) {
+    // hào i from bottom → index 6-i in code6
+    const bit = code6[6 - hao];
+    const isMoving = moving.includes(hao);
+
+    const row = document.createElement('div');
+    row.className = 'hao-row' + (isMoving ? ' moving' : '');
+
+    const wrap = document.createElement('div');
+    wrap.className = 'seg-wrap ' + (bit === '1' ? 'yang' : 'yin');
+
+    if (bit === '1') {
+      // Solid line
+      const seg = document.createElement('div');
+      seg.className = 'seg';
+      wrap.appendChild(seg);
+    } else {
+      // Broken line: two segments
+      const s1 = document.createElement('div'); s1.className = 'seg';
+      const s2 = document.createElement('div'); s2.className = 'seg';
+      wrap.appendChild(s1);
+      wrap.appendChild(s2);
+    }
+
+    row.appendChild(wrap);
+    container.appendChild(row);
+  }
+}
+
+// ── Download as image ────────────────────────────────
+async function downloadImg() {
+  const btn = document.getElementById('copyBtn');
+  btn.textContent = '⏳ Đang tạo ảnh…';
+  btn.disabled = true;
+
+  // Build a snapshot div with all the info
+  const nameMain = document.getElementById('nameMain').textContent;
+  const nameBien = document.getElementById('nameBien').textContent;
+  const binMain  = document.getElementById('binMain').textContent;
+  const binBien  = document.getElementById('binBien').textContent;
+  const question = document.getElementById('question').value.trim();
+
+  const moving = [];
+  for (let i = 1; i <= 6; i++) {
+    if (document.getElementById('hao' + i).checked) moving.push('Hào ' + i);
+  }
+  const movingStr = moving.length ? moving.join(', ') : 'Không có hào động';
+
+  // Clone result + question area into a temp container for capture
+  const snap = document.createElement('div');
+  snap.style.cssText = `
+    position:fixed; left:-9999px; top:0;
+    width:500px; background:#faf6ed;
+    padding:24px 20px 28px; font-family:'Noto Serif',serif;
+    color:#1a1209; box-sizing:border-box;
+  `;
+
+  // Title
+  snap.innerHTML = `
+    <div style="text-align:center;margin-bottom:18px;">
+      <div style="font-family:'Cinzel',serif;font-size:1.5rem;font-weight:800;color:#b8860b;letter-spacing:0.04em;">易 Dịch Học</div>
+      <div style="height:2px;background:linear-gradient(90deg,transparent,#b8860b,transparent);margin:6px auto;width:80%;"></div>
+    </div>`;
+
+  // Clone hexagrams side by side
+  const pairClone = document.querySelector('.result-pair').cloneNode(true);
+  pairClone.style.margin = '0 0 18px';
+  snap.appendChild(pairClone);
+
+  // Moving lines info
+  const movDiv = document.createElement('div');
+  movDiv.style.cssText = 'background:#fff3cd;border:1px solid #c9b07a;border-radius:4px;padding:10px 14px;margin-bottom:14px;font-size:0.9rem;';
+  movDiv.innerHTML = `<strong style="color:#5a3a00;">Hào Động:</strong> <span style="color:#c0392b;">${movingStr}</span>`;
+  snap.appendChild(movDiv);
+
+  // Question if any
+  if (question) {
+    const qDiv = document.createElement('div');
+    qDiv.style.cssText = 'background:white;border:1px solid #c9b07a;border-radius:4px;padding:10px 14px;font-size:0.9rem;';
+    qDiv.innerHTML = `<strong style="color:#5a3a00;">Câu Hỏi:</strong><br><span style="color:#1a1209;">${question.replace(/\n/g,'<br>')}</span>`;
+    snap.appendChild(qDiv);
+  }
+
+  document.body.appendChild(snap);
+
+  try {
+    const canvas = await html2canvas(snap, {
+      backgroundColor: '#faf6ed',
+      scale: 2,
+      useCORS: true,
+      logging: false
+    });
+    document.body.removeChild(snap);
+
+    const link = document.createElement('a');
+    link.download = 'dich-hoc-que.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+
+    btn.textContent = '✅ Đã Tải Ảnh!';
+    btn.classList.add('ok');
+    setTimeout(() => {
+      btn.textContent = '📥 Tải Ảnh Kết Quả';
+      btn.classList.remove('ok');
+      btn.disabled = false;
+    }, 2500);
+  } catch(e) {
+    document.body.removeChild(snap);
+    btn.textContent = '📥 Tải Ảnh Kết Quả';
+    btn.disabled = false;
+    alert('Lỗi khi tạo ảnh: ' + e.message);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
